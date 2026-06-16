@@ -1,0 +1,48 @@
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+#game-container{width:100vw;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+#game{display:block}
+#back-btn{position:fixed;top:1rem;left:1rem;background:rgba(255,255,255,.1);color:#e0e0e0;border:1px solid rgba(255,255,255,.2);padding:.5rem 1rem;border-radius:8px;cursor:pointer;font-size:.9rem;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:background .2s;z-index:10}
+#back-btn:hover{background:rgba(255,255,255,.2)}
+
+.mobile-controls {
+  position: relative;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+}
+.mobile-controls.hidden { display: none; }
+.d-pad {
+  display: grid;
+  grid-template-columns: 55px 55px 55px;
+  grid-template-rows: 55px 55px 55px;
+  gap: 0.4rem;
+}
+.d-pad-row {
+  display: contents;
+}
+#btn-up { grid-column: 2; grid-row: 1; }
+#btn-left { grid-column: 1; grid-row: 2; }
+#btn-right { grid-column: 3; grid-row: 2; }
+#btn-down { grid-column: 2; grid-row: 3; }
+.control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+.control-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+}
+@media (min-width: 769px) {
+  .mobile-controls { display: none !important; }
+}

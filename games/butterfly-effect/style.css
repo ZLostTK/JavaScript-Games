@@ -1,0 +1,150 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000; /* Fondo negro puro sin neon */
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+canvas#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+canvas#game:active {
+  cursor: grabbing;
+}
+
+#back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+#back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.controls-panel {
+  position: absolute;
+  /* Corregido: Panel en la parte superior derecha siempre */
+  top: 20px;
+  right: 20px;
+  width: 250px;
+  padding: 15px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  z-index: 100;
+}
+
+.control-group {
+  margin-bottom: 15px;
+}
+
+.control-group label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  color: #ccc;
+}
+
+.control-group input[type=range] {
+  width: 100%;
+  cursor: pointer;
+  accent-color: #fff;
+}
+
+.control-help {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+.info-panel {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 25px;
+  background: transparent; /* Totalmente transparente */
+  border: none;
+  z-index: 100;
+  text-align: center;
+  display: none;
+  pointer-events: none;
+}
+
+.info-panel.visible {
+  display: block;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.info-panel h1 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #fff;
+  font-weight: normal;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.info-panel p {
+  font-size: 0.9rem;
+  color: #ccc;
+  font-family: monospace;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 2px #000;
+}
+
+#unfollow-btn {
+  pointer-events: auto;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+#unfollow-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .controls-panel {
+    /* Ajustado para pantallas pequeñas: justo debajo del botón "Volver" si es que choca, pero top:20px a la derecha está bien si cabe */
+    top: 60px;
+    right: 20px;
+    width: 200px;
+  }
+}

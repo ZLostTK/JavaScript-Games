@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Snake</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div id="game-container">
+  <canvas id="game"></canvas>
+  <button id="back-btn" onclick="location.href='../../'">← Back</button>
+  <div id="mobile-controls" class="mobile-controls hidden">
+    <div class="d-pad">
+      <button id="btn-up" class="control-btn"><i class="fa-solid fa-arrow-up"></i></button>
+      <div class="d-pad-row">
+        <button id="btn-left" class="control-btn"><i class="fa-solid fa-arrow-left"></i></button>
+        <button id="btn-right" class="control-btn"><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <button id="btn-down" class="control-btn"><i class="fa-solid fa-arrow-down"></i></button>
+    </div>
+  </div>
+</div>
+<script src="../../engine/input.js"></script>
+<script src="../../engine/audio.js"></script>
+<script src="../../engine/engine.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
