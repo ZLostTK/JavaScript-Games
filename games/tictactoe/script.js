@@ -142,8 +142,10 @@ const game = {
     this.gameOver   = false;
     this.winner     = null;
     this.winLine    = null;
-    this.hadMouse   = false;
-    this.hadTouch   = false;
+    // Inicializar con el estado actual para que el click del menú
+    // no se registre como la primera acción del juego.
+    this.hadMouse   = Input.isMousePressed();
+    this.hadTouch   = Input.getTouchCount() > 0;
     this._aiTimer   = null;
     this.restartCd  = 0;
 

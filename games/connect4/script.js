@@ -121,7 +121,11 @@ const game = {
         this.board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
         this.turn = RED; this.gameOver = false; this.winner = null;
         this.winCells = null; this.hoverCol = -1; this.dropAnim = null;
-        this.restartCd = 0; this.hadMouse = false; this.hadTouch = false;
+        this.restartCd = 0;
+        // Inicializar con el estado actual para que el click del menú
+        // no se registre como la primera acción del juego.
+        this.hadMouse = Input.isMousePressed();
+        this.hadTouch = Input.getTouchCount() > 0;
         this._aiTimer = null;
         this.state = 'playing';
     },

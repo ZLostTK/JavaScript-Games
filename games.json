@@ -28,6 +28,32 @@
       ]
     },
     {
+      "id": "connect4",
+      "title": "Conecta 4",
+      "description": "Conecta 4 fichas en línea antes que la IA",
+      "path": "games/connect4/",
+      "image": "assets/imgs_games/connect4.svg",
+      "color": "#1a2a5e",
+      "tags": [
+        "Clásico",
+        "Inteligencia Artificial",
+        "Estrategia"
+      ]
+    },
+    {
+      "id": "hangman",
+      "title": "Ahorcado",
+      "description": "Adivina la palabra secreta - Modos Random y 1v1",
+      "path": "games/hangman/",
+      "image": "assets/imgs_games/hangman.svg",
+      "color": "#2a2a4a",
+      "tags": [
+        "Palabras",
+        "Lógica",
+        "Multijugador"
+      ]
+    },
+    {
       "id": "snake",
       "title": "Snake Game",
       "description": "Grow the snake by eating food",
@@ -51,15 +77,6 @@
         "Lógica",
         "Inteligencia Artificial"
       ]
-    },
-    {
-      "id": "connect4",
-      "title": "Conecta 4",
-      "description": "Conecta 4 fichas en línea antes que la IA",
-      "path": "games/connect4/",
-      "image": "assets/imgs_games/connect4.svg",
-      "color": "#1a2a5e",
-      "tags": ["Clásico", "Inteligencia Artificial", "Estrategia"]
     }
   ]
 }
