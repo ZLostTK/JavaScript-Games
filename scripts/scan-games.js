@@ -16,7 +16,13 @@ const meta = {
     title: 'Tic Tac Toe', 
     description: 'Classic 3-in-a-row against AI', 
     color: '#16213e',
-    tags: ['Lógica', 'Inteligencia Artificial'
+    tags: ['Lógica', 'Inteligencia Artificial']
+  },
+  connect4: { 
+    title: 'Conecta 4', 
+    description: 'Conecta 4 fichas en línea antes que la IA', 
+    color: '#1a2a5e',
+    tags: ['Clásico', 'Inteligencia Artificial', 'Estrategia']
   },
   arkanoid: { 
     title: 'Arkanoid', 

@@ -3,28 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO primario -->
   <title>JavaScript Games</title>
-  <meta name="description" content="Colección de juegos clásicos en JavaScript">
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Colección de juegos clásicos — Snake, Tetris, Pong y más — creados con JavaScript puro (Vanilla JS). Gratis, sin anuncios, jugables desde el navegador.">
+  <link rel="canonical" href="https://zlosttk.github.io/JavaScript-Games/">
+
+  <!-- Open Graph (redes sociales + motores de IA) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://zlosttk.github.io/JavassJavaScript-Games/">
+  <meta property="og:title" content="JavaScript Games – Juegos Clásicos en Vanilla JS">
+  <meta property="og:description" content="Colección de juegos clásicos creados con JavaScript puro. Snake, Tetris, Pong y más. Gratis, sin anuncios, jugables desde el navegador.">
+  <meta property="og:locale" content="es_MX">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="JavaScript Games – Juegos Clásicos en Vanilla JS">
+  <meta name="twitter:description" content="Juegos clásicos en JavaScript puro. Gratis, sin anuncios, jugables desde el navegador.">
+
+  <!-- PWA / Tema -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#09090b">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Schema markup: WebSite + autor -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "JavaScript Games",
+    "url": "https://zlosttk.github.io/JavaScript-Games/",
+    "description": "Colección de juegos clásicos creados con JavaScript puro (Vanilla JS). Gratis, sin anuncios, jugables desde el navegador.",
+    "inLanguage": "es",
+    "author": {
+      "@type": "Person",
+      "name": "ZLostTK"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://zlosttk.github.io/JavassJavaScript-Games/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- Font Awesome diferido para no bloquear render -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="pwa-banner" class="hidden">
     <p>¡Instala la App para jugar sin conexión y pantalla completa!</p>
-    <button id="install-btn"><i class="fa-solid fa-download"></i> Instalar PWA</button>
+    <button id="install-btn"><i class="fa-solid fa-download" aria-hidden="true"></i> Instalar PWA</button>
   </div>
+
   <header>
-    <h1><i class="fa-solid fa-gamepad"></i> JavaScript Games</h1>
-    <p>Una colección de juegos clásicos creados con Vanilla JS</p>
+    <!-- Ícono separado del texto del H1 para que crawlers lean "JavaScript Games" limpio -->
+    <h1>
+      <i class="fa-solid fa-gamepad" aria-hidden="true"></i>
+      JavaScript Games
+    </h1>
+    <p>Una colección de juegos clásicos creados con Vanilla JS.</p>
   </header>
-  <main id="game-grid"></main>
+
+  <main id="game-grid" aria-label="Catálogo de juegos"></main>
+
   <footer>
-    <p>Desarrollado en JavaScript</p>
-    <p>© 2026 Open Source by ZLostTK.</p>
+    <p>Desarrollado con JavaScript puro (Vanilla JS) · Open Source</p>
+    <p>&copy; 2026 <a href="https://github.com/ZLostTK" rel="author" aria-label="Perfil de GitHub de ZLostTK" style="color: #f5f5e3; text-decoration: none;">ZLostTK</a></p>
   </footer>
+
   <script src="main.js"></script>
 </body>
 </html>

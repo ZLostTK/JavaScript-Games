@@ -25,12 +25,19 @@ class Engine {
     const pw = p.clientWidth;
     const ph = p.clientHeight;
     const s = Math.min(pw / this.W, ph / this.H);
+    this._scale = s;
     this.canvas.width = this.W;
     this.canvas.height = this.H;
     if (this.scaleMode === 'fit') {
       this.canvas.style.width = `${this.W * s}px`;
       this.canvas.style.height = `${this.H * s}px`;
     }
+  }
+
+  /** Convert CSS-pixel coords (offsetX/offsetY or touch) → logical canvas coords */
+  static toGame(x, y) {
+    const s = this._scale || 1;
+    return { x: x / s, y: y / s };
   }
 
   static start(game) {

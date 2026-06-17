@@ -51,6 +51,15 @@
         "Lógica",
         "Inteligencia Artificial"
       ]
+    },
+    {
+      "id": "connect4",
+      "title": "Conecta 4",
+      "description": "Conecta 4 fichas en línea antes que la IA",
+      "path": "games/connect4/",
+      "image": "assets/imgs_games/connect4.svg",
+      "color": "#1a2a5e",
+      "tags": ["Clásico", "Inteligencia Artificial", "Estrategia"]
     }
   ]
 }
