@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ahorcado - Hangman Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Volver siempre visible en la esquina, igual que tictactoe/connect4 -->
+        <button id="back-btn" onclick="location.href='../../'">← Volver</button>
+
+        <!-- Game UI (visible durante la partida) -->
+        <div id="game-ui">
+            <!-- Hangman drawing area -->
+            <div id="hangman-display">
+                <img id="hangman-image" src="./images/hangman-0.svg" alt="Hangman stage 0">
+            </div>
+            
+            <!-- Game stats -->
+            <div id="game-stats">
+                <div id="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-label">Intentos</span>
+                        <span id="attempts" class="stat-value">6</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Aciertos</span>
+                        <span id="correct-letters" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item" id="hint-item" class="hidden">
+                        <span class="stat-label">Pista</span>
+                        <button id="hint-btn" class="hint-btn">Ver</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Word display -->
+            <div id="word-display">
+                <div id="word-container"></div>
+            </div>
+            
+            <!-- Keyboard -->
+            <div id="keyboard-container">
+                <div id="keyboard"></div>
+            </div>
+            
+            <!-- Game info panel -->
+            <div id="game-info">
+                <p id="mode-display">Modo: Cargando...</p>
+                <p id="opponent-info" class="hidden">Oponente: <span id="opponent-name">---</span></p>
+            </div>
+        </div>
+        
+        <!-- Mode selection overlay -->
+        <div id="mode-overlay" class="overlay">
+            <div id="mode-panel">
+                <p id="mode-title">Ahorcado</p>
+                <p id="mode-subtitle">Elige modo de juego</p>
+                <div id="mode-buttons">
+                    <button id="random-mode-btn" class="mode-btn" data-accent="e94560">
+                        Random
+                    </button>
+                    <button id="pvp-mode-btn" class="mode-btn" data-accent="533483">
+                        1 vs 1
+                    </button>
+                    <button id="online-mode-btn" class="mode-btn" data-accent="4ecca3">
+                        En linea
+                    </button>
+                </div>
+                <p id="mode-footer">Ahorcado &middot; Vanilla JS</p>
+            </div>
+        </div>
+        
+        <!-- Online Setup overlay -->
+        <div id="online-setup-overlay" class="overlay hidden">
+            <div id="online-setup-panel" class="panel">
+                <h2>Modo En Línea</h2>
+                <div id="online-options">
+                    <button id="host-mode-btn" class="btn-primary" style="margin-bottom: 0.75rem; width: 100%;">Crear Partida (Host)</button>
+                    <button id="join-mode-btn" class="btn-secondary" style="margin-bottom: 0.75rem; width: 100%;">Unirse a Partida (Guest)</button>
+                    <button id="online-cancel-btn" class="btn-secondary" style="width: 100%;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Online Lobby overlay -->
+        <div id="online-lobby-overlay" class="overlay hidden">
+            <div id="online-lobby-panel" class="panel">
+                <h2 id="online-lobby-title">Crear partida</h2>
+                <p id="online-lobby-status" style="text-align: center; margin-bottom: 1rem; color: #a0a0b0;">Conectando al servidor...</p>
+                
+                <!-- Host view -->
+                <div id="host-view" class="hidden">
+                    <p style="font-size: 0.85rem; color: #c0c0d0; font-weight: 700; text-transform: uppercase; text-align: center;">Código de la sala</p>
+                    <p id="room-code-display" style="font-size: 2rem; font-weight: 800; text-align: center; color: #4ecca3; margin: 0.5rem 0;">------</p>
+                    <button id="copy-btn" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem;">Copiar código</button>
+                    <p style="font-size: 0.8rem; color: #606080; text-align: center;">Comparte este código con tu oponente</p>
+                </div>
+                
+                <!-- Join view -->
+                <div id="join-view" class="hidden">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="room-code-input">Código de la sala:</label>
+                        <input type="text" id="room-code-input" placeholder="Ej: ABCDEF" maxlength="6" style="text-transform: uppercase;">
+                    </div>
+                    <button id="connect-btn" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem;">Conectar</button>
+                </div>
+                
+                <button id="lobby-back-btn" class="btn-secondary" style="width: 100%; margin-top: 1rem;">← Volver</button>
+            </div>
+        </div>
+        
+        <!-- 1v1 Setup overlay -->
+        <div id="setup-1v1-overlay" class="overlay hidden">
+            <div id="setup-1v1-panel" class="panel">
+                <h2 id="setup-title">Configura la Partida</h2>
+                <form id="setup-1v1-form">
+                    <div class="form-group">
+                        <label for="player-name">Tu nombre:</label>
+                        <input type="text" id="player-name" placeholder="Ej: Juan" required maxlength="20">
+                    </div>
+                    <div class="form-group" id="opponent-name-group">
+                        <label for="opponent-name-input">Nombre del rival:</label>
+                        <input type="text" id="opponent-name-input" placeholder="Ej: María" required maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="secret-word">Palabra secreta:</label>
+                        <input type="password" id="secret-word" placeholder="Ingresa una palabra" required minlength="3" maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label>Pistas (ingresa 3):</label>
+                        <input type="text" id="hint-1" placeholder="Pista 1" required maxlength="50">
+                        <input type="text" id="hint-2" placeholder="Pista 2" required maxlength="50">
+                        <input type="text" id="hint-3" placeholder="Pista 3" required maxlength="50">
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-primary" id="setup-submit-btn">Comenzar Partida</button>
+                        <button type="button" id="cancel-setup-btn" class="btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 1v1 Player switch overlay -->
+        <div id="player-switch-overlay" class="overlay hidden">
+            <div id="player-switch-panel" class="panel">
+                <h2 id="switch-title">Cambio de Jugador</h2>
+                <p id="switch-message">El rival va a adivinar la palabra...</p>
+                <p id="switch-instruction">Pasa el dispositivo</p>
+                <button id="continue-btn" class="btn-primary">Continuar</button>
+            </div>
+        </div>
+        
+        <!-- Game Over overlay -->
+        <div id="game-over-overlay" class="overlay hidden">
+            <div id="game-over-panel" class="panel">
+                <div id="game-over-content">
+                    <!-- Dynamic content injected here -->
+                </div>
+                <div class="game-over-buttons">
+                    <button id="play-again-btn" class="btn-primary">Jugar de Nuevo</button>
+                    <button id="menu-btn" class="btn-secondary">Menú Principal</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hint display (1v1 mode) -->
+        <div id="hint-display" class="hidden">
+            <div id="hint-content">
+                <p id="hint-text"></p>
+                <button id="close-hint-btn">×</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="words.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
