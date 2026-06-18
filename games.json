@@ -68,7 +68,7 @@
     },
     {
       "id": "tictactoe",
-      "title": "Tic Tac Toe",
+      "title": "Gato - Ateti",
       "description": "Classic 3-in-a-row against AI",
       "path": "games/tictactoe/",
       "image": "assets/imgs_games/tictactoe.svg",
@@ -80,10 +80,10 @@
     },
     {
       "id": "minesweeper",
-      "title": "Minesweeper",
+      "title": "Busca Minas",
       "description": "Find the bombs using logic and arrays",
       "path": "games/minesweeper/",
-      "image": "assets/imgs_games/snake.svg",
+      "image": "assets/imgs_games/minesweeper.svg",
       "color": "#2a2a4a",
       "tags": [
         "Lógica",

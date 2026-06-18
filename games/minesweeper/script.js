@@ -156,11 +156,23 @@ const game = {
     },
 
     placeMines(firstR, firstC) {
+        // Construir conjunto de celdas protegidas (primera celda + sus 8 vecinas)
+        const safe = new Set();
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                const nr = firstR + dr;
+                const nc = firstC + dc;
+                if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+                    safe.add(nr * COLS + nc);
+                }
+            }
+        }
+    
         let placed = 0;
         while (placed < MINES) {
             const r = Math.floor(Math.random() * ROWS);
             const c = Math.floor(Math.random() * COLS);
-            if (this.board[r][c] === 0 && (r !== firstR || c !== firstC)) {
+            if (this.board[r][c] === 0 && !safe.has(r * COLS + c)) {
                 this.board[r][c] = 1;
                 placed++;
             }
