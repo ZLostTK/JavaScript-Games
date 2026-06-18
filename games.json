@@ -77,6 +77,19 @@
         "Lógica",
         "Inteligencia Artificial"
       ]
+    },
+    {
+      "id": "minesweeper",
+      "title": "Minesweeper",
+      "description": "Find the bombs using logic and arrays",
+      "path": "games/minesweeper/",
+      "image": "assets/imgs_games/snake.svg",
+      "color": "#2a2a4a",
+      "tags": [
+        "Lógica",
+        "Clásico",
+        "Cuadrícula"
+      ]
     }
   ]
 }

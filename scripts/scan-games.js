@@ -47,6 +47,12 @@ const meta = {
 		description: 'Adivina la palabra secreta - Modos Random y 1v1',
 		color: '#2a2a4a',
 		tags: ['Palabras', 'Lógica', 'Multijugador']
+	},
+	minesweeper: { 
+		title: 'Minesweeper', 
+		description: 'Find the bombs using logic and arrays', 
+		color: '#2a2a4a',
+		tags: ['Lógica', 'Clásico', 'Cuadrícula']
 	}
 };
 

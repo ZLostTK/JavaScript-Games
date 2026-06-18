@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>Minesweeper</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="game-container">
+		<canvas id="game" oncontextmenu="return false;"></canvas>
+		<button id="back-btn" onclick="location.href='../../'">← Volver</button>
+		
+		<!-- Online UI overlay -->
+		<div id="online-ui" class="hidden">
+			<div id="online-panel">
+				<h2 id="online-title">En línea</h2>
+				<p id="online-status">Conectando...</p>
+				
+				<!-- Host view -->
+				<div id="host-view" class="hidden">
+					<p class="label">Código de partida</p>
+					<p id="room-code-display">------</p>
+					<button id="copy-btn">Copiar código</button>
+					<p class="hint">Comparte este código con tu rival</p>
+				</div>
+				
+				<!-- Join view -->
+				<div id="join-view" class="hidden">
+					<p class="label">Introduce el código</p>
+					<input id="room-code-input" type="text" maxlength="6" placeholder="XXXXXX" autocomplete="off" spellcheck="false">
+					<button id="join-btn">Conectar</button>
+				</div>
+				
+				<button id="online-back-btn">← Cancelar</button>
+			</div>
+		</div>
+	</div>
+	
+	<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+	<script src="../../engine/input.js"></script>
+	<script src="../../engine/audio.js"></script>
+	<script src="../../engine/engine.js"></script>
+	<script src="script.js"></script>
+</body>
+</html>
