@@ -336,11 +336,12 @@ function updateDisplay() {
     DOM.correctLetters.textContent = correctCount;
     
     // Update mode display
-    if (GameState.mode === 'random') {
-        DOM.modeDisplay.textContent = 'Random';
-        DOM.opponentInfo.classList.add('hidden');
-        DOM.hintItem.classList.remove('hidden');
-    } else if (GameState.mode === '1v1') {
+        if (GameState.mode === 'random' && GameState.hintsUsed < 1) {
+            DOM.modeDisplay.textContent = 'Random';
+            DOM.opponentInfo.classList.add('hidden');
+            DOM.hintItem.classList.remove('hidden');
+            DOM.hintBtn.disabled = false;
+        } else if (GameState.mode === '1v1') {
         const currentPlayerName = GameState.currentPlayer === 1 ? GameState.player1Name : GameState.player2Name;
         DOM.modeDisplay.textContent = `1v1 - Turno de ${currentPlayerName}`;
         DOM.opponentNameDisplay.textContent = GameState.currentPlayer === 1 ? GameState.player2Name : GameState.player1Name;

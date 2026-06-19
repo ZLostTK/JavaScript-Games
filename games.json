@@ -1,95 +1,108 @@
 {
-  "games": [
-    {
-      "id": "arkanoid",
-      "title": "Arkanoid",
-      "description": "Break bricks with paddle and ball",
-      "path": "games/arkanoid/",
-      "image": "assets/imgs_games/arkanoid.svg",
-      "color": "#1a1a2e",
-      "tags": [
-        "Arcade",
-        "Colisiones",
-        "Física Básica"
-      ]
-    },
-    {
-      "id": "butterfly-effect",
-      "title": "Efecto Mariposa",
-      "description": "Visualización caótica del Atractor de Lorenz",
-      "path": "games/butterfly-effect/",
-      "image": "assets/imgs_games/butterfly-effect.svg",
-      "color": "#0c0a1a",
-      "tags": [
-        "Simulación",
-        "Caos",
-        "Física",
-        "Fractal"
-      ]
-    },
-    {
-      "id": "connect4",
-      "title": "Conecta 4",
-      "description": "Conecta 4 fichas en línea antes que la IA",
-      "path": "games/connect4/",
-      "image": "assets/imgs_games/connect4.svg",
-      "color": "#1a2a5e",
-      "tags": [
-        "Clásico",
-        "Inteligencia Artificial",
-        "Estrategia"
-      ]
-    },
-    {
-      "id": "hangman",
-      "title": "Ahorcado",
-      "description": "Adivina la palabra secreta - Modos Random y 1v1",
-      "path": "games/hangman/",
-      "image": "assets/imgs_games/hangman.svg",
-      "color": "#2a2a4a",
-      "tags": [
-        "Palabras",
-        "Lógica",
-        "Multijugador"
-      ]
-    },
-    {
-      "id": "snake",
-      "title": "Snake Game",
-      "description": "Grow the snake by eating food",
-      "path": "games/snake/",
-      "image": "assets/imgs_games/snake.svg",
-      "color": "#0f3460",
-      "tags": [
-        "Clásico",
-        "Cuadrícula",
-        "Arrays"
-      ]
-    },
-    {
-      "id": "tictactoe",
-      "title": "Gato - Ateti",
-      "description": "Classic 3-in-a-row against AI",
-      "path": "games/tictactoe/",
-      "image": "assets/imgs_games/tictactoe.svg",
-      "color": "#16213e",
-      "tags": [
-        "Lógica",
-        "Inteligencia Artificial"
-      ]
-    },
-    {
-      "id": "minesweeper",
-      "title": "Busca Minas",
-      "description": "Find the bombs using logic and arrays",
-      "path": "games/minesweeper/",
-      "image": "assets/imgs_games/minesweeper.svg",
-      "color": "#2a2a4a",
-      "tags": [
-        "Lógica",
-        "Clásico",
-        "Cuadrícula"
-      ]
-    }
-  ]
+	"games": [
+		{
+			"id": "arkanoid",
+			"title": "Arkanoid",
+			"description": "Break bricks with paddle and ball",
+			"path": "games/arkanoid/",
+			"image": "assets/imgs_games/arkanoid.svg",
+			"color": "#1a1a2e",
+			"tags": [
+				"Arcade",
+				"Colisiones",
+				"Física Básica"
+			]
+		},
+		{
+			"id": "butterfly-effect",
+			"title": "Efecto Mariposa",
+			"description": "Visualización caótica del Atractor de Lorenz",
+			"path": "games/butterfly-effect/",
+			"image": "assets/imgs_games/butterfly-effect.svg",
+			"color": "#0c0a1a",
+			"tags": [
+				"Simulación",
+				"Caos",
+				"Física",
+				"Fractal"
+			]
+		},
+		{
+			"id": "connect4",
+			"title": "Conecta 4",
+			"description": "Conecta 4 fichas en línea antes que la IA",
+			"path": "games/connect4/",
+			"image": "assets/imgs_games/connect4.svg",
+			"color": "#1a2a5e",
+			"tags": [
+				"Clásico",
+				"Inteligencia Artificial",
+				"Estrategia"
+			]
+		},
+		{
+			"id": "hangman",
+			"title": "Ahorcado",
+			"description": "Adivina la palabra secreta - Modos Random y 1v1",
+			"path": "games/hangman/",
+			"image": "assets/imgs_games/hangman.svg",
+			"color": "#2a2a4a",
+			"tags": [
+				"Palabras",
+				"Lógica",
+				"Multijugador"
+			]
+		},
+		{
+			"id": "snake",
+			"title": "Snake Game",
+			"description": "Grow the snake by eating food",
+			"path": "games/snake/",
+			"image": "assets/imgs_games/snake.svg",
+			"color": "#0f3460",
+			"tags": [
+				"Clásico",
+				"Cuadrícula",
+				"Arrays"
+			]
+		},
+		{
+			"id": "tictactoe",
+			"title": "Gato - Ateti",
+			"description": "Classic 3-in-a-row against AI",
+			"path": "games/tictactoe/",
+			"image": "assets/imgs_games/tictactoe.svg",
+			"color": "#16213e",
+			"tags": [
+				"Lógica",
+				"Inteligencia Artificial"
+			]
+		},
+		{
+			"id": "minesweeper",
+			"title": "Busca Minas",
+			"description": "Find the bombs using logic and arrays",
+			"path": "games/minesweeper/",
+			"image": "assets/imgs_games/minesweeper.svg",
+			"color": "#2a2a4a",
+			"tags": [
+				"Lógica",
+				"Clásico",
+				"Cuadrícula"
+			]
+		},
+		{
+			"id": "flappybird",
+			"title": "Flappy Bird",
+			"description": "Vuela entre tuberías sin chocar - Canvas puro",
+			"path": "games/flappybird/",
+			"image": "assets/imgs_games/flappybird.svg",
+			"color": "#0f2244",
+			"tags": [
+				"Arcade",
+				"Reacción",
+				"Clásico"
+			]
+		}
+	]
 }
