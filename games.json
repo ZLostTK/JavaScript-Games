@@ -16,7 +16,7 @@
 		{
 			"id": "butterfly-effect",
 			"title": "Efecto Mariposa",
-			"description": "Visualización caótica del Atractor de Lorenz",
+			"description": "Chaotic visualization of the Lorenz Attractor",
 			"path": "games/butterfly-effect/",
 			"image": "assets/imgs_games/butterfly-effect.svg",
 			"color": "#0c0a1a",
@@ -30,7 +30,7 @@
 		{
 			"id": "connect4",
 			"title": "Conecta 4",
-			"description": "Conecta 4 fichas en línea antes que la IA",
+			"description": "Connect 4 chips in a row before the AI",
 			"path": "games/connect4/",
 			"image": "assets/imgs_games/connect4.svg",
 			"color": "#1a2a5e",
@@ -43,7 +43,7 @@
 		{
 			"id": "hangman",
 			"title": "Ahorcado",
-			"description": "Adivina la palabra secreta - Modos Random y 1v1",
+			"description": "Guess the secret word - Random and 1v1 modes",
 			"path": "games/hangman/",
 			"image": "assets/imgs_games/hangman.svg",
 			"color": "#2a2a4a",
@@ -94,13 +94,26 @@
 		{
 			"id": "flappybird",
 			"title": "Flappy Bird",
-			"description": "Vuela entre tuberías sin chocar - Canvas puro",
+			"description": "Fly between pipes without crashing",
 			"path": "games/flappybird/",
 			"image": "assets/imgs_games/flappybird.svg",
 			"color": "#0f2244",
 			"tags": [
 				"Arcade",
 				"Reacción",
+				"Clásico"
+			]
+		},
+		{
+			"id": "lightsout",
+			"title": "Fuera Luces!",
+			"description": "Turn off all the lights in the fewest possible pulses",
+			"path": "games/lightsout/",
+			"image": "assets/imgs_games/lightsout.svg",
+			"color": "#0d0d1a",
+			"tags": [
+				"Lógica",
+				"Puzle",
 				"Clásico"
 			]
 		}
