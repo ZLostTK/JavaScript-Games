@@ -15,21 +15,8 @@ const copyBtn        = document.getElementById('copy-btn');
 const joinBtn        = document.getElementById('join-btn');
 const onlineBackBtn  = document.getElementById('online-back-btn');
 
-// ── PeerJS state ──────────────────────────────────────────
-let peer = null;
-let conn = null;
-
-function destroyPeer() {
-  if (conn) { try { conn.close(); } catch (_) {} conn = null; }
-  if (peer) { try { peer.destroy(); } catch (_) {} peer = null; }
-}
-
-function genCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let c = '';
-  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
-  return c;
-}
+// ── PeerJS state handled by Online class ────────────────────
+// Online abstraction used here
 
 // ── Helper: draw a rounded rect button on canvas ──────────
 function drawBtn(ctx, label, x, y, w, h, accent, hover) {
@@ -242,8 +229,8 @@ const game = {
     Audio.play('place');
 
     // Send to peer if local move in online mode
-    if (isLocal && this.mode === 'online' && conn) {
-      conn.send(JSON.stringify({ type: 'move', index: idx }));
+    if (isLocal && this.mode === 'online') {
+      Online.send({ type: 'move', index: idx });
     }
 
     const result = this.checkWinner();
@@ -320,7 +307,7 @@ const game = {
 
   // ── Navigation helpers ────────────────────────────────
   _returnToSelect() {
-    destroyPeer();
+    Online.destroy();
     onlineUI.classList.add('hidden');
     this.state = 'select';
     this.mode  = null;
@@ -337,54 +324,47 @@ const game = {
   },
 
   _cancelOnline() {
-    destroyPeer();
+    Online.destroy();
     onlineUI.classList.add('hidden');
     this.state = 'select';
   },
 
   // ── PeerJS — Host ─────────────────────────────────────
   _hostGame() {
-    destroyPeer();
-    const code = genCode();
-
-    // Show overlay immediately
-    onlineTitle.textContent  = 'Crear partida';
-    onlineStatus.textContent = 'Esperando a un rival...';
-    hostView.classList.remove('hidden');
-    joinView.classList.add('hidden');
-    roomCodeDisp.textContent = code;
-    onlineUI.classList.remove('hidden');
-
-    peer = new Peer(code, { debug: 0 });
-
-    peer.on('open', () => {
+    Online.on('onHostReady', () => {
       onlineStatus.textContent = 'Esperando conexión...';
     });
-
-    peer.on('connection', (c) => {
-      conn = c;
-      conn.on('open', () => {
-        onlineUI.classList.add('hidden');
-        hostView.classList.add('hidden');
-        this.onlineConnected = true;
-        this.startGame('online', 'host');
-      });
-      conn.on('data', (raw) => {
-        const data = JSON.parse(raw);
-        if (data.type === 'move') this.makeMove(data.index, false);
-      });
-      conn.on('close', () => this._onDisconnect());
-      conn.on('error', () => this._onDisconnect());
+    
+    Online.on('onConnected', () => {
+      onlineUI.classList.add('hidden');
+      hostView.classList.add('hidden');
+      this.onlineConnected = true;
+      this.startGame('online', 'host');
     });
 
-    peer.on('error', (err) => {
+    Online.on('onData', (data) => {
+      if (data.type === 'move') this.makeMove(data.index, false);
+    });
+
+    Online.on('onDisconnect', () => this._onDisconnect());
+    
+    Online.on('onError', (err) => {
       onlineStatus.textContent = 'Error: ' + err.type;
+    });
+
+    Online.host((code) => {
+      onlineTitle.textContent  = 'Crear partida';
+      onlineStatus.textContent = 'Creando sala...';
+      hostView.classList.remove('hidden');
+      joinView.classList.add('hidden');
+      roomCodeDisp.textContent = code;
+      onlineUI.classList.remove('hidden');
     });
   },
 
   // ── PeerJS — Join ─────────────────────────────────────
   _joinGame() {
-    destroyPeer();
+    Online.destroy();
 
     onlineTitle.textContent  = 'Unirse a partida';
     onlineStatus.textContent = 'Introduce el código del anfitrión';
@@ -393,36 +373,30 @@ const game = {
     roomCodeInput.value      = '';
     onlineUI.classList.remove('hidden');
 
-    peer = new Peer({ debug: 0 });
-
-    peer.on('error', (err) => {
-      onlineStatus.textContent = 'Error: ' + err.type;
+    Online.on('onError', (err) => {
+      onlineStatus.textContent = 'Error al conectar';
+      joinBtn.disabled = false;
     });
 
-    // The join button submits the code
+    Online.on('onConnected', () => {
+      onlineUI.classList.add('hidden');
+      joinView.classList.add('hidden');
+      this.onlineConnected = true;
+      this.startGame('online', 'guest');
+    });
+
+    Online.on('onData', (data) => {
+      if (data.type === 'move') this.makeMove(data.index, false);
+    });
+
+    Online.on('onDisconnect', () => this._onDisconnect());
+
     joinBtn.onclick = () => {
       const code = roomCodeInput.value.trim().toUpperCase();
       if (code.length < 4) { onlineStatus.textContent = 'Código demasiado corto'; return; }
       onlineStatus.textContent = 'Conectando...';
       joinBtn.disabled = true;
-
-      conn = peer.connect(code, { reliable: true });
-
-      conn.on('open', () => {
-        onlineUI.classList.add('hidden');
-        joinView.classList.add('hidden');
-        this.onlineConnected = true;
-        this.startGame('online', 'guest');
-      });
-      conn.on('data', (raw) => {
-        const data = JSON.parse(raw);
-        if (data.type === 'move') this.makeMove(data.index, false);
-      });
-      conn.on('close', () => this._onDisconnect());
-      conn.on('error', () => {
-        onlineStatus.textContent = 'No se pudo conectar. Verifica el código.';
-        joinBtn.disabled = false;
-      });
+      Online.join(code);
     };
   },
 
@@ -432,7 +406,7 @@ const game = {
       this.state  = 'gameover';
       this.restartCd = 2;
     }
-    destroyPeer();
+    Online.destroy();
   },
 
   // ─────────────────────────────────────────────────────

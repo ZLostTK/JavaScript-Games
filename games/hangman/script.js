@@ -47,20 +47,8 @@ const GameState = {
     }
 };
 
-let peer = null;
-let conn = null;
-
-function destroyPeer() {
-    if (conn) { try { conn.close(); } catch (_) {} conn = null; }
-    if (peer) { try { peer.destroy(); } catch (_) {} peer = null; }
-}
-
-function genCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let c = '';
-    for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
-    return c;
-}
+// ── PeerJS state handled by Online class ────────────────────
+// Online abstraction used here
 
 // ────────────────────────────────────────────────────────────
 // DOM References
@@ -158,7 +146,7 @@ function init() {
 // ────────────────────────────────────────────────────────────
 
 function showModeSelection() {
-    destroyPeer();
+    Online.destroy();
     DOM.modeOverlay.classList.remove('hidden');
     DOM.setup1v1Overlay.classList.add('hidden');
     DOM.playerSwitchOverlay.classList.add('hidden');
@@ -220,13 +208,13 @@ function start1v1Game() {
         GameState.player2Name = 'Adivinador';
         GameState.currentPlayer = 2; // Guest guesses
         
-        if (conn) {
-            conn.send(JSON.stringify({
+        if (GameState.mode === 'online') {
+            Online.send({
                 type: 'start',
                 word: secretWord,
                 hints: hints,
                 hostName: p1
-            }));
+            });
         }
         
         DOM.setup1v1Overlay.classList.add('hidden');
@@ -391,8 +379,8 @@ function makeGuess(letter, isLocal = true) {
         GameState.attempts--;
     }
     
-    if (isLocal && GameState.mode === 'online' && conn) {
-        conn.send(JSON.stringify({ type: 'guess', letter: letter }));
+    if (isLocal && GameState.mode === 'online') {
+        Online.send({ type: 'guess', letter: letter });
     }
     
     renderWord();
@@ -555,34 +543,34 @@ DOM.copyBtn.addEventListener('click', () => {
 });
 
 function hostGame() {
-    destroyPeer();
-    const code = genCode();
+    Online.destroy();
     DOM.onlineLobbyTitle.textContent = 'Crear partida';
     DOM.onlineLobbyStatus.textContent = 'Esperando conexión...';
     DOM.hostView.classList.remove('hidden');
     DOM.joinView.classList.add('hidden');
-    DOM.roomCodeDisplay.textContent = code;
     
-    peer = new Peer(code, { debug: 0 });
-    peer.on('connection', (c) => {
-        conn = c;
-        setupConnection();
-    });
-    peer.on('error', (err) => {
+    setupConnection();
+
+    Online.on('onError', (err) => {
         DOM.onlineLobbyStatus.textContent = 'Error: ' + err.type;
+    });
+
+    Online.host((code) => {
+        DOM.roomCodeDisplay.textContent = code;
     });
 }
 
 function joinGame() {
-    destroyPeer();
+    Online.destroy();
     DOM.onlineLobbyTitle.textContent = 'Unirse a partida';
     DOM.onlineLobbyStatus.textContent = 'Introduce el código del host';
     DOM.hostView.classList.add('hidden');
     DOM.joinView.classList.remove('hidden');
     DOM.roomCodeInput.value = '';
     
-    peer = new Peer({ debug: 0 });
-    peer.on('error', (err) => {
+    setupConnection();
+
+    Online.on('onError', (err) => {
         DOM.onlineLobbyStatus.textContent = 'Error: ' + err.type;
     });
     
@@ -593,19 +581,17 @@ function joinGame() {
             return;
         }
         DOM.onlineLobbyStatus.textContent = 'Conectando...';
-        conn = peer.connect(code, { reliable: true });
-        setupConnection();
+        Online.join(code);
     };
 }
 
 function setupConnection() {
-    conn.on('open', () => {
+    Online.on('onConnected', (role) => {
         DOM.onlineLobbyOverlay.classList.add('hidden');
         GameState.mode = 'online';
         GameState.onlineConnected = true;
         
-        // Host has Peer ID equal to room code
-        if (peer.id === DOM.roomCodeDisplay.textContent) {
+        if (role === 'host') {
             GameState.onlineRole = 'host';
             document.getElementById('setup-title').textContent = 'Configura el Ahorcado';
             document.getElementById('opponent-name-group').classList.add('hidden');
@@ -621,8 +607,7 @@ function setupConnection() {
         }
     });
     
-    conn.on('data', (raw) => {
-        const data = JSON.parse(raw);
+    Online.on('onData', (data) => {
         if (data.type === 'start') {
             DOM.onlineLobbyOverlay.classList.add('hidden');
             GameState.reset();
@@ -638,8 +623,7 @@ function setupConnection() {
         }
     });
     
-    conn.on('close', () => onPeerDisconnect());
-    conn.on('error', () => onPeerDisconnect());
+    Online.on('onDisconnect', () => onPeerDisconnect());
 }
 
 function onPeerDisconnect() {
