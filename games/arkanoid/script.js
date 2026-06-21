@@ -104,6 +104,23 @@ const game = {
       this.lives--;
       Audio.play('lose');
       if (this.lives <= 0) { this.gameOver = true; return; }
+
+      const bw = 52, bh = 18, pad = 4, top = 40;
+      const colors = ['#e94560', '#533483', '#0f3460', '#4ecca3', '#e94560'];
+      const shiftY = 3 * (bh + pad);
+      for (const b of this.bricks) {
+        if (b.alive) b.y += shiftY;
+      }
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 8; c++) {
+          this.bricks.push({
+            x: c * (bw + pad) + pad + 10,
+            y: r * (bh + pad) + top,
+            w: bw, h: bh, alive: true, color: colors[r % colors.length]
+          });
+        }
+      }
+
       this.ballLaunched = false;
       this.ballX = this.paddleX + this.paddleW / 2;
       this.ballY = this.paddleY - this.ballR;
@@ -128,7 +145,7 @@ const game = {
       if (this.ballX + this.ballR > b.x && this.ballX - this.ballR < b.x + b.w &&
           this.ballY + this.ballR > b.y && this.ballY - this.ballR < b.y + b.h) {
         b.alive = false;
-        this.score += 10;
+        this.score += 10 * this.lives;
         Audio.play('brick');
         const ox = Math.min(this.ballX + this.ballR - b.x, b.x + b.w - (this.ballX - this.ballR));
         const oy = Math.min(this.ballY + this.ballR - b.y, b.y + b.h - (this.ballY - this.ballR));
