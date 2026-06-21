@@ -13,14 +13,14 @@ const gamesDir = join(root, 'games');
 
 const meta = {
 	tictactoe: { 
-		title: 'Tic Tac Toe', 
+		title: 'Gato - Ateti', 
 		description: 'Classic 3-in-a-row against AI', 
 		color: '#16213e',
 		tags: ['Lógica', 'Inteligencia Artificial']
 	},
 	connect4: { 
 		title: 'Conecta 4', 
-		description: 'Conecta 4 fichas en línea antes que la IA', 
+		description: 'Connect 4 chips in a row before the AI', 
 		color: '#1a2a5e',
 		tags: ['Clásico', 'Inteligencia Artificial', 'Estrategia']
 	},
@@ -38,21 +38,39 @@ const meta = {
 	},
 	'butterfly-effect': {
 		title: 'Efecto Mariposa',
-		description: 'Visualización caótica del Atractor de Lorenz',
+		description: 'Chaotic visualization of the Lorenz Attractor',
 		color: '#0c0a1a',
 		tags: ['Simulación', 'Caos', 'Física', 'Fractal']
 	},
 	hangman: { 
 		title: 'Ahorcado', 
-		description: 'Adivina la palabra secreta - Modos Random y 1v1',
+		description: 'Guess the word - Modes Random y 1v1',
 		color: '#2a2a4a',
 		tags: ['Palabras', 'Lógica', 'Multijugador']
 	},
 	minesweeper: { 
-		title: 'Minesweeper', 
+		title: 'Busca Minas', 
 		description: 'Find the bombs using logic and arrays', 
 		color: '#2a2a4a',
 		tags: ['Lógica', 'Clásico', 'Cuadrícula']
+	},
+	flappybird: { 
+		title: 'Flappy Bird', 
+		description: 'Fly between pipes without crashing', 
+		color: '#0f2244',
+		tags: ['Arcade', 'Reacción', 'Clásico']
+	},
+	lightsout: { 
+		title: 'Fuera Luces!', 
+		description: 'Turn off all the lights', 
+		color: '#0d0d1a',
+		tags: ['Lógica', 'Puzle', 'Clásico']
+	},
+	sudoku: { 
+		title: 'Sudoku', 
+		description: 'Solve the sudoku puzzle', 
+		color: '#1a1a2e',
+		tags: ['Lógica', 'Puzle', 'Clásico']
 	}
 };
 

@@ -116,6 +116,19 @@
 				"Puzle",
 				"Clásico"
 			]
+		},
+		{
+			"id": "sudoku",
+			"title": "Sudoku",
+			"description": "Solve the sudoku puzzle",
+			"path": "games/sudoku/",
+			"image": "assets/imgs_games/sudoku.svg",
+			"color": "#1a1a2e",
+			"tags": [
+				"Lógica",
+				"Puzle",
+				"Clásico"
+			]
 		}
 	]
 }

@@ -1,0 +1,58 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background: #0f0f1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
+}
+
+#game-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
+    image-rendering: pixelated;
+    touch-action: none;
+}
+
+.back-btn {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    padding: 8px 16px;
+    background: hsla(210, 30%, 12%, 0.85);
+    color: #4ecca3;
+    border: 1px solid hsla(160, 64%, 50%, 0.35);
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.back-btn:hover {
+    background: hsla(160, 64%, 20%, 0.7);
+    border-color: #4ecca3;
+    transform: translateX(-2px);
+}
+
+.back-btn:active {
+    transform: translateX(0) scale(0.97);
+}
