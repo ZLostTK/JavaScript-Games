@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.addEventListener('click', async (e) => {
         const path = btn.getAttribute('data-path');
         const image = btn.getAttribute('data-image');
+        const isCached = btn.getAttribute('data-cached') === 'true';
         
         try {
           const originalHTML = btn.innerHTML;
@@ -48,26 +49,59 @@ document.addEventListener('DOMContentLoaded', async () => {
             `./${image}`
           ];
           
-          await cache.addAll(filesToCache);
-          
-          btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-          btn.style.color = '#10b981';
-          btn.title = 'Juego guardado en caché';
-        } catch (err) {
-          console.error('Error al guardar el juego en caché:', err);
-          btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-          btn.style.color = '#ef4444';
-          btn.title = 'Error al guardar el juego';
-          
-          setTimeout(() => {
+          if (isCached) {
+            // Desinstalar (eliminar de caché)
+            for (const file of filesToCache) {
+              await cache.delete(file);
+            }
+            btn.setAttribute('data-cached', 'false');
             btn.innerHTML = '<i class="fa-solid fa-download"></i>';
-            btn.disabled = false;
             btn.style.color = '';
             btn.title = 'Guardar para jugar sin conexión';
+            btn.disabled = false;
+          } else {
+            // Instalar (añadir a caché)
+            await cache.addAll(filesToCache);
+            btn.setAttribute('data-cached', 'true');
+            btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            btn.style.color = '#ef4444';
+            btn.title = 'Eliminar de caché';
+            btn.disabled = false;
+          }
+        } catch (err) {
+          console.error('Error al modificar la caché del juego:', err);
+          btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+          btn.style.color = '#ef4444';
+          btn.title = 'Error en la operación';
+          
+          setTimeout(() => {
+            const isCachedNow = btn.getAttribute('data-cached') === 'true';
+            btn.innerHTML = isCachedNow ? '<i class="fa-solid fa-trash"></i>' : '<i class="fa-solid fa-download"></i>';
+            btn.disabled = false;
+            btn.style.color = isCachedNow ? '#ef4444' : '';
+            btn.title = isCachedNow ? 'Eliminar de caché' : 'Guardar para jugar sin conexión';
           }, 2000);
         }
       });
     });
+
+    // Inicializar el estado visual de los botones según la caché actual
+    if ('caches' in window) {
+      caches.open('js-games-v1').then(cache => {
+        document.querySelectorAll('.cache-btn').forEach(async btn => {
+          const path = btn.getAttribute('data-path');
+          const match = await cache.match(`./${path}index.html`);
+          if (match) {
+            btn.setAttribute('data-cached', 'true');
+            btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+            btn.style.color = '#ef4444';
+            btn.title = 'Eliminar de caché';
+          } else {
+            btn.setAttribute('data-cached', 'false');
+          }
+        });
+      });
+    }
   } catch (e) {
     grid.innerHTML = '<p style="color:#e94560;text-align:center;padding:2rem">Error al cargar los juegos.</p>';
     console.error(e);
