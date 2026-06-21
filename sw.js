@@ -15,6 +15,11 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  if (e.request.url.includes('?_nocache')) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request).then(r => {
       if (e.request.url.startsWith(self.location.origin) && e.request.method === 'GET') {

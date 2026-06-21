@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.addEventListener('click', async (e) => {
         const path = btn.getAttribute('data-path');
         const image = btn.getAttribute('data-image');
-        const isCached = btn.getAttribute('data-cached') === 'true';
+        const cacheState = btn.getAttribute('data-cached');
         
         try {
           const originalHTML = btn.innerHTML;
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             `./${image}`
           ];
           
-          if (isCached) {
+          if (cacheState === 'true') {
             // Desinstalar (eliminar de caché)
             for (const file of filesToCache) {
               await cache.delete(file);
@@ -60,7 +60,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.title = 'Guardar para jugar sin conexión';
             btn.disabled = false;
           } else {
-            // Instalar (añadir a caché)
+            // Instalar o Actualizar (añadir a caché)
+            // Si es actualización, borramos lo viejo primero (aunque addAll sobrescribe, es más limpio)
+            if (cacheState === 'update') {
+              for (const file of filesToCache) {
+                await cache.delete(file);
+              }
+            }
             await cache.addAll(filesToCache);
             btn.setAttribute('data-cached', 'true');
             btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
@@ -75,11 +81,21 @@ document.addEventListener('DOMContentLoaded', async () => {
           btn.title = 'Error en la operación';
           
           setTimeout(() => {
-            const isCachedNow = btn.getAttribute('data-cached') === 'true';
-            btn.innerHTML = isCachedNow ? '<i class="fa-solid fa-trash"></i>' : '<i class="fa-solid fa-download"></i>';
+            const currentCacheState = btn.getAttribute('data-cached');
+            if (currentCacheState === 'update') {
+              btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
+              btn.style.color = '#3b82f6';
+              btn.title = 'Actualizar juego (reemplazar caché)';
+            } else if (currentCacheState === 'true') {
+              btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+              btn.style.color = '#ef4444';
+              btn.title = 'Eliminar de caché';
+            } else {
+              btn.innerHTML = '<i class="fa-solid fa-download"></i>';
+              btn.style.color = '';
+              btn.title = 'Guardar para jugar sin conexión';
+            }
             btn.disabled = false;
-            btn.style.color = isCachedNow ? '#ef4444' : '';
-            btn.title = isCachedNow ? 'Eliminar de caché' : 'Guardar para jugar sin conexión';
           }, 2000);
         }
       });
@@ -92,10 +108,37 @@ document.addEventListener('DOMContentLoaded', async () => {
           const path = btn.getAttribute('data-path');
           const match = await cache.match(`./${path}index.html`);
           if (match) {
-            btn.setAttribute('data-cached', 'true');
-            btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-            btn.style.color = '#ef4444';
-            btn.title = 'Eliminar de caché';
+            let isDifferent = false;
+            try {
+              // Fetch HEAD del script principal para ver si ha cambiado
+              const headRes = await fetch(`./${path}script.js?_nocache=${Date.now()}`, { method: 'HEAD' });
+              if (headRes && headRes.ok) {
+                const matchScript = await cache.match(`./${path}script.js`);
+                if (matchScript) {
+                  const netLastMod = headRes.headers.get('Last-Modified');
+                  const cachedLastMod = matchScript.headers.get('Last-Modified');
+                  const netSize = headRes.headers.get('Content-Length');
+                  const cachedSize = matchScript.headers.get('Content-Length');
+                  
+                  if (netLastMod && cachedLastMod && netLastMod !== cachedLastMod) isDifferent = true;
+                  else if (netSize && cachedSize && netSize !== cachedSize) isDifferent = true;
+                }
+              }
+            } catch (err) {
+              console.log('No se pudo comprobar actualización para', path);
+            }
+
+            if (isDifferent) {
+              btn.setAttribute('data-cached', 'update');
+              btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
+              btn.style.color = '#3b82f6'; // Azul
+              btn.title = 'Actualizar juego (reemplazar caché)';
+            } else {
+              btn.setAttribute('data-cached', 'true');
+              btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+              btn.style.color = '#ef4444'; // Rojo
+              btn.title = 'Eliminar de caché';
+            }
           } else {
             btn.setAttribute('data-cached', 'false');
           }
