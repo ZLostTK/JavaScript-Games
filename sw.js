@@ -1,8 +1,8 @@
 const CACHE = 'js-games-v1';
 const PRECACHE = [
-  '/', '/index.html', '/style.css', '/main.js', '/games.json',
-  '/manifest.json', '/icon.svg',
-  '/engine/engine.js', '/engine/input.js', '/engine/audio.js'
+  './', './index.html', './style.css', './main.js', './games.json',
+  './manifest.json', './icon.svg',
+  './engine/engine.js', './engine/input.js', './engine/audio.js'
 ];
 
 self.addEventListener('install', e => {
