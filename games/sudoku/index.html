@@ -1,19 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Sudoku</title>
-    <link rel="stylesheet" href="style.css" />
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+	<title>Sudoku</title>
+	<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <a href="../../index.html" class="back-btn">← Volver</a>
-    <div id="game-wrapper">
-        <canvas id="gameCanvas"></canvas>
-    </div>
-    <script src="../../engine/engine.js"></script>
-    <script src="../../engine/input.js"></script>
-    <script src="../../engine/audio.js"></script>
-    <script src="script.js"></script>
+	<a href="../../index.html" class="back-btn">← Volver</a>
+	<div id="game-wrapper">
+		<canvas id="gameCanvas"></canvas>
+	</div>
+	
+	<!-- Overlay HTML: Menú principal + Lobby online -->
+	<div id="overlay" class="overlay visible">
+		
+		<!-- ── PANTALLA 0: Menú principal ── -->
+		<div id="screen-main" class="screen active">
+			<div class="menu-card">
+				<div class="menu-logo">
+					<span class="logo-s">S</span><span class="logo-u">U</span><span class="logo-d">D</span><span class="logo-o">O</span><span class="logo-k">K</span><span class="logo-u2">U</span>
+				</div>
+				<p class="menu-sub">Elige cómo quieres jugar</p>
+				<div class="mode-grid">
+					<button class="mode-btn" id="btn-solo" data-mode="solo">
+						<span class="mode-icon">◎</span>
+						<span class="mode-label">Solo / Contrarreloj</span>
+						<span class="mode-desc">Juega a tu ritmo contra el tiempo</span>
+					</button>
+					<button class="mode-btn" id="btn-local" data-mode="local">
+						<span class="mode-icon">⊞</span>
+						<span class="mode-label">Versus Local</span>
+						<span class="mode-desc">Dos jugadores, un dispositivo</span>
+					</button>
+					<button class="mode-btn" id="btn-online" data-mode="online">
+						<span class="mode-icon">⊕</span>
+						<span class="mode-label">Online 1v1</span>
+						<span class="mode-desc">Enfréntate a un rival en red</span>
+					</button>
+				</div>
+				<div class="diff-row" id="diff-row">
+					<span class="diff-label">Dificultad:</span>
+					<button class="diff-btn active" data-d="easy">Fácil</button>
+					<button class="diff-btn" data-d="medium">Medio</button>
+					<button class="diff-btn" data-d="hard">Difícil</button>
+				</div>
+			</div>
+		</div>
+		
+		<!-- ── PANTALLA 1: Lobby Online – Anfitrión ── -->
+		<div id="screen-host" class="screen">
+			<div class="menu-card lobby-card">
+				<h2 class="lobby-title">Crear Partida</h2>
+				<p class="lobby-sub">Comparte este código con tu rival</p>
+				<div class="code-display" id="host-code">––––––</div>
+				<button class="copy-code-btn" id="btn-copy-code">⧉ Copiar código</button>
+				<div class="lobby-status" id="host-status">Generando código…</div>
+				<div class="lobby-spinner" id="host-spinner"></div>
+				<button class="lobby-cancel" id="btn-host-cancel">← Cancelar</button>
+			</div>
+		</div>
+		
+		<!-- ── PANTALLA 2: Lobby Online – Invitado ── -->
+		<div id="screen-join" class="screen">
+			<div class="menu-card lobby-card">
+				<h2 class="lobby-title">Unirse a Partida</h2>
+				<p class="lobby-sub">Ingresa el código de tu rival</p>
+				<input id="join-input" class="code-input" maxlength="6" placeholder="XXXXXX" autocomplete="off" spellcheck="false" />
+				<div class="lobby-status" id="join-status"></div>
+				<div class="lobby-spinner hidden" id="join-spinner"></div>
+				<div class="join-actions">
+					<button class="lobby-action" id="btn-join-go">Conectar</button>
+					<button class="lobby-cancel" id="btn-join-cancel">← Cancelar</button>
+				</div>
+			</div>
+		</div>
+		
+		<!-- ── PANTALLA 3: Pantalla Online – ¿Host o Guest? ── -->
+		<div id="screen-online-choice" class="screen">
+			<div class="menu-card">
+				<h2 class="lobby-title">Multijugador Online</h2>
+				<p class="lobby-sub">¿Qué rol tomarás?</p>
+				<div class="mode-grid" style="grid-template-columns: 1fr 1fr; gap: 14px;">
+					<button class="mode-btn" id="btn-be-host">
+						<span class="mode-icon">★</span>
+						<span class="mode-label">Crear sala</span>
+						<span class="mode-desc">Sé el anfitrión</span>
+					</button>
+					<button class="mode-btn" id="btn-be-guest">
+						<span class="mode-icon">↗</span>
+						<span class="mode-label">Unirse</span>
+						<span class="mode-desc">Ingresa un código</span>
+					</button>
+				</div>
+				<button class="lobby-cancel" id="btn-online-choice-cancel">← Cancelar</button>
+			</div>
+		</div>
+		
+	</div>
+	
+	<script src="../../engine/engine.js"></script>
+	<script src="../../engine/input.js"></script>
+	<script src="../../engine/audio.js"></script>
+	<script src="../../engine/peerjs.min.js"></script>
+	<script src="../../engine/online.js"></script>
+	<script src="script.js"></script>
 </body>
 </html>
