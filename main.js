@@ -48,6 +48,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             `./${path}script.js`,
             `./${image}`
           ];
+
+          const g = data.games.find(game => game.path === path);
+          if (g && g.extraCacheFiles) {
+            g.extraCacheFiles.forEach(file => {
+              filesToCache.push(`./${file}`);
+            });
+          }
           
           if (cacheState === 'true') {
             // Desinstalar (eliminar de caché)

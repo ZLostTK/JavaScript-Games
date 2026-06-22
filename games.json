@@ -38,6 +38,10 @@
 				"Clásico",
 				"Inteligencia Artificial",
 				"Estrategia"
+			],
+			"extraCacheFiles": [
+				"engine/peerjs.min.js",
+				"engine/online.js"
 			]
 		},
 		{
@@ -51,6 +55,20 @@
 				"Palabras",
 				"Lógica",
 				"Multijugador"
+			],
+			"extraCacheFiles": [
+				"games/hangman/words.js",
+				"games/hangman/images/lost.gif",
+				"games/hangman/images/victory.gif",
+				"games/hangman/images/hangman-0.svg",
+				"games/hangman/images/hangman-1.svg",
+				"games/hangman/images/hangman-2.svg",
+				"games/hangman/images/hangman-3.svg",
+				"games/hangman/images/hangman-4.svg",
+				"games/hangman/images/hangman-5.svg",
+				"games/hangman/images/hangman-6.svg",
+				"engine/peerjs.min.js",
+				"engine/online.js"
 			]
 		},
 		{
@@ -76,6 +94,10 @@
 			"tags": [
 				"Lógica",
 				"Inteligencia Artificial"
+			],
+			"extraCacheFiles": [
+				"engine/peerjs.min.js",
+				"engine/online.js"
 			]
 		},
 		{
@@ -89,6 +111,10 @@
 				"Lógica",
 				"Clásico",
 				"Cuadrícula"
+			],
+			"extraCacheFiles": [
+				"engine/peerjs.min.js",
+				"engine/online.js"
 			]
 		},
 		{
@@ -102,6 +128,10 @@
 				"Arcade",
 				"Reacción",
 				"Clásico"
+			],
+			"extraCacheFiles": [
+				"engine/peerjs.min.js",
+				"engine/online.js"
 			]
 		},
 		{
@@ -128,6 +158,10 @@
 				"Lógica",
 				"Puzle",
 				"Clásico"
+			],
+			"extraCacheFiles": [
+				"engine/peerjs.min.js",
+				"engine/online.js"
 			]
 		}
 	]
