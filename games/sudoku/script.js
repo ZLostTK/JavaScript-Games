@@ -157,6 +157,149 @@ const ACT_H     = 42;
 // ═══════════════════════════════════════════════════════════════════════════════
 const SCENE = { MENU: 'menu', GAME: 'game', WIN: 'win' };
 
+// ── DOM refs (lobby overlay — mismo patrón que otros juegos) ──────────────────
+const onlineUI      = document.getElementById('online-ui');
+const onlineTitle   = document.getElementById('online-title');
+const onlineStatus  = document.getElementById('online-status');
+const hostView      = document.getElementById('host-view');
+const joinView      = document.getElementById('join-view');
+const roomCodeDisp  = document.getElementById('room-code-display');
+const roomCodeInput = document.getElementById('room-code-input');
+const copyBtn       = document.getElementById('copy-btn');
+const joinBtn       = document.getElementById('join-btn');
+const onlineBackBtn = document.getElementById('online-back-btn');
+
+// ── Canvas menu buttons ────────────────────────────────────────────────────────
+const _menuBtns = {}; // populado en renderMenu()
+
+function drawMenuBtn(ctx, label, x, y, w, h, accent, hover) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, 10);
+    ctx.fillStyle = hover ? accent + 'cc' : accent + '33';
+    ctx.fill();
+    ctx.strokeStyle = accent + 'aa';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = hover ? '#fff' : accent;
+    ctx.font = "bold 16px 'Courier New', monospace";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x + w / 2, y + h / 2);
+    ctx.restore();
+}
+
+function hitMenuBtn(gx, gy, btn) {
+    return gx >= btn.x && gx <= btn.x + btn.w && gy >= btn.y && gy <= btn.y + btn.h;
+}
+
+function renderMenu(ctx) {
+    const W = 480, H = 760;
+    const mRaw = Input.getMouse();
+    const mPt  = Engine.toGame(mRaw.x, mRaw.y);
+    const mx = mPt.x, my = mPt.y;
+
+    // Título
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = "bold 42px 'Courier New', monospace";
+    ctx.fillStyle = C.accent;
+    ctx.shadowColor = C.accent;
+    ctx.shadowBlur = 20;
+    ctx.fillText('SUDOKU', W / 2, 90);
+    ctx.shadowBlur = 0;
+    ctx.font = "14px 'Courier New', monospace";
+    ctx.fillStyle = C.textMuted;
+    ctx.fillText('Elige cómo quieres jugar', W / 2, 132);
+    ctx.restore();
+
+    // Dificultad
+    const diffLabels = { easy: 'FÁCIL', medium: 'MEDIO', hard: 'DIFÍCIL' };
+    const diffs = ['easy', 'medium', 'hard'];
+    const dw = 90, dh = 34, dgap = 10;
+    const dtotalW = diffs.length * dw + (diffs.length - 1) * dgap;
+    const dStartX = (W - dtotalW) / 2;
+    const dStartY = 170;
+    ctx.save();
+    ctx.font = "12px 'Courier New', monospace";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.textMuted;
+    ctx.fillText('Dificultad', W / 2, dStartY - 12);
+    diffs.forEach((d, i) => {
+        const bx = dStartX + i * (dw + dgap);
+        const active = state.difficulty === d;
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(bx, dStartY, dw, dh, 8);
+        ctx.fillStyle = active ? C.accent + '33' : C.btnBg;
+        ctx.fill();
+        ctx.strokeStyle = active ? C.accent : C.border;
+        ctx.lineWidth = active ? 1.5 : 0.8;
+        ctx.stroke();
+        ctx.fillStyle = active ? C.accent : C.textMuted;
+        ctx.font = "12px 'Courier New', monospace";
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(diffLabels[d], bx + dw / 2, dStartY + dh / 2);
+        ctx.restore();
+        _menuBtns['diff_' + d] = { x: bx, y: dStartY, w: dw, h: dh, action: () => { state.difficulty = d; } };
+    });
+    ctx.restore();
+
+    // Botones de modo
+    const bw = 240, bh = 56, bx = W / 2 - bw / 2;
+    const buttons = [
+        { key: 'solo',   label: 'Solo / Contrarreloj', y: 250, accent: C.accent },
+        { key: 'local',  label: 'Versus Local (1v1)',   y: 320, accent: '#a78bfa' },
+        { key: 'online', label: 'Multijugador Online',  y: 390, accent: '#6096f5' },
+    ];
+    buttons.forEach(({ key, label, y, accent }) => {
+        const btn = { x: bx, y, w: bw, h: bh };
+        _menuBtns[key] = btn;
+        drawMenuBtn(ctx, label, bx, y, bw, bh, accent, hitMenuBtn(mx, my, btn));
+    });
+
+    ctx.save();
+    ctx.font = "11px 'Courier New', monospace";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.border;
+    ctx.fillText('Sudoku · ZLostTK Games', W / 2, H - 20);
+    ctx.restore();
+}
+
+function renderOnlineSetup(ctx) {
+    const W = 480;
+    const mRaw = Input.getMouse();
+    const mPt  = Engine.toGame(mRaw.x, mRaw.y);
+    const mx = mPt.x, my = mPt.y;
+
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = "bold 28px 'Courier New', monospace";
+    ctx.fillStyle = '#6096f5';
+    ctx.fillText('Multijugador Online', W / 2, 80);
+    ctx.font = "14px 'Courier New', monospace";
+    ctx.fillStyle = C.textMuted;
+    ctx.fillText('¿Qué rol tomarás?', W / 2, 118);
+    ctx.restore();
+
+    const bw = 240, bh = 56, bx = W / 2 - bw / 2;
+    const buttons = [
+        { key: 'host', label: '★ Crear Sala (Host)',  y: 170, accent: C.accent },
+        { key: 'join', label: '↗ Unirse con código', y: 240, accent: '#a78bfa' },
+        { key: 'back', label: '← Cancelar',           y: 340, accent: C.textMuted },
+    ];
+    buttons.forEach(({ key, label, y, accent }) => {
+        const btn = { x: bx, y, w: bw, h: bh };
+        _menuBtns['os_' + key] = btn;
+        drawMenuBtn(ctx, label, bx, y, bw, bh, accent, hitMenuBtn(mx, my, btn));
+    });
+}
+
 const state = {
     scene:         SCENE.MENU,
     mode:          'solo',    // 'solo' | 'local' | 'online'
@@ -205,119 +348,20 @@ const state = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // OVERLAY UI — controla las pantallas HTML
 // ═══════════════════════════════════════════════════════════════════════════════
-const OverlayUI = (() => {
-    const overlay  = document.getElementById('overlay');
-    const screens  = document.querySelectorAll('.screen');
-    const diffBtns = document.querySelectorAll('.diff-btn');
+// ── OverlayUI: ahora solo maneja el #online-ui panel (igual que los otros juegos) ──
+const OverlayUI = {
+    _menuState: 'main',   // 'main' | 'online-setup'
 
-    function show(screenId) {
-        overlay.classList.add('visible');
-        screens.forEach(s => s.classList.remove('active'));
-        const target = document.getElementById(screenId);
-        if (target) target.classList.add('active');
-    }
-    function hide() {
-        overlay.classList.remove('visible');
-        screens.forEach(s => s.classList.remove('active'));
-    }
-    function setStatus(elId, msg, cls = '') {
-        const el = document.getElementById(elId);
-        if (!el) return;
-        el.textContent = msg;
-        el.className = 'lobby-status ' + cls;
-    }
-    function setCode(elId, code) {
-        const el = document.getElementById(elId);
-        if (el) el.textContent = code;
-    }
-    function setSpinner(elId, visible) {
-        const el = document.getElementById(elId);
-        if (!el) return;
-        el.classList.toggle('hidden', !visible);
-    }
+    show() { onlineUI.classList.remove('hidden'); },
+    hide() { onlineUI.classList.add('hidden'); },
 
-    // ── Dificultad
-    diffBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            diffBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.difficulty = btn.dataset.d;
-        });
-    });
-
-    // ── Modos
-    document.getElementById('btn-solo').addEventListener('click', () => {
-        state.mode = 'solo'; state.role = null;
-        GameModel.start(); hide();
-    });
-    document.getElementById('btn-local').addEventListener('click', () => {
-        state.mode = 'local'; state.role = null;
-        GameModel.start(); hide();
-    });
-    document.getElementById('btn-online').addEventListener('click', () => {
-        show('screen-online-choice');
-    });
-
-    // ── Elección online
-    document.getElementById('btn-be-host').addEventListener('click', () => {
-        state.mode = 'online'; state.role = 'host';
-        show('screen-host');
-        OnlineLayer.startHost();
-    });
-    document.getElementById('btn-be-guest').addEventListener('click', () => {
-        state.mode = 'online'; state.role = 'guest';
-        show('screen-join');
-        setStatus('join-status', '');
-        setSpinner('join-spinner', false);
-        document.getElementById('join-input').value = '';
-    });
-    document.getElementById('btn-online-choice-cancel').addEventListener('click', () => {
-        show('screen-main');
-    });
-
-    // ── Lobby host
-    document.getElementById('btn-host-cancel').addEventListener('click', () => {
-        OnlineLayer.cancel(); show('screen-main');
-    });
-
-    // ── Botón copiar código ── (NEW)
-    document.getElementById('btn-copy-code').addEventListener('click', () => {
-        const code = document.getElementById('host-code').textContent.trim();
-        if (!code || code === '––––––') return;
-        navigator.clipboard.writeText(code).then(() => {
-            const btn = document.getElementById('btn-copy-code');
-            const orig = btn.textContent;
-            btn.textContent = '✓ Copiado';
-            btn.classList.add('copied');
-            setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
-        }).catch(() => {
-            // fallback para entornos sin permiso de portapapeles
-            const ta = document.createElement('textarea');
-            ta.value = code;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-        });
-    });
-
-    // ── Lobby guest
-    document.getElementById('btn-join-go').addEventListener('click', () => {
-        const code = document.getElementById('join-input').value.trim().toUpperCase();
-        if (code.length < 4) { setStatus('join-status', 'Código inválido', 'error'); return; }
-        setStatus('join-status', 'Conectando…');
-        setSpinner('join-spinner', true);
-        OnlineLayer.joinAs(code);
-    });
-    document.getElementById('btn-join-cancel').addEventListener('click', () => {
-        OnlineLayer.cancel(); show('screen-main');
-    });
-    document.getElementById('join-input').addEventListener('keydown', e => {
-        if (e.key === 'Enter') document.getElementById('btn-join-go').click();
-    });
-
-    return { show, hide, setStatus, setCode, setSpinner };
-})();
+    setStatus(msg) {
+        onlineStatus.textContent = msg;
+    },
+    setCode(code) {
+        roomCodeDisp.textContent = code;
+    },
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HISTORIAL (undo)
@@ -546,15 +590,13 @@ const OnlineLayer = {
 
     startHost() {
         Online.on('onHostReady', (code) => {
-            OverlayUI.setCode('host-code', code);
-            OverlayUI.setStatus('host-status', 'Esperando rival…');
-            OverlayUI.setSpinner('host-spinner', true);
+            OverlayUI.setCode(code);
+            OverlayUI.setStatus('Esperando rival…');
         });
 
         Online.on('onConnected', (role) => {
             if (role !== 'host') return;
-            OverlayUI.setStatus('host-status', '¡Rival conectado! Generando tablero…', 'success');
-            OverlayUI.setSpinner('host-spinner', false);
+            OverlayUI.setStatus('¡Rival conectado! Generando tablero…');
             Audio.play('connect');
             state.online.connected = true;
 
@@ -575,8 +617,8 @@ const OnlineLayer = {
         Online.on('onData',       (data) => this._handleData(data));
 
         Online.host((code) => {
-            OverlayUI.setCode('host-code', code);
-            OverlayUI.setStatus('host-status', 'Generando código…');
+            OverlayUI.setCode(code);
+            OverlayUI.setStatus('Generando código…');
         });
     },
 
@@ -584,8 +626,7 @@ const OnlineLayer = {
         Online.on('onConnected', (role) => {
             if (role !== 'guest') return;
             state.online.connected = true;
-            OverlayUI.setStatus('join-status', 'Conectado. Esperando tablero…', 'success');
-            OverlayUI.setSpinner('join-spinner', false);
+            OverlayUI.setStatus('Conectado. Esperando tablero…');
             Audio.play('connect');
         });
 
@@ -600,6 +641,7 @@ const OnlineLayer = {
         Online.destroy();
         state.online.connected = false;
         state.online.opponentDisconnected = false;
+        OverlayUI.hide();
     },
 
     _handleData(data) {
@@ -615,10 +657,7 @@ const OnlineLayer = {
 
     _handleError(err) {
         const msg = err?.message || err?.type || 'Error de red';
-        OverlayUI.setStatus('host-status', msg, 'error');
-        OverlayUI.setStatus('join-status', msg, 'error');
-        OverlayUI.setSpinner('host-spinner', false);
-        OverlayUI.setSpinner('join-spinner', false);
+        OverlayUI.setStatus('Error: ' + msg);
     },
 };
 
@@ -668,12 +707,49 @@ function hitButtons(x, y, buttons) {
 function handleClick(rawX, rawY) {
     const { x, y } = Engine.toGame(rawX, rawY);
 
+    // ── Menú principal (canvas)
+    if (state.scene === SCENE.MENU && OverlayUI._menuState === 'main') {
+        // Dificultad
+        for (const d of ['easy', 'medium', 'hard']) {
+            const btn = _menuBtns['diff_' + d];
+            if (btn && hitMenuBtn(x, y, btn)) { state.difficulty = d; return; }
+        }
+        if (_menuBtns.solo   && hitMenuBtn(x, y, _menuBtns.solo))   { state.mode = 'solo';  state.role = null; GameModel.start(); return; }
+        if (_menuBtns.local  && hitMenuBtn(x, y, _menuBtns.local))  { state.mode = 'local'; state.role = null; GameModel.start(); return; }
+        if (_menuBtns.online && hitMenuBtn(x, y, _menuBtns.online)) { OverlayUI._menuState = 'online-setup'; return; }
+        return;
+    }
+
+    // ── Selección host/guest (canvas)
+    if (state.scene === SCENE.MENU && OverlayUI._menuState === 'online-setup') {
+        if (_menuBtns.os_host && hitMenuBtn(x, y, _menuBtns.os_host)) {
+            state.mode = 'online'; state.role = 'host';
+            onlineTitle.textContent = 'Crear partida';
+            onlineStatus.textContent = 'Generando código…';
+            hostView.classList.remove('hidden'); joinView.classList.add('hidden');
+            OverlayUI.show();
+            OnlineLayer.startHost();
+            return;
+        }
+        if (_menuBtns.os_join && hitMenuBtn(x, y, _menuBtns.os_join)) {
+            state.mode = 'online'; state.role = 'guest';
+            onlineTitle.textContent = 'Unirse a partida';
+            onlineStatus.textContent = 'Introduce el código del anfitrión';
+            hostView.classList.add('hidden'); joinView.classList.remove('hidden');
+            roomCodeInput.value = '';
+            OverlayUI.show();
+            return;
+        }
+        if (_menuBtns.os_back && hitMenuBtn(x, y, _menuBtns.os_back)) { OverlayUI._menuState = 'main'; return; }
+        return;
+    }
+
     if (state.scene === SCENE.WIN) {
         Online.destroy();
         state.online.connected = false;
         state.online.opponentDisconnected = false;
         state.scene = SCENE.MENU;
-        OverlayUI.show('screen-main');
+        OverlayUI._menuState = 'main';
         return;
     }
     if (state.scene !== SCENE.GAME) return;
@@ -683,7 +759,7 @@ function handleClick(rawX, rawY) {
         state.online.connected = false;
         state.online.opponentDisconnected = false;
         state.scene = SCENE.MENU;
-        OverlayUI.show('screen-main');
+        OverlayUI._menuState = 'main';
         return;
     }
 
@@ -725,7 +801,7 @@ function handleClick(rawX, rawY) {
             state.online.connected = false;
             state.online.opponentDisconnected = false;
             state.scene = SCENE.MENU;
-            OverlayUI.show('screen-main');
+            OverlayUI._menuState = 'main';
         }
         return;
     }
@@ -805,6 +881,11 @@ const game = {
         ctx.fillStyle = C.bg;
         ctx.fillRect(0, 0, 480, 760);
 
+        if (state.scene === SCENE.MENU) {
+            if (OverlayUI._menuState === 'main') renderMenu(ctx);
+            else renderOnlineSetup(ctx);
+            return;
+        }
         if (state.scene === SCENE.GAME || state.scene === SCENE.WIN) {
             renderGame(ctx);
             if (state.scene === SCENE.WIN) renderWinOverlay(ctx);
@@ -1316,6 +1397,8 @@ function renderWinOverlay(ctx) {
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Volver al menú', 240, btnY + 25);
+    // Store hit area for win screen back button
+    _menuBtns._winBack = { x: 140, y: btnY, w: 200, h: 50 };
 
     ctx.restore();
 }
@@ -1369,4 +1452,29 @@ function renderDisconnectOverlay(ctx) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // START
 // ═══════════════════════════════════════════════════════════════════════════════
+// ── HTML button wiring (lobby online) ──────────────────────────────────────────
+copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(roomCodeDisp.textContent).then(() => {
+        copyBtn.textContent = '¡Copiado!';
+        setTimeout(() => { copyBtn.textContent = 'Copiar código'; }, 1800);
+    });
+});
+
+joinBtn.onclick = () => {
+    const code = roomCodeInput.value.trim().toUpperCase();
+    if (code.length < 4) { onlineStatus.textContent = 'Código demasiado corto'; return; }
+    onlineStatus.textContent = 'Conectando a ' + code + '…';
+    joinBtn.disabled = true;
+    OnlineLayer.joinAs(code);
+};
+
+onlineBackBtn.addEventListener('click', () => {
+    OnlineLayer.cancel();
+    state.scene = SCENE.MENU;
+    OverlayUI._menuState = 'main';
+});
+
+roomCodeInput.addEventListener('keydown', e => e.stopPropagation());
+roomCodeInput.addEventListener('keyup',   e => e.stopPropagation());
+
 Engine.start(game);

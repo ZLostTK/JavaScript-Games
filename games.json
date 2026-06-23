@@ -163,6 +163,23 @@
 				"engine/peerjs.min.js",
 				"engine/online.js"
 			]
+		},
+		{
+			"id": "othello",
+			"title": "Othello — Reversi",
+			"description": "Classic strategy board game for two players",
+			"path": "games/othello/",
+			"image": "assets/imgs_games/othello.svg",
+			"color": "#0f3460",
+			"tags": [
+				"Clásico",
+				"Estrategia",
+				"Tabletop"
+			],
+			"extraCacheFiles": [
+				"engine/peerjs.min.js",
+				"engine/online.js"
+			]
 		}
 	]
 }
