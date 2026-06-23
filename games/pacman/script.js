@@ -325,7 +325,7 @@ class Ghost {
                 if (this.eaten && this.r === this.startR && this.c === this.startC) {
                     this.eaten = false;
                     this.released = false;
-                    this.releaseDelay = 2;
+                    this.releaseDelay = 5;
                     this._moving = false;
                     this.px = cellX(this.c);
                     this.py = cellY(this.r);
