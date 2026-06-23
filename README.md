@@ -21,7 +21,6 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Othello — Reversi](./games/othello/)** — Classic strategy board game for two players
 - **[Snake Game](./games/snake/)** — Grow the snake by eating food
 - **[Sudoku](./games/sudoku/)** — Solve the sudoku puzzle
-- **[Test Game](./games/test/)** — Test Game
 
 <!-- GAMES_END -->
 
