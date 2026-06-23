@@ -10,12 +10,18 @@ class Input {
 
     this._onKeyDown = (e) => {
       if (e.repeat) return;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+        return;
+      }
       this._keys[e.code] = true;
       this._pressed[e.code] = true;
       e.preventDefault();
     };
 
     this._onKeyUp = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+        return;
+      }
       this._keys[e.code] = false;
       this._released[e.code] = true;
       e.preventDefault();
