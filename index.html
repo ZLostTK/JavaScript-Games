@@ -66,9 +66,22 @@
       JavaScript Games
     </h1>
     <p>Una colección de juegos clásicos creados con Vanilla JS.</p>
+    <button id="clear-cache-btn" class="clear-cache-btn" aria-label="Borrar caché y recargar">
+      <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Borrar Caché
+    </button>
   </header>
 
   <main id="game-grid" aria-label="Catálogo de juegos"></main>
+
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-content">
+      <p id="confirm-modal-text">¿Borrar toda la caché?</p>
+      <div class="modal-actions">
+        <button id="confirm-modal-cancel" class="btn btn-secondary">Cancelar</button>
+        <button id="confirm-modal-ok" class="btn btn-danger">Borrar</button>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <p>Desarrollado con JavaScript puro (Vanilla JS) · Open Source</p>

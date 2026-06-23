@@ -182,6 +182,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Botón de borrar toda la caché con modal
+  const modal = document.getElementById('confirm-modal');
+  const modalText = document.getElementById('confirm-modal-text');
+  const modalCancel = document.getElementById('confirm-modal-cancel');
+  const modalOk = document.getElementById('confirm-modal-ok');
+
+  document.getElementById('clear-cache-btn').addEventListener('click', () => {
+    modalText.textContent = '¿Borrar toda la caché? Se eliminarán todos los datos descargados y se recargará la página.';
+    modal.classList.remove('hidden');
+  });
+
+  modalCancel.addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
+
+  modalOk.addEventListener('click', async () => {
+    modal.classList.add('hidden');
+    const btn = document.getElementById('clear-cache-btn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Borrando...';
+    btn.disabled = true;
+
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (err) {
+      console.error('Error al borrar caché:', err);
+    }
+
+    window.location.reload();
+  });
+
   // Registrar Service Worker
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
