@@ -18,8 +18,9 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Flappy Bird](./games/flappybird/)** — Fly between pipes without crashing
 - **[Fuera Luces!](./games/lightsout/)** — Turn off all the lights in the fewest possible pulses
 - **[Gato - Ateti](./games/tictactoe/)** — Classic 3-in-a-row against AI
-- **[Othello — Reversi](./games/othello/)** — Classic strategy board game for two players
+- **[Othello - Reversi](./games/othello/)** — Classic strategy board game for two players
 - **[Snake Game](./games/snake/)** — Grow the snake by eating food
+- **[Space Invaders](./games/spaceinvaders/)** — Classic arcade game - Shoot aliens
 - **[Sudoku](./games/sudoku/)** — Solve the sudoku puzzle
 
 <!-- GAMES_END -->
