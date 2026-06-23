@@ -8,10 +8,22 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 
 ## Games
 
-- **[Tic Tac Toe](./games/tictactoe/)** — Classic 3-in-a-row against an AI opponent.
-- **[Arkanoid](./games/arkanoid/)** — Break bricks with paddle and ball physics (40 bricks across 5 rows, 3 lives, score tracking).
-- **[Snake](./games/snake/)** — Grow the snake by eating food with wall wrapping, swipe controls, and progressive speed.
-- **[Efecto Mariposa](./games/butterfly-effect/)** — Chaotic 3D Lorenz Attractor simulation with interactive parameters, camera controls, and particle tracking.
+<!-- GAMES_START -->
+
+- **[Ahorcado](./games/hangman/)** — Guess the secret word - Random and 1v1 modes
+- **[Arkanoid](./games/arkanoid/)** — Break bricks with paddle and ball
+- **[Busca Minas](./games/minesweeper/)** — Find the bombs using logic and arrays
+- **[Conecta 4](./games/connect4/)** — Connect 4 chips in a row before the AI
+- **[Efecto Mariposa](./games/butterfly-effect/)** — Chaotic visualization of the Lorenz Attractor
+- **[Flappy Bird](./games/flappybird/)** — Fly between pipes without crashing
+- **[Fuera Luces!](./games/lightsout/)** — Turn off all the lights in the fewest possible pulses
+- **[Gato - Ateti](./games/tictactoe/)** — Classic 3-in-a-row against AI
+- **[Othello — Reversi](./games/othello/)** — Classic strategy board game for two players
+- **[Snake Game](./games/snake/)** — Grow the snake by eating food
+- **[Sudoku](./games/sudoku/)** — Solve the sudoku puzzle
+- **[Test Game](./games/test/)** — Test Game
+
+<!-- GAMES_END -->
 
 ## Features
 
@@ -19,21 +31,21 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **Unified Input** — `Input` class normalises keyboard, mouse, and multi-touch events into a single API with gesture detection (swipe) and just-pressed/released semantics
 - **Procedural Audio** — `Audio` class synthesises sounds at runtime (square, sine, saw, noise waves with envelope shaping); no external audio files required
 - **Hub Page** — Minimalist game grid reads `games.json` and auto-renders game cards with thumbnails, descriptions, and a Play button; fully responsive (auto-fill grid, 1 col on mobile)
-- **Auto-Discovery** — `scripts/scan-games.js` scans the `games/` directory and regenerates `games.json` so new games appear on the hub automatically
-- **PWA** — Service worker (cache-first strategy) caches all engine files, hub assets, and game pages; `manifest.json` enables install-as-app on Chrome, Edge, and Samsung Internet
+- **Auto-Discovery** — `scripts/scan-games.js` scans the `games/` directory and updates `games.json` automatically. This runs via a GitHub Workflow on every push.
+- **PWA (Hybrid Cache)** — Service worker uses a hybrid strategy: Network-First for core hub files (`index.html`, `games.json`, etc.) to ensure new games appear immediately when online, and Cache-First for static assets and manually saved game files.
 - **Dark Mode** — Full dark theme (`#0f0f1a` background) with a consistent red/purple accent palette across the hub and all games
 - **AI Opponent** — Tic Tac Toe features an AI that plays optimally; Arkanoid and Snake are single-player with progressive difficulty
 
 ## Adding a New Game
 
-1. Create a new folder under `games/` with `index.html`, `style.css`, and `script.js`
+1. Create a new folder under `games/` with `index.html`, `style.css`, and `script.js`.
 2. Use the shared engine via `<script>` tags:
    ```html
    <script src="../../engine/input.js"></script>
    <script src="../../engine/audio.js"></script>
    <script src="../../engine/engine.js"></script>
    ```
-3. Register the game in `games.json` (or run `node scripts/scan-games.js`)
+3. Push your changes. A GitHub Actions workflow will automatically run `scripts/scan-games.js` to update `games.json` and deploy it to GitHub Pages. You can also run it locally via `node scripts/scan-games.js`.
 
 Each game directory is self-contained and can be opened independently — the engine is loaded via relative paths.
 
@@ -81,7 +93,7 @@ Open `http://localhost:8000` in your browser. The hub lists all registered games
 ├── main.js                        # Hub logic — fetches games.json, renders cards
 ├── games.json                     # Game manifest
 ├── manifest.json                  # PWA manifest
-├── sw.js                          # Service worker (cache-first)
+├── sw.js                          # Service worker (hybrid network-first/cache-first)
 └── icon.svg                       # PWA icon
 ```
 

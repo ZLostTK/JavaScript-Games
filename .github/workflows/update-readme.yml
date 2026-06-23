@@ -1,0 +1,40 @@
+name: Update README Games List
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'games.json'
+      - 'scripts/update-readme-games.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Update README.md
+        run: node scripts/update-readme-games.js
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if git diff --exit-code README.md; then
+            echo "No changes detected in README.md"
+          else
+            git add README.md
+            git commit -m "docs: auto-update README games list [skip ci]"
+            git push
+          fi
