@@ -124,7 +124,7 @@
       "description": "Classic strategy board game for two players",
       "path": "games/othello/",
       "image": "assets/imgs_games/othello.svg",
-      "color": "#0f3460",
+      "color": "#ffffff",
       "tags": [
         "Clásico",
         "Estrategia",
@@ -192,6 +192,19 @@
         "Clásico",
         "Arcade",
         "Shoot"
+      ]
+    },
+    {
+      "id": "pacman",
+      "title": "Pacman",
+      "description": "Classic arcade maze game",
+      "path": "games/pacman/",
+      "image": "assets/imgs_games/pacman.svg",
+      "color": "#faff77",
+      "tags": [
+        "Clásico",
+        "Arcade",
+        "Laberinto"
       ]
     }
   ]
