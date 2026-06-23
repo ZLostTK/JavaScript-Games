@@ -120,7 +120,7 @@
     },
     {
       "id": "othello",
-      "title": "Othello — Reversi",
+      "title": "Othello - Reversi",
       "description": "Classic strategy board game for two players",
       "path": "games/othello/",
       "image": "assets/imgs_games/othello.svg",
@@ -179,6 +179,19 @@
       "extraCacheFiles": [
         "engine/peerjs.min.js",
         "engine/online.js"
+      ]
+    },
+    {
+      "id": "spaceinvaders",
+      "title": "Space Invaders",
+      "description": "Classic arcade game - Shoot aliens",
+      "path": "games/spaceinvaders/",
+      "image": "assets/imgs_games/spaceinvaders.svg",
+      "color": "#0f3460",
+      "tags": [
+        "Clásico",
+        "Arcade",
+        "Shoot"
       ]
     }
   ]
