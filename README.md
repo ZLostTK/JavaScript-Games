@@ -23,6 +23,7 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Snake Game](./games/snake/)** — Grow the snake by eating food
 - **[Space Invaders](./games/spaceinvaders/)** — Classic arcade game - Shoot aliens
 - **[Sudoku](./games/sudoku/)** — Solve the sudoku puzzle
+- **[Typing Speed](./games/typingspeed/)** — Test your typing speed
 
 <!-- GAMES_END -->
 
