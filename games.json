@@ -206,6 +206,18 @@
 				"Arcade",
 				"Laberinto"
 			]
+		},
+		{
+			"id": "typingspeed",
+			"title": "Typing Speed",
+			"description": "Test your typing speed",
+			"path": "games/typingspeed/",
+			"image": "assets/imgs_games/typingspeed.svg",
+			"color": "#0f3460",
+			"tags": [
+				"Clásico",
+				"DOM"
+			]
 		}
 	]
 }
