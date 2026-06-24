@@ -18,18 +18,20 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Flappy Bird](./games/flappybird/)** — Fly between pipes without crashing
 - **[Fuera Luces!](./games/lightsout/)** — Turn off all the lights in the fewest possible pulses
 - **[Gato - Ateti](./games/tictactoe/)** — Classic 3-in-a-row against AI
-- **[Othello - Reversi](./games/othello/)** — Classic strategy board game for two players
-- **[Pacman](./games/pacman/)** — Classic arcade maze game
+- **[Othello — Reversi](./games/othello/)** — Classic strategy board game for two players
+- **[pacman](./games/pacman/)** — A JavaScript game
 - **[Snake Game](./games/snake/)** — Grow the snake by eating food
-- **[Space Invaders](./games/spaceinvaders/)** — Classic arcade game - Shoot aliens
+- **[spaceinvaders](./games/spaceinvaders/)** — A JavaScript game
 - **[Sudoku](./games/sudoku/)** — Solve the sudoku puzzle
-- **[Typing Speed](./games/typingspeed/)** — Test your typing speed
+- **[Typing Speed](./games/typingspeed/)** — Test your typing speed — ES / EN word pools
+- **[Word Scramble](./games/wordscramble/)** — Unscramble the letters — ES / EN
 
 <!-- GAMES_END -->
 
 ## Features
 
 - **Shared Game Engine** — `Engine` class provides a unified game loop, canvas management with responsive `fit` scaling, and drawing primitives (`rect`, `circle`, `text`)
+- **DOM Engine** — `DOMEngine` sub-engine for HTML/CSS games (no canvas): manual `render()` on state changes, `createGrid()` for board games, CSS class-based cell states, and `showOverlay()` for game-over screens. Used by Typing Speed, Word Scramble, and other DOM-based games.
 - **Unified Input** — `Input` class normalises keyboard, mouse, and multi-touch events into a single API with gesture detection (swipe) and just-pressed/released semantics
 - **Procedural Audio** — `Audio` class synthesises sounds at runtime (square, sine, saw, noise waves with envelope shaping); no external audio files required
 - **Hub Page** — Minimalist game grid reads `games.json` and auto-renders game cards with thumbnails, descriptions, and a Play button; fully responsive (auto-fill grid, 1 col on mobile)
@@ -42,11 +44,21 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 
 1. Create a new folder under `games/` with `index.html`, `style.css`, and `script.js`.
 2. Use the shared engine via `<script>` tags:
+
+   **Canvas games:**
    ```html
    <script src="../../engine/input.js"></script>
    <script src="../../engine/audio.js"></script>
    <script src="../../engine/engine.js"></script>
    ```
+
+   **DOM games (HTML/CSS, no canvas):**
+   ```html
+   <script src="../../engine/input.js"></script>
+   <script src="../../engine/audio.js"></script>
+   <script src="../../engine/dom-engine.js"></script>
+   ```
+   See `ideadom.txt` for the full DOM game template (`init` / `update` / manual `render`, CSS grid boards, menu pattern).
 3. Push your changes. A GitHub Actions workflow will automatically run `scripts/scan-games.js` to update `games.json` and deploy it to GitHub Pages. You can also run it locally via `node scripts/scan-games.js`.
 
 Each game directory is self-contained and can be opened independently — the engine is loaded via relative paths.
@@ -67,12 +79,23 @@ Open `http://localhost:8000` in your browser. The hub lists all registered games
 ├── engine/                        # Shared game engine
 │   ├── input.js                   # Keyboard, mouse, touch (unified)
 │   ├── audio.js                   # Procedural sound synthesis
-│   └── engine.js                  # Game loop, canvas, drawing primitives
+│   ├── engine.js                  # Game loop, canvas, drawing primitives
+│   └── dom-engine.js              # DOM sub-engine (HTML/CSS games, manual render)
 ├── games/                         # Individual game directories
 │   ├── tictactoe/
 │   │   ├── index.html
 │   │   ├── style.css
 │   │   └── script.js              # AI, 3x3 grid
+│   ├── typingspeed/
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   ├── words.js               # ES / EN word pools
+│   │   └── script.js              # WPM typing test (DOM engine)
+│   ├── wordscramble/
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   ├── words.js               # ES / EN scrambled words
+│   │   └── script.js              # Timed word unscramble (DOM engine)
 │   ├── arkanoid/
 │   │   ├── index.html
 │   │   ├── style.css
@@ -104,7 +127,7 @@ Open `http://localhost:8000` in your browser. The hub lists all registered games
 | Layer | Tech |
 |---|---|
 | Runtime | Vanilla JS (no frameworks, no bundler) |
-| Rendering | Canvas 2D (`fit` scaling) |
+| Rendering | Canvas 2D (`fit` scaling) and DOM/CSS (`DOMEngine`) |
 | Input | Keyboard (`keydown/keyup`), Mouse, Touch (`touchstart/touchend/touchmove`) |
 | Audio | Web Audio API (`OscillatorNode` / `AudioBufferSourceNode`) |
 | PWA | Service Worker + Web App Manifest |

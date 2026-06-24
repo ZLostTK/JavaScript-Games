@@ -97,6 +97,20 @@ const meta = {
 		color: '#0f3460',
 		tags: ['Clásico', 'Estrategia', 'Tabletop'],
 		extraCacheFiles: ['engine/peerjs.min.js', 'engine/online.js']
+	},
+	typingspeed: {
+		title: 'Typing Speed',
+		description: 'Test your typing speed — ES / EN word pools',
+		color: '#0f1117',
+		tags: ['Palabras', 'DOM', 'Teclado'],
+		extraCacheFiles: ['games/typingspeed/words.js']
+	},
+	wordscramble: {
+		title: 'Word Scramble',
+		description: 'Unscramble the letters — ES / EN',
+		color: '#0f1117',
+		tags: ['Palabras', 'DOM', 'Puzle'],
+		extraCacheFiles: ['games/wordscramble/words.js']
 	}
 };
 

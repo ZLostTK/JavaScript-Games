@@ -169,6 +169,10 @@ MENU / SELECT SCREEN
     border-color: var(--accent);
     background: var(--surface2);
 }
+.btn-option.btn-lang {
+    font-family: var(--font-ui);
+    font-size: 14px;
+}
 .btn-option.active {
     background: var(--accent-dim);
     border-color: var(--accent);

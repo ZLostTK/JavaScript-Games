@@ -3,52 +3,10 @@ TYPING SPEED TEST — script.js
 DOM Engine game — no canvas
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── Word pools ─────────────────────────────────────────────── */
-const WORDS = {
-	words: [
-		'the','be','to','of','and','a','in','that','have','it',
-		'for','not','on','with','he','as','you','do','at','this',
-		'but','his','by','from','they','we','say','her','she','or',
-		'an','will','my','one','all','would','there','their','what',
-		'so','up','out','if','about','who','get','which','go','me',
-		'when','make','can','like','time','no','just','him','know',
-		'take','people','into','year','your','good','some','could',
-		'them','see','other','than','then','now','look','only','come',
-		'its','over','think','also','back','after','use','two','how',
-		'our','work','first','well','way','even','new','want','because',
-		'any','these','give','day','most','us','great','between','need',
-		'large','often','hand','high','place','hold','turn','was','said',
-		'each','tell','does','set','put','end','does','another','well',
-		'large','often','next','few','both','those','always','show',
-		'house','point','page','letter','mother','answer','found','study',
-		'still','learn','plant','cover','food','sun','four','between',
-	],
-	numbers: [
-		'0','1','2','3','4','5','6','7','8','9',
-		'10','11','12','13','14','15','16','17','18','19','20',
-		'100','200','500','1000','2024','42','7','3','99','365',
-		'2','3','4','5','6','7','8','9','10','11','12','13',
-		'15','20','25','30','40','50','60','75','80','90',
-	],
-	quotes: [
-		'The quick brown fox jumps over the lazy dog.',
-		'To be or not to be that is the question.',
-		'All that glitters is not gold.',
-		'A journey of a thousand miles begins with a single step.',
-		'In the middle of difficulty lies opportunity.',
-		'The only way to do great work is to love what you do.',
-		'Life is what happens when you are busy making other plans.',
-		'The future belongs to those who believe in the beauty of their dreams.',
-		'It does not matter how slowly you go as long as you do not stop.',
-		'Success is not final failure is not fatal it is the courage to continue that counts.',
-		'The best time to plant a tree was twenty years ago the second best time is now.',
-		'Whether you think you can or you think you cannot you are right.',
-	],
-};
-
 /* ── Config ─────────────────────────────────────────────────── */
 const DURATIONS = [15, 30, 60, 120];
 const MODES = ['words', 'numbers', 'quotes'];
+const LANGS = ['es', 'en'];
 
 /* ── WPM rank table ─────────────────────────────────────────── */
 function getRank(wpm) {
@@ -70,13 +28,17 @@ function shuffle(arr) {
 	return a;
 }
 
-function generateText(mode) {
+function generateText(mode, lang) {
 	if (mode === 'quotes') {
-		const q = WORDS.quotes;
+		const q = WORD_POOLS[lang].quotes;
 		return q[Math.floor(Math.random() * q.length)];
 	}
-	const pool = shuffle(WORDS[mode]);
-	// Repeat if short pool
+	if (mode === 'numbers') {
+		const pool = shuffle(WORD_POOLS.numbers);
+		const extended = [...pool, ...pool, ...pool];
+		return extended.slice(0, 80).join(' ');
+	}
+	const pool = shuffle(WORD_POOLS[lang].words);
 	const extended = [...pool, ...pool, ...pool];
 	return extended.slice(0, 80).join(' ');
 }
@@ -89,6 +51,7 @@ const game = {
 	state:    'select',  // 'select' | 'playing' | 'results'
 	duration: 30,
 	mode:     'words',
+	lang:     'es',
 	
 	text:     '',
 	chars:    [],        // array of { char, status } — 'pending'|'correct'|'wrong'|'current'
@@ -157,7 +120,32 @@ const game = {
 		title.innerHTML = 'Typing <span>Speed</span> Test';
 		
 		const sub = DOMEngine.create('p', 'menu-subtitle', screen);
-		sub.textContent = 'Pon a prueba tu velocidad y precisión. Elige la duración y el modo de escritura.';
+		sub.textContent = 'Pon a prueba tu velocidad y precisión. Elige idioma, duración y modo de escritura.';
+		
+		// Language selector
+		const langSection = DOMEngine.create('div', 'config-section', screen);
+		const langLabel = DOMEngine.create('p', 'config-label', langSection);
+		langLabel.textContent = 'Idioma';
+		const langGroup = DOMEngine.create('div', 'btn-group', langSection);
+		
+		const langInfo = {
+			es: { flag: '🇪🇸', name: 'Español' },
+			en: { flag: '🇬🇧', name: 'English' },
+		};
+		
+		LANGS.forEach(l => {
+			const info = langInfo[l];
+			const btn = DOMEngine.create('button', 'btn-option btn-lang', langGroup);
+			btn.innerHTML = `${info.flag} ${info.name}`;
+			if (l === this.lang) DOMEngine.addClass(btn, 'active');
+			btn.onclick = () => {
+				this.lang = l;
+				langGroup.querySelectorAll('.btn-option').forEach(b => DOMEngine.removeClass(b, 'active'));
+				DOMEngine.addClass(btn, 'active');
+				Audio.play('tick');
+				this._updateModeDescriptions(modeGrid);
+			};
+		});
 		
 		// Duration selector
 		const durSection = DOMEngine.create('div', 'config-section', screen);
@@ -182,16 +170,12 @@ const game = {
 		const modeLabel = DOMEngine.create('p', 'config-label', modeSection);
 		modeLabel.textContent = 'Modo';
 		const modeGrid = DOMEngine.create('div', 'mode-grid', modeSection);
-		
-		const modeInfo = {
-			words:   { icon: '<i class="fa-solid fa-file-lines"></i>', name: 'Palabras',  desc: 'Palabras comunes en inglés' },
-			numbers: { icon: '<i class="fa-solid fa-hashtag"></i>', name: 'Números',   desc: 'Practica con cifras y dígitos' },
-			quotes:  { icon: '<i class="fa-solid fa-quote-left"></i>', name: 'Citas',     desc: 'Frases y citas famosas' },
-		};
+		modeGrid.id = 'mode-grid';
 		
 		MODES.forEach(m => {
-			const info = modeInfo[m];
+			const info = this._getModeInfo(m);
 			const btn = DOMEngine.create('button', 'btn-mode', modeGrid);
+			btn.dataset.mode = m;
 			if (m === this.mode) DOMEngine.addClass(btn, 'active');
 			
 			const icon = DOMEngine.create('span', 'mode-icon', btn);
@@ -410,7 +394,7 @@ const game = {
 	GAME LOGIC
 	════════════════════════════════════ */
 	_startGame() {
-		this.text       = generateText(this.mode);
+		this.text       = generateText(this.mode, this.lang);
 		this.chars      = this.text.split('').map(ch => ({ char: ch, status: 'pending' }));
 		this.inputIdx   = 0;
 		this.errors     = 0;
@@ -650,6 +634,25 @@ const game = {
 		
 		this.state = 'results';
 		DOMEngine.render();
+	},
+	
+	_getModeInfo(mode) {
+		const langLabel = this.lang === 'es' ? 'español' : 'inglés';
+		const infos = {
+			words:   { icon: '<i class="fa-solid fa-file-lines"></i>', name: 'Palabras', desc: `Palabras comunes en ${langLabel}` },
+			numbers: { icon: '<i class="fa-solid fa-hashtag"></i>',    name: 'Números',  desc: 'Practica con cifras y dígitos' },
+			quotes:  { icon: '<i class="fa-solid fa-quote-left"></i>', name: 'Citas',  desc: `Frases y citas en ${langLabel}` },
+		};
+		return infos[mode];
+	},
+	
+	_updateModeDescriptions(modeGrid) {
+		if (!modeGrid) return;
+		modeGrid.querySelectorAll('.btn-mode').forEach(btn => {
+			const info = this._getModeInfo(btn.dataset.mode);
+			const desc = btn.querySelector('.mode-desc');
+			if (desc) desc.textContent = info.desc;
+		});
 	},
 };
 
