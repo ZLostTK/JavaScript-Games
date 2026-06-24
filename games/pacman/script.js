@@ -25,7 +25,7 @@ const BASE_MAP = [
     [0,0,0,0,2,2,2,1,4,4,4,4,4,1,2,2,2,0,0,0,0],
     [1,1,1,1,2,1,2,1,1,1,1,1,1,1,2,1,2,1,1,1,1],
     [1,1,1,1,2,1,2,2,2,2,2,2,2,2,2,1,2,1,1,1,1],
-    [1,1,1,1,2,1,2,1,1,1,1,1,1,1,4,1,2,1,1,1,1],
+    [1,1,1,1,2,1,2,1,1,1,1,1,1,1,2,1,2,1,1,1,1],
     [1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1],
     [1,2,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,2,1],
     [1,3,2,1,2,2,2,2,2,2,0,2,2,2,2,2,2,1,2,3,1],
@@ -173,6 +173,32 @@ function generateMap(level) {
     }
     function randInt(min, max) { return Math.floor(rand() * (max - min + 1)) + min; }
     
+    // Flood-fill desde Pac-Man: ¿todos los puntos (2 y 3) son accesibles?
+    function _allDotsReachable(m) {
+        const visited = Array.from({length: ROWS}, () => Array(COLS).fill(false));
+        const queue = [[PAC_START_R, PAC_START_C]];
+        visited[PAC_START_R][PAC_START_C] = true;
+        let head = 0;
+        while (head < queue.length) {
+            const [r, c] = queue[head++];
+            for (const [dr, dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+                const nr = r + dr;
+                const nc = wrapCol(c + dc);
+                if (nr < 0 || nr >= ROWS) continue;
+                if (visited[nr][nc]) continue;
+                const v = m[nr][nc];
+                if (v === 1 || v === 4 || v === 5) continue;
+                visited[nr][nc] = true;
+                queue.push([nr, nc]);
+            }
+        }
+        for (let r = 0; r < ROWS; r++)
+            for (let c = 0; c < COLS; c++)
+                if ((m[r][c] === 2 || m[r][c] === 3) && !visited[r][c])
+                    return false;
+        return true;
+    }
+    
     // ── Zonas editables: solo filas 1-6 y 14-20, cols 1-9 (se espeja a 11-19) ──
     // No tocar: fila 0, 21 (bordes), filas 7-13 (zona corral), col 0, 20 (bordes)
     const EDIT_ROWS_TOP    = [1, 2, 3, 4, 5, 6];
@@ -198,7 +224,6 @@ function generateMap(level) {
         if (c === cm) continue; // columna central, no espejar
         
         // Verificar que el corredor no quede totalmente bloqueado
-        // Si la celda izquierda Y la derecha también son muros, no poner
         const neighbors = [
             [r-1,c],[r+1,c],[r,c-1],[r,c+1],
         ];
@@ -208,8 +233,16 @@ function generateMap(level) {
     ).length;
     if (freeNeighbors < 2) continue; // deja mínimo 2 vecinos libres
     
+    // Colocar paredes temporalmente
     map[r][c]  = 1;
     map[r][cm] = 1;
+    
+    // Verificar que todos los puntos queden accesibles (flood-fill desde Pac)
+    if (!_allDotsReachable(map)) {
+        map[r][c]  = 2; // revertir
+        map[r][cm] = 2;
+        continue;
+    }
     placed++;
 }
 
@@ -260,6 +293,10 @@ class Ghost {
         this.releaseDelay = 0;
         this.released   = false;
         this._houseAnim = 0;
+        this._eyeVisited = null;
+        this._eyePath = null;
+        this._eyePathIdx = 0;
+        this._eyeFallback = false;
     }
     
     get speed() {
@@ -325,10 +362,14 @@ class Ghost {
                 if (this.eaten && this.r === this.startR && this.c === this.startC) {
                     this.eaten = false;
                     this.released = false;
-                    this.releaseDelay = 5;
+                    this.releaseDelay = 555;
                     this._moving = false;
                     this.px = cellX(this.c);
                     this.py = cellY(this.r);
+                    this._eyeVisited = null;
+                    this._eyePath = null;
+                    this._eyePathIdx = 0;
+                    this._eyeFallback = false;
                 }
             }
         }
@@ -366,6 +407,42 @@ class Ghost {
         
         // ── Modo ojos: ir al corral ──
         if (this.eaten) {
+            // Inicializar tracking al entrar en modo ojos
+            if (this._eyeVisited === null) {
+                this._eyeVisited = {};
+                this._eyePath = null;
+                this._eyePathIdx = 0;
+                this._eyeFallback = false;
+            }
+            // Detección de ciclo (solo en modo greedy)
+            if (!this._eyeFallback) {
+                const key = `${this.r},${this.c}`;
+                this._eyeVisited[key] = (this._eyeVisited[key] || 0) + 1;
+                if (this._eyeVisited[key] >= 3) {
+                    this._eyeFallback = true;
+                }
+            }
+            // Fallback BFS: ruta óptima al corral
+            if (this._eyeFallback) {
+                if (!this._eyePath || this._eyePathIdx >= this._eyePath.length) {
+                    this._eyePath = this._bfsPath(map, this.r, this.c, this.startR, this.startC);
+                    this._eyePathIdx = 0;
+                }
+                if (this._eyePath && this._eyePathIdx < this._eyePath.length) {
+                    const [nr, nc] = this._eyePath[this._eyePathIdx];
+                    for (const k of DIR_KEYS) {
+                        const d = DIR[k];
+                        if (this.r + d.dy === nr && wrapCol(this.c + d.dx) === nc) {
+                            this.dir = d;
+                            this._eyePathIdx++;
+                            break;
+                        }
+                    }
+                    return;
+                }
+                // Si BFS falló, usar greedy como último recurso
+            }
+            // Greedy por defecto
             this._moveTowards(map, this.startR, this.startC, wallFn);
             return;
         }
@@ -457,6 +534,38 @@ class Ghost {
             }
         }
         if (best) this.dir = best;
+    }
+    
+    /** BFS shortest path (excluye celda origen). Usa isWallEyes como walkable. */
+    _bfsPath(map, fromR, fromC, toR, toC) {
+        const visited = Array.from({length: ROWS}, () => Array(COLS).fill(false));
+        const prev = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+        const q = [[fromR, fromC]];
+        visited[fromR][fromC] = true;
+        let head = 0;
+        while (head < q.length) {
+            const [r, c] = q[head++];
+            if (r === toR && c === toC) {
+                const path = [];
+                let cur = [r, c];
+                while (cur[0] !== fromR || cur[1] !== fromC) {
+                    path.unshift(cur);
+                    cur = prev[cur[0]][cur[1]];
+                }
+                return path;
+            }
+            for (const [dr, dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+                const nr = r + dr;
+                const nc = wrapCol(c + dc);
+                if (nr < 0 || nr >= ROWS) continue;
+                if (visited[nr][nc]) continue;
+                if (isWallEyes(map, nr, nc)) continue;
+                visited[nr][nc] = true;
+                prev[nr][nc] = [r, c];
+                q.push([nr, nc]);
+            }
+        }
+        return null;
     }
     
     draw(ctx) {
