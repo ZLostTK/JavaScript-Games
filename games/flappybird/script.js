@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────
-   Flappy Bird — script.js
+   Flappy Bird - script.js
    Modos: Solo | Online 1v1 (PeerJS P2P) | vs Sombra (bot AI)
    
    Online: Pájaro amarillo = Host (tú), Pájaro azul = Guest (rival)
@@ -726,7 +726,7 @@ const game = {
     _hostOnline() {
         Online.on('onHostReady', () => {
             const el = document.getElementById('online-status');
-            if (el) el.textContent = 'Código listo — esperando rival...';
+            if (el) el.textContent = 'Código listo - esperando rival...';
         });
         Online.on('onConnected', () => {
             const el = document.getElementById('online-status');
@@ -1096,7 +1096,7 @@ const game = {
         ctx.textBaseline = 'middle';
         ctx.font         = "bold 22px 'Courier New', monospace";
         ctx.fillStyle    = '#4ecca3';
-        ctx.fillText('Conectado — esperando anfitrión' + dots, W / 2, H / 2);
+        ctx.fillText('Conectado - esperando anfitrión' + dots, W / 2, H / 2);
         ctx.font         = "13px 'Courier New', monospace";
         ctx.fillStyle    = '#404060';
         ctx.fillText('El anfitrión iniciará la partida', W / 2, H / 2 + 35);

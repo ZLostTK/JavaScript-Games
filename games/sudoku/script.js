@@ -1,6 +1,6 @@
 // ─── Sudoku – ZLostTK Games ──────────────────────────────────────────────────
 // Modos: Solo / Versus Local / Online 1v1 (PeerJS)
-// Resolución lógica: 480×760 — Sin assets externos. Mouse + Touch + Teclado.
+// Resolución lógica: 480×760 - Sin assets externos. Mouse + Touch + Teclado.
 
 Engine.init('gameCanvas', { width: 480, height: 760, bg: '#0f0f1a' });
 
@@ -157,7 +157,7 @@ const ACT_H     = 42;
 // ═══════════════════════════════════════════════════════════════════════════════
 const SCENE = { MENU: 'menu', GAME: 'game', WIN: 'win' };
 
-// ── DOM refs (lobby overlay — mismo patrón que otros juegos) ──────────────────
+// ── DOM refs (lobby overlay - mismo patrón que otros juegos) ──────────────────
 const onlineUI      = document.getElementById('online-ui');
 const onlineTitle   = document.getElementById('online-title');
 const onlineStatus  = document.getElementById('online-status');
@@ -346,7 +346,7 @@ const state = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// OVERLAY UI — controla las pantallas HTML
+// OVERLAY UI - controla las pantallas HTML
 // ═══════════════════════════════════════════════════════════════════════════════
 // ── OverlayUI: ahora solo maneja el #online-ui panel (igual que los otros juegos) ──
 const OverlayUI = {
@@ -392,7 +392,7 @@ function undoMove() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// GAME MODEL — lógica pura, separada de la vista
+// GAME MODEL - lógica pura, separada de la vista
 // ═══════════════════════════════════════════════════════════════════════════════
 const GameModel = {
 
@@ -934,7 +934,7 @@ function drawStar(ctx, x, y, r) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — GAME (contenedor principal)
+// RENDER - GAME (contenedor principal)
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderGame(ctx) {
     ctx.save();
@@ -967,7 +967,7 @@ function renderGame(ctx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — HEADER
+// RENDER - HEADER
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderHeader(ctx, activePlayer) {
     ctx.save();
@@ -1073,7 +1073,7 @@ function renderHeader(ctx, activePlayer) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — CELLS
+// RENDER - CELLS
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderCells(ctx, sel, selN) {
     const ap = state.activePlayer;
@@ -1147,7 +1147,7 @@ function renderCells(ctx, sel, selN) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — GRID LINES
+// RENDER - GRID LINES
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderGrid(ctx) {
     ctx.save();
@@ -1168,7 +1168,7 @@ function renderGrid(ctx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — NUMPAD
+// RENDER - NUMPAD
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderNumPad(ctx, sel) {
     ctx.save();
@@ -1211,7 +1211,7 @@ function renderNumPad(ctx, sel) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — ACTION BUTTONS
+// RENDER - ACTION BUTTONS
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderActionBtns(ctx) {
     ctx.save();
@@ -1248,7 +1248,7 @@ function renderActionBtns(ctx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — TURNO LOCAL
+// RENDER - TURNO LOCAL
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderTurnIndicator(ctx, p) {
     ctx.save();
@@ -1288,7 +1288,7 @@ function renderPassTurnBtn(ctx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — INDICADOR TURNO ONLINE
+// RENDER - INDICADOR TURNO ONLINE
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderOnlineIndicator(ctx) {
     const myIdx    = state.role === 'host' ? 0 : 1;
@@ -1313,7 +1313,7 @@ function renderOnlineIndicator(ctx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — WIN OVERLAY
+// RENDER - WIN OVERLAY
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderWinOverlay(ctx) {
     ctx.save();
@@ -1404,7 +1404,7 @@ function renderWinOverlay(ctx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RENDER — DISCONNECT OVERLAY
+// RENDER - DISCONNECT OVERLAY
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderDisconnectOverlay(ctx) {
     ctx.save();

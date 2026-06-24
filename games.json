@@ -120,7 +120,7 @@
     },
     {
       "id": "othello",
-      "title": "Othello — Reversi",
+      "title": "Othello - Reversi",
       "description": "Classic strategy board game for two players",
       "path": "games/othello/",
       "image": "assets/imgs_games/othello.svg",
@@ -202,7 +202,7 @@
     {
       "id": "typingspeed",
       "title": "Typing Speed",
-      "description": "Test your typing speed — ES / EN word pools",
+      "description": "Test your typing speed - ES / EN word pools",
       "path": "games/typingspeed/",
       "image": "assets/imgs_games/typingspeed.svg",
       "color": "#0f1117",
@@ -218,7 +218,7 @@
     {
       "id": "wordscramble",
       "title": "Word Scramble",
-      "description": "Unscramble the letters — ES / EN",
+      "description": "Unscramble the letters - ES / EN",
       "path": "games/wordscramble/",
       "image": "assets/imgs_games/wordscramble.svg",
       "color": "#0f1117",

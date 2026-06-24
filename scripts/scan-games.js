@@ -92,7 +92,7 @@ const meta = {
 		extraCacheFiles: ['engine/peerjs.min.js', 'engine/online.js']
 	},
 	othello: {
-		title: 'Othello — Reversi',
+		title: 'Othello - Reversi',
 		description: 'Classic strategy board game for two players',
 		color: '#0f3460',
 		tags: ['Clásico', 'Estrategia', 'Tabletop'],
@@ -100,14 +100,14 @@ const meta = {
 	},
 	typingspeed: {
 		title: 'Typing Speed',
-		description: 'Test your typing speed — ES / EN word pools',
+		description: 'Test your typing speed - ES / EN word pools',
 		color: '#0f1117',
 		tags: ['Palabras', 'DOM', 'Teclado'],
 		extraCacheFiles: ['games/typingspeed/words.js']
 	},
 	wordscramble: {
 		title: 'Word Scramble',
-		description: 'Unscramble the letters — ES / EN',
+		description: 'Unscramble the letters - ES / EN',
 		color: '#0f1117',
 		tags: ['Palabras', 'DOM', 'Puzle'],
 		extraCacheFiles: ['games/wordscramble/words.js']

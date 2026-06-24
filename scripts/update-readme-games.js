@@ -19,7 +19,7 @@ try {
   // Format markdown list
   const gamesListMarkdown = sortedGames.map(g => {
     const formattedPath = g.path.startsWith('./') ? g.path : `./${g.path}`;
-    return `- **[${g.title}](${formattedPath})** — ${g.description}`;
+    return `- **[${g.title}](${formattedPath})** - ${g.description}`;
   }).join('\n');
 
   // Read README.md

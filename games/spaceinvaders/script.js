@@ -119,7 +119,7 @@ const game = {
     state:          'menu',
     mode:           'solo',
     onlineRole:     null,        // 'host'|'guest'
-    onlinePlayerNum: 1,          // 1 = P1 (shooter), 2 = P2 (alien-jugador) — asignado en online 1v1
+    onlinePlayerNum: 1,          // 1 = P1 (shooter), 2 = P2 (alien-jugador) - asignado en online 1v1
     _onlineSubMode: '1v1',
 
     stars: [],
@@ -129,7 +129,7 @@ const game = {
     px: W/2, py: H-50, pspd: 220,
     pbullets: [], pCooldown: 0, pW: 36, pH: 18,
 
-    // ── P2 — alien-jugador en modo 1v1 ────────────────────────────────────────
+    // ── P2 - alien-jugador en modo 1v1 ────────────────────────────────────────
     // En local: P2 controla un alien en zona superior
     // p2x/p2y = posición del alien-jugador
     // p2lives = 4 vidas, skin cambia con cada vida perdida
@@ -488,7 +488,7 @@ const game = {
         for (const sx of [90, 185, 295, 390]) this.shields.push(...makeShield(sx, H - 130));
     },
 
-    // Local 1v1: sin aliens NPC — sólo el alien-P2 y el shooter-P1
+    // Local 1v1: sin aliens NPC - sólo el alien-P2 y el shooter-P1
     _initLevelLocal() {
         this.aliens = [];       // no hay horda NPC
         this.aFrame = 0; this.aFrameTimer = 0; this.aFrameInterval = 0.4;
@@ -1595,12 +1595,12 @@ const game = {
             ctx.restore();
         };
 
-        // P1 (shooter) — cyan — franja inferior
+        // P1 (shooter) - cyan - franja inferior
         drawTB(L.left,  '◀', this._touchLeft,  C.player);
         drawTB(L.fire,  '●', this._touchFire,  C.player);
         drawTB(L.right, '▶', this._touchRight, C.player);
 
-        // P2 (alien) — morado — franja superior (rotada 180 para face-to-face)
+        // P2 (alien) - morado - franja superior (rotada 180 para face-to-face)
         drawTB(L.p2left,  '▶', this._touch2Left,  C.alienP2, true);
         drawTB(L.p2right, '◀', this._touch2Right, C.alienP2, true);
         drawTB(L.p2up,    '▼', this._touch2Up,    C.alienP2, true);

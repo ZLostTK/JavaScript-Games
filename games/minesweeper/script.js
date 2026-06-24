@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────
-   Minesweeper — script.js
+   Minesweeper - script.js
    Modes: P1  |  2P (Hotseat)  |  Online (PeerJS)
    ───────────────────────────────────────────────────────── */
 
@@ -392,7 +392,7 @@ const game = {
                 this.hoverRow = -1;
             }
 
-            // Touch + mouse input — long-press para banderas en móvil
+            // Touch + mouse input - long-press para banderas en móvil
             const touchRaw = Input.getTouchCount() > 0 ? Input.getTouch(0) : null;
             const gtRaw    = touchRaw ? Engine.toGame(touchRaw.x, touchRaw.y) : null;
 
@@ -428,7 +428,7 @@ const game = {
                 this.touchCol = -1;
             }
 
-            // Click de ratón (PC) — ignorado si venimos de un toque reciente
+            // Click de ratón (PC) - ignorado si venimos de un toque reciente
             if (mouseClick && !Input.getTouchCount() && this._touchSuppressMs <= 0) {
                 const c = Math.floor((gm.x - this.boardX) / this.cellSize);
                 const r = Math.floor((gm.y - this.boardY) / this.cellSize);
@@ -464,7 +464,7 @@ const game = {
                         Engine.text('🚩', x + this.cellSize/2, y + this.cellSize/2, '#e94560', this.cellSize * 0.6);
                     }
                 } else if (s === 1) {
-                    // Revealed — color según quién lo reveló
+                    // Revealed - color según quién lo reveló
                     const playerColor = this.playerColors[r][c];
                     let bgColor = '#1a1a2e';
 
@@ -505,7 +505,7 @@ const game = {
             }
         }
 
-        // UI overlay — turn indicator
+        // UI overlay - turn indicator
         if (this.mode === 'online') {
             const isMyTurn = this._isMyTurn();
             const turnMsg  = isMyTurn ? 'Tu turno' : 'Turno del rival';

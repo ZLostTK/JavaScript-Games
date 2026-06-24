@@ -106,7 +106,7 @@ function isWallPac(map, r, c) {
 
 /**
 * ¿Es un muro para un fantasma normal (no en modo ojos)?
-* Fantasma NO puede pisar: 1 (muro), 5 (puerta — solo entra al corral en modo ojos).
+* Fantasma NO puede pisar: 1 (muro), 5 (puerta - solo entra al corral en modo ojos).
 * Puede pisar: 0, 2, 3, 4.
 */
 function isWallGhost(map, r, c) {
@@ -219,7 +219,7 @@ function generateMap(level) {
         const c = EDIT_COLS[randInt(0, EDIT_COLS.length - 1)];
         const cm = COLS - 1 - c; // columna espejada
         
-        // Solo convertir pasillos (2) en muros — no tocar power pellets (3) ni ya-muros
+        // Solo convertir pasillos (2) en muros - no tocar power pellets (3) ni ya-muros
         if (map[r][c] !== 2) continue;
         if (c === cm) continue; // columna central, no espejar
         
@@ -724,7 +724,7 @@ const game = {
         p.dead = false; p.deadTimer = 0; p.deadAnim = 0;
         p.speed = 7 + (this.level - 1) * 0.4;
         
-        // Fantasmas — posiciones internas del corral
+        // Fantasmas - posiciones internas del corral
         // Blinky empieza fuera (ya liberado), los demás dentro
         this.ghosts = [
             new Ghost(GHOST_HOME_R, GHOST_HOME_C,     0, [0,      COLS-1]),  // Blinky  sup-der

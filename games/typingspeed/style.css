@@ -90,7 +90,7 @@ BACK BUTTON
 }
 
 /* ══════════════════════════════════════
-SCREENS — helpers
+SCREENS - helpers
 ══════════════════════════════════════ */
 .screen {
     width: 100%;
@@ -287,7 +287,7 @@ PLAYING SCREEN
     margin-top: 3px;
 }
 
-/* Timer pill — cambia de color */
+/* Timer pill - cambia de color */
 .stat-pill.timer-danger .stat-value {
     color: var(--red);
     animation: pulse-red 0.5s ease infinite alternate;

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-DOMEngine — Sub-engine para juegos HTML/CSS/JS (sin Canvas)
+DOMEngine - Sub-engine para juegos HTML/CSS/JS (sin Canvas)
 ═══════════════════════════════════════════════════════════════
 
 Diferencias clave vs Engine (canvas):
@@ -35,7 +35,7 @@ class DOMEngine {
 	* Monta el engine sobre un div existente.
 	* @param {string} containerId  id del <div> raíz del juego
 	* @param {object} opts
-	*   opts.fps   {number}  — límite de FPS del loop (default: 60, 0 = sin límite)
+	*   opts.fps   {number}  - límite de FPS del loop (default: 60, 0 = sin límite)
 	*/
 	static init(containerId, opts = {}) {
 		this.container = document.getElementById(containerId);
@@ -68,7 +68,7 @@ class DOMEngine {
 	
 	/**
 	* Arranca el juego.
-	* @param {object} game  — objeto con init(), update(dt), [render()]
+	* @param {object} game  - objeto con init(), update(dt), [render()]
 	*/
 	static start(game) {
 		this._game    = game;
@@ -144,9 +144,9 @@ class DOMEngine {
 	
 	/**
 	* Crea un elemento HTML, le asigna clases y lo añade al padre.
-	* @param {string}      tag     — nombre del tag ('div', 'button', 'span'…)
-	* @param {string}      cls     — clases CSS separadas por espacio (opcional)
-	* @param {HTMLElement} parent  — elemento padre al que se añade (opcional)
+	* @param {string}      tag     - nombre del tag ('div', 'button', 'span'…)
+	* @param {string}      cls     - clases CSS separadas por espacio (opcional)
+	* @param {HTMLElement} parent  - elemento padre al que se añade (opcional)
 	* @returns {HTMLElement}
 	*/
 	static create(tag, cls = '', parent = null) {
@@ -185,7 +185,7 @@ class DOMEngine {
 	* Alterna una clase CSS en un elemento.
 	* @param {HTMLElement} el
 	* @param {string}      cls
-	* @param {boolean}     [force]  — true=añadir, false=quitar
+	* @param {boolean}     [force]  - true=añadir, false=quitar
 	*/
 	static toggleClass(el, cls, force) {
 		el.classList.toggle(cls, force);
@@ -194,7 +194,7 @@ class DOMEngine {
 	/**
 	* Aplica múltiples estilos en línea a un elemento.
 	* @param {HTMLElement} el
-	* @param {object}      styles  — { property: value, … }
+	* @param {object}      styles  - { property: value, … }
 	*/
 	static setStyle(el, styles) {
 		Object.assign(el.style, styles);
@@ -206,7 +206,7 @@ class DOMEngine {
 	* @param {string}   event
 	* @param {Function} handler
 	* @param {object}   [opts]
-	* @returns {Function}  — llamar para eliminar el listener
+	* @returns {Function}  - llamar para eliminar el listener
 	*/
 	static on(target, event, handler, opts) {
 		target.addEventListener(event, handler, opts);
@@ -217,12 +217,12 @@ class DOMEngine {
 	* Crea una rejilla de celdas como elementos DOM dentro de un contenedor.
 	* Útil para juegos de tablero (buscaminas, connect4, sudoku…).
 	*
-	* @param {HTMLElement} parent   — contenedor donde se insertan las celdas
+	* @param {HTMLElement} parent   - contenedor donde se insertan las celdas
 	* @param {number}      rows
 	* @param {number}      cols
-	* @param {Function}    onClick  — callback(row, col, event) al hacer click
-	* @param {Function}    [onCtx]  — callback(row, col, event) en contextmenu
-	* @returns {Array<Array<HTMLElement>>}  — matriz [row][col] de elementos
+	* @param {Function}    onClick  - callback(row, col, event) al hacer click
+	* @param {Function}    [onCtx]  - callback(row, col, event) en contextmenu
+	* @returns {Array<Array<HTMLElement>>}  - matriz [row][col] de elementos
 	*/
 	static createGrid(parent, rows, cols, onClick, onCtx) {
 		this.clear(parent);
@@ -260,7 +260,7 @@ class DOMEngine {
 	* @param {string}   message
 	* @param {string}   [subMessage]
 	* @param {Function} [onDismiss]
-	* @returns {HTMLElement}  — el elemento overlay creado
+	* @returns {HTMLElement}  - el elemento overlay creado
 	*/
 	static showOverlay(message, subMessage = '', onDismiss = null) {
 		// Eliminar overlay previo si existe

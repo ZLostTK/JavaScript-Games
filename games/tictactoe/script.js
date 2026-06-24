@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────
-   Tic Tac Toe — script.js
+   Tic Tac Toe - script.js
    Modes: vs. IA  |  1v1 (same device)  |  Online (PeerJS)
    ───────────────────────────────────────────────────────── */
 
@@ -329,7 +329,7 @@ const game = {
     this.state = 'select';
   },
 
-  // ── PeerJS — Host ─────────────────────────────────────
+  // ── PeerJS - Host ─────────────────────────────────────
   _hostGame() {
     Online.on('onHostReady', () => {
       onlineStatus.textContent = 'Esperando conexión...';
@@ -362,7 +362,7 @@ const game = {
     });
   },
 
-  // ── PeerJS — Join ─────────────────────────────────────
+  // ── PeerJS - Join ─────────────────────────────────────
   _joinGame() {
     Online.destroy();
 

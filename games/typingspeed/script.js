@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-TYPING SPEED TEST — script.js
-DOM Engine game — no canvas
+TYPING SPEED TEST - script.js
+DOM Engine game - no canvas
 ═══════════════════════════════════════════════════════════════ */
 
 /* ── Config ─────────────────────────────────────────────────── */
@@ -54,10 +54,10 @@ const game = {
 	lang:     'es',
 	
 	text:     '',
-	chars:    [],        // array of { char, status } — 'pending'|'correct'|'wrong'|'current'
+	chars:    [],        // array of { char, status } - 'pending'|'correct'|'wrong'|'current'
 	inputIdx: 0,         // next char to type
 	errors:   0,
-	corrections: 0,  // backspace presses — partial penalty recovery
+	corrections: 0,  // backspace presses - partial penalty recovery
 	totalTyped: 0,
 	startTime: null,
 	timeLeft:  30,
@@ -81,7 +81,7 @@ const game = {
 	},
 	
 	update(dt) {
-		// Nothing needed — timer runs via setInterval on start
+		// Nothing needed - timer runs via setInterval on start
 	},
 	
 	render() {
@@ -107,7 +107,7 @@ const game = {
 		const c = this._container;
 		DOMEngine.clear(c);
 		
-		// Back btn is fixed — re-append so it stays on top
+		// Back btn is fixed - re-append so it stays on top
 		const backBtn = DOMEngine.create('button', '', c);
 		backBtn.id = 'back-btn';
 		backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Volver';
@@ -410,7 +410,7 @@ const game = {
 		
 		this._stopTimer();
 		DOMEngine.render();
-		// After render the DOM is built — skip leading spaces if numbers mode
+		// After render the DOM is built - skip leading spaces if numbers mode
 		if (this.mode === 'numbers') setTimeout(() => this._skipSpaces(), 0);
 	},
 	
@@ -463,7 +463,7 @@ const game = {
 		
 		const prevChar = this.chars[this.inputIdx];
 		if (prevChar.status === 'wrong') {
-			// Correction noted but errors stay — partial recovery only
+			// Correction noted but errors stay - partial recovery only
 			this.corrections++;
 		}
 		prevChar.status = 'pending';

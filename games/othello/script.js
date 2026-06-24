@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════
-OTHELLO / REVERSI  —  Full game for the shared-canvas engine
+OTHELLO / REVERSI  -  Full game for the shared-canvas engine
 Modes: Solo (vs CPU), Versus Local, Multiplayer Online (P2P)
 ═══════════════════════════════════════════════════════════════ */
 
-// ── DOM refs (lobby overlay — mismo patrón que otros juegos) ──────────────────
+// ── DOM refs (lobby overlay - mismo patrón que otros juegos) ──────────────────
 const onlineUI      = document.getElementById('online-ui');
 const onlineTitle   = document.getElementById('online-title');
 const onlineStatus  = document.getElementById('online-status');
@@ -310,7 +310,7 @@ const game = {
                 break;
             }
             case 'move': {
-                // Opponent placed a piece — data.row, data.col are LOGICAL board indices
+                // Opponent placed a piece - data.row, data.col are LOGICAL board indices
                 const { row, col } = data;
                 this._applyLocalMove(row, col, false);
                 break;
@@ -373,7 +373,7 @@ const game = {
             return;
         }
         
-        // Opponent has no moves — check if current player can still move
+        // Opponent has no moves - check if current player can still move
         const myMoves = getValidMoves(this.board, this.currentPlayer);
         if (myMoves.length > 0) {
             // Force opponent pass
@@ -491,7 +491,7 @@ const game = {
         if (!this._lobbyBound) {
             this._lobbyBound = true;
             
-            // Botón "Crear Sala" — inyectado dinámicamente si no existe
+            // Botón "Crear Sala" - inyectado dinámicamente si no existe
             if (!document.getElementById('btn-oth-host')) {
                 const btnHost = document.createElement('button');
                 btnHost.id = 'btn-oth-host';
@@ -732,7 +732,7 @@ const game = {
         // Pass banner
         if (this.passing) {
             const who = this.currentPlayer === BLACK ? 'Negras' : 'Blancas';
-            this._drawBanner(ctx, `${who}: sin movimientos — pasa turno`, C.danger);
+            this._drawBanner(ctx, `${who}: sin movimientos - pasa turno`, C.danger);
         }
     },
     

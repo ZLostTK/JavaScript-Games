@@ -1,4 +1,4 @@
-/* Word pools — English & Spanish */
+/* Word pools - English & Spanish */
 const WORD_POOLS = {
 	en: {
 		words: [

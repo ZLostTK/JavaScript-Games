@@ -48,7 +48,7 @@ Main Game Container
 }
 
 /* ──────────────────────────────────────────────────────────
-Back Button — fixed top-left igual que tictactoe/connect4
+Back Button - fixed top-left igual que tictactoe/connect4
 ────────────────────────────────────────────────────────── */
 
 #back-btn {
@@ -398,7 +398,7 @@ Mode Selection  (estilo idéntico al canvas de tictactoe / connect4)
     /* Individual colors set below via data-accent */
 }
 
-/* Random — #e94560 */
+/* Random - #e94560 */
 #random-mode-btn {
     background: rgba(233, 69, 96, 0.13);
     border: 1.5px solid rgba(233, 69, 96, 0.55);
@@ -410,7 +410,7 @@ Mode Selection  (estilo idéntico al canvas de tictactoe / connect4)
     box-shadow: 0 0 14px rgba(233,69,96,.25);
 }
 
-/* 1 vs 1 — #f5c518 (connect4 amarillo) */
+/* 1 vs 1 - #f5c518 (connect4 amarillo) */
 #pvp-mode-btn {
     background: rgba(245, 197, 24, 0.15);
     border: 1.5px solid rgba(245, 197, 24, 0.6);
@@ -422,7 +422,7 @@ Mode Selection  (estilo idéntico al canvas de tictactoe / connect4)
     box-shadow: 0 0 14px rgba(245,197,24,.25);
 }
 
-/* En linea — #4ecca3 */
+/* En linea - #4ecca3 */
 #online-mode-btn {
     background: rgba(78, 204, 163, 0.1);
     border: 1.5px solid rgba(78, 204, 163, 0.5);

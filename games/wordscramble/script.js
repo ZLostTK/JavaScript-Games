@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-WORD SCRAMBLE — script.js
-DOM Engine game — unscramble words ES / EN
+WORD SCRAMBLE - script.js
+DOM Engine game - unscramble words ES / EN
 ═══════════════════════════════════════════════════════════════ */
 
 const ROUND_DURATION = 60;

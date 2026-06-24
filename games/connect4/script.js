@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────
-Conecta 4 — script.js
+Conecta 4 - script.js
 Modes: vs. IA  |  1v1 (same device)  |  Online (PeerJS)
 ───────────────────────────────────────────────────────── */
 
@@ -354,7 +354,7 @@ const game = {
             return;
         }
         
-        // Drop animation — blocks all input
+        // Drop animation - blocks all input
         if (this.dropAnim) {
             const a     = this.dropAnim;
             const speed = (a.targetY - (this.boardY - this.cellSize)) * 8;

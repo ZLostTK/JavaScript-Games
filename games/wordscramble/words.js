@@ -1,4 +1,4 @@
-/* Word Scramble — word pools ES / EN by difficulty */
+/* Word Scramble - word pools ES / EN by difficulty */
 const SCRAMBLE_WORDS = {
 	es: {
 		easy: [
