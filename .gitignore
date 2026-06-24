@@ -26,6 +26,7 @@ Thumbs.db
 repomix-output.xml
 repomix-output.txt
 repomix-output.json
+repomix-dom.xml
 
 # Local env files
 .env
@@ -43,6 +44,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-
+# Game ideas Logic & DOM
 idea.txt
 websockets.txt
+ideadom.txt
+ideadom-websockets.txt
