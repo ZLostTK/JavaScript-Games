@@ -230,6 +230,23 @@
       "extraCacheFiles": [
         "games/wordscramble/words.js"
       ]
+    },
+    {
+      "id": "domino",
+      "title": "Dominó",
+      "description": "El clásico juego de mesa Dominó. Multijugador local y online para 4 jugadores.",
+      "path": "games/domino/",
+      "image": "assets/imgs_games/domino.svg",
+      "color": "#111827",
+      "tags": [
+        "Clásico",
+        "Multijugador",
+        "Tablero"
+      ],
+      "extraCacheFiles": [
+        "engine/peerjs.min.js",
+        "engine/online.js"
+      ]
     }
   ]
 }

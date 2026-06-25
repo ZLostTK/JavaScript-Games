@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+	<title>Domino</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="game-container"></div>
+	
+	<!-- Online UI overlay — fuera del contenedor para no borrarse con DOMEngine.clear -->
+	<div id="online-ui" class="hidden">
+		<div id="online-panel">
+			<h2 id="online-title">En línea</h2>
+			<p id="online-status">Conectando...</p>
+			<div id="host-view" class="hidden">
+				<p class="label">Código de partida</p>
+				<p id="room-code-display">------</p>
+				<button id="copy-btn">Copiar código</button>
+				<p class="hint">Comparte este código para que hasta 3 jugadores se unan</p>
+				
+				<div id="lobby-players">
+					<p class="label" id="lobby-label">Jugadores (1/4)</p>
+					<ul id="lobby-list"></ul>
+				</div>
+				<button id="start-online-btn" disabled>Iniciar Partida (Faltan jugadores)</button>
+			</div>
+			<div id="join-view" class="hidden">
+				<p class="label">Introduce el código</p>
+				<input id="room-code-input" type="text" maxlength="6" placeholder="XXXXXX" autocomplete="off" spellcheck="false">
+				<button id="join-btn">Conectar</button>
+			</div>
+			<button id="online-back-btn">← Cancelar</button>
+		</div>
+	</div>
+	
+	<script src="../../engine/input.js"></script>
+	<script src="../../engine/audio.js"></script>
+	<script src="../../engine/dom-engine.js"></script>
+	<script src="../../engine/peerjs.min.js"></script>
+	<script src="../../engine/online.js"></script>
+	<script src="script.js"></script>
+</body>
+</html>
