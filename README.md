@@ -14,6 +14,7 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Arkanoid](./games/arkanoid/)** - Break bricks with paddle and ball
 - **[Busca Minas](./games/minesweeper/)** - Find the bombs using logic and arrays
 - **[Conecta 4](./games/connect4/)** - Connect 4 chips in a row before the AI
+- **[Dominó](./games/domino/)** - El clásico juego de mesa Dominó. Multijugador local y online para 4 jugadores.
 - **[Efecto Mariposa](./games/butterfly-effect/)** - Chaotic visualization of the Lorenz Attractor
 - **[Flappy Bird](./games/flappybird/)** - Fly between pipes without crashing
 - **[Fuera Luces!](./games/lightsout/)** - Turn off all the lights in the fewest possible pulses
