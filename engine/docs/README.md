@@ -7,11 +7,11 @@ Una biblioteca modular diseñada para crear juegos 2D en la web. Su principal fo
 1. [Conceptos Básicos y Arquitectura](#arquitectura-y-conceptos-básicos)
 2. [Estructura de un Proyecto](#estructura-de-un-proyecto)
 3. **Módulos Principales:**
-   - 🎮 [Motores Core (Canvas, DOM, PIXI)](CORE_ENGINES.md)
-   - ⌨️ [Sistema de Input (Teclado, Mouse, Táctil)](INPUT.md)
-   - 🎵 [Sistema de Audio (Sonidos, Música, Síntesis)](AUDIO.md)
-   - 🌐 [Sistema Online (Multijugador P2P)](ONLINE.md)
-   - 👾 [Gestión de Sprites y Animaciones](SPRITES.md)
+   - [Motores Core (Canvas, DOM, PIXI)](CORE_ENGINES.md)
+   - [Sistema de Input (Teclado, Mouse, Táctil)](INPUT.md)
+   - [Sistema de Audio (Sonidos, Música, Síntesis)](AUDIO.md)
+   - [Sistema Online (Multijugador P2P)](ONLINE.md)
+   - [Gestión de Sprites y Animaciones](SPRITES.md)
 4. [Referencia Rápida API](API.md)
 
 ---

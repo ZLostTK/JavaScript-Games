@@ -2,6 +2,7 @@
 node_modules/
 jspm_packages/
 web_modules/
+.pnpm-store
 
 # Package managers
 .npm
@@ -47,6 +48,9 @@ pnpm-debug.log*
 #Discarted Games
 discard_games/
 
+#Cosas propias
+editor
+
 # Game ideas Logic & DOM
 idea.txt
 websockets.txt
@@ -55,3 +59,4 @@ ideadom-websockets.txt
 
 # Skill propia
 SKILL.md
+CURSOR.md

@@ -195,39 +195,87 @@ class SpriteProcessor {
         const animations = {};
         
         for (const [animName, config] of Object.entries(animationDefs)) {
-            const { frames, speed, loop, onComplete } = config;
+            let frameList, speed, loop, onComplete;
             
-            if (typeof frames === 'string') {
-                const range = this._parseFrameRange(frames);
-                const frameList = [];
-                for (let i = range.start; i <= range.end; i++) {
-                    const frameName = `${range.prefix}${i}`;
-                    if (sprites[frameName]) {
-                        frameList.push(frameName);
-                    }
-                }
-                animations[animName] = this.createAnimation(sprites, frameList, { speed, loop, onComplete });
-            } else if (Array.isArray(frames)) {
-                animations[animName] = this.createAnimation(sprites, frames, { speed, loop, onComplete });
+            if (typeof config === 'string') {
+                const resolved = this._parseFrameRange(config, animName);
+                frameList = resolved.values.map(i => `${resolved.prefix}${i}`);
+                speed = 10;
+                loop = true;
+                onComplete = null;
             } else {
-                throw new Error(`Invalid animation definition for "${animName}"`);
+                speed = config.speed ?? 10;
+                loop = config.loop ?? true;
+                onComplete = config.onComplete || null;
+                
+                if (typeof config.frames === 'string') {
+                    const resolved = this._parseFrameRange(config.frames, animName);
+                    frameList = resolved.values.map(i => `${resolved.prefix}${i}`);
+                } else if (Array.isArray(config.frames)) {
+                    frameList = config.frames;
+                } else {
+                    throw new Error(`Invalid animation definition for "${animName}"`);
+                }
             }
+            
+            animations[animName] = this.createAnimation(sprites, frameList, { speed, loop, onComplete });
         }
         
         return animations;
     }
 
-    static _parseFrameRange(rangeStr) {
-        const match = rangeStr.match(/^(.+?)(\d+)-(\d+)$/);
-        if (!match) {
-            throw new Error(`Invalid range format: ${rangeStr}. Use format: prefix0-10`);
+    static _parseFrameRange(rangeStr, defaultPrefix) {
+        const trimmed = rangeStr.trim();
+        
+        const braceMatch = trimmed.match(/^(.+?)\{([\d,\-\s]+)\}$/);
+        if (braceMatch) {
+            return {
+                prefix: braceMatch[1],
+                values: this._expandRangeExpression(braceMatch[2])
+            };
+        }
+        
+        if (/^[\d,\-\s]+$/.test(trimmed)) {
+            return {
+                prefix: defaultPrefix || '',
+                values: this._expandRangeExpression(trimmed)
+            };
+        }
+        
+        const legacyMatch = trimmed.match(/^(.+?)(\d+)-(\d+)$/);
+        if (legacyMatch) {
+            return {
+                prefix: legacyMatch[1],
+                values: this._range(parseInt(legacyMatch[2], 10), parseInt(legacyMatch[3], 10))
+            };
         }
         
         return {
-            prefix: match[1],
-            start: parseInt(match[2], 10),
-            end: parseInt(match[3], 10),
+            prefix: trimmed,
+            values: ['']
         };
+    }
+
+    static _expandRangeExpression(expr) {
+        const values = [];
+        const parts = expr.split(',');
+        for (let part of parts) {
+            part = part.trim();
+            if (part === '') continue;
+            if (part.includes('-')) {
+                const [s, e] = part.split('-').map(n => parseInt(n.trim(), 10));
+                for (let i = s; i <= e; i++) values.push(i);
+            } else {
+                values.push(parseInt(part, 10));
+            }
+        }
+        return values;
+    }
+
+    static _range(start, end) {
+        const values = [];
+        for (let i = start; i <= end; i++) values.push(i);
+        return values;
     }
 
     static processGrid(imagePath, options = {}) {
@@ -413,6 +461,500 @@ class SpriteProcessor {
                 return this.toCanvas(sprite);
         }
     }
+
+    // ─── DEBUG: GRID DE SPRITES ──────────────────────────────────────────────
+    // Abre un overlay mostrando todos los sprites cargados en el SpriteManager,
+    // agrupados por grupo de animación y con sus nombres visibles.
+    // Se activa con tecla D (solo si existe window.spriteManager)
+
+    static _debugOverlay = null;
+    static _previewData = null;   // { texture, name, info, frames? }
+    static _previewMode = null;   // 'sprite' | 'anim'
+    static _previewAngle = 0;
+    static _animPlaying = false;
+    static _animFrame = 0;
+    static _animSpeed = 5;
+    static _animLooping = true;
+    static _animRAF = null;
+    static _previewCanvas = null;
+    static _previewCtx = null;
+    static _refs = {}; // { previewPanel, previewCanvas, frameLabel, frameSlider, speedLabel, angleLabel }
+
+    static showDebugGrid(manager) {
+        if (this._debugOverlay) { this.hideDebugGrid(); return; }
+
+        this._previewData = null;
+        this._previewMode = null;
+        this._previewAngle = 0;
+        this._animPlaying = false;
+        this._animFrame = 0;
+        this._animSpeed = 5;
+        if (this._animRAF) { cancelAnimationFrame(this._animRAF); this._animRAF = null; }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'sprite-debug-overlay';
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,10,20,0.95);z-index:99999;';
+
+        // ── Layout: left column (grid) + right column (preview) ──────────
+        const leftCol = document.createElement('div');
+        leftCol.style.cssText = 'position:absolute;left:0;top:0;right:340px;bottom:0;overflow-y:auto;padding:48px 16px 20px;';
+        overlay.appendChild(leftCol);
+
+        const rightCol = document.createElement('div');
+        rightCol.id = 'sprite-preview-panel';
+        rightCol.style.cssText = [
+            'position:fixed;right:0;top:0;width:340px;height:100%;',
+            'background:rgba(0,0,0,0.85);border-left:1px solid rgba(78,204,163,0.3);',
+            'padding:16px;overflow-y:auto;display:none;',
+        ].join('');
+        overlay.appendChild(rightCol);
+        this._refs.previewPanel = rightCol;
+
+        // ── Título ───────────────────────────────────────────────────────
+        const title = document.createElement('h1');
+        title.style.cssText = 'color:#4ecca3;font:bold 18px monospace;text-align:center;margin:0 0 6px;';
+        title.textContent = 'Sprite Debug Grid  ·  [D] Cerrar';
+        leftCol.appendChild(title);
+
+        // ── Cerrar sesión ────────────────────────────────────────────────
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '✕';
+        closeBtn.style.cssText = [
+            'position:fixed;top:10px;right:352px;background:#e94560;color:#fff;',
+            'border:none;width:32px;height:32px;border-radius:50%;',
+            'font:bold 16px monospace;cursor:pointer;z-index:100000;',
+            'display:flex;align-items:center;justify-content:center;',
+        ].join('');
+        closeBtn.onclick = () => this.hideDebugGrid();
+        overlay.appendChild(closeBtn);
+
+        // ── Teclas ───────────────────────────────────────────────────────
+        const onKey = (e) => {
+            if (e.key === 'Escape' || e.key === 'd' || e.key === 'D') {
+                this.hideDebugGrid();
+                document.removeEventListener('keydown', onKey);
+            }
+        };
+        document.addEventListener('keydown', onKey);
+
+        // ── Recopilar sprites ────────────────────────────────────────────
+        let allSprites = [];
+        for (const sprites of Object.values(manager.sprites)) {
+            allSprites = Object.entries(sprites);
+            break;
+        }
+        allSprites.sort((a, b) => {
+            const na = parseInt(a[0].replace(/\D/g, '')) || 0;
+            const nb = parseInt(b[0].replace(/\D/g, '')) || 0;
+            return na - nb;
+        });
+
+        // ── Grid de sprites raw ──────────────────────────────────────────
+        const rawHeader = document.createElement('h2');
+        rawHeader.style.cssText = 'color:#ffe97d;font:bold 13px monospace;margin:8px 0 4px;';
+        rawHeader.textContent = `Sprites Raw (${allSprites.length} total)`;
+        leftCol.appendChild(rawHeader);
+
+        const rawGrid = document.createElement('div');
+        rawGrid.style.cssText = 'display:flex;flex-wrap:wrap;gap:3px;margin-bottom:16px;';
+        for (const [name, sprite] of allSprites) {
+            const cell = this._debugCell(rawGrid, sprite.texture, name, '#aaa');
+            cell.addEventListener('click', () => this._previewSprite(sprite.texture, name, null));
+        }
+        leftCol.appendChild(rawGrid);
+
+        // ── Animaciones por grupo ────────────────────────────────────────
+        const animHeader = document.createElement('h2');
+        animHeader.style.cssText = 'color:#4ecca3;font:bold 13px monospace;margin:12px 0 4px;';
+        animHeader.textContent = 'Animaciones por Grupo';
+        leftCol.appendChild(animHeader);
+
+        for (const [groupName, anims] of Object.entries(manager.animations)) {
+            const groupLabel = document.createElement('h3');
+            groupLabel.style.cssText = 'color:#fff;font:bold 11px monospace;margin:6px 0 3px;';
+            groupLabel.textContent = `Grupo: ${groupName}`;
+            leftCol.appendChild(groupLabel);
+
+            const animGrid = document.createElement('div');
+            animGrid.style.cssText = 'display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;';
+
+            for (const [animName, anim] of Object.entries(anims)) {
+                const firstFrame = anim.frames?.[0];
+                if (!firstFrame) continue;
+
+                const cell = document.createElement('div');
+                cell.style.cssText = [
+                    'width:72px;text-align:center;background:rgba(78,204,163,0.08);',
+                    'border-radius:4px;padding:2px;border:1px solid rgba(78,204,163,0.2);',
+                    'cursor:pointer;transition:background 0.15s;',
+                ].join('');
+                cell.onmouseenter = () => { cell.style.background = 'rgba(78,204,163,0.2)'; };
+                cell.onmouseleave = () => { cell.style.background = 'rgba(78,204,163,0.08)'; };
+
+                const img = document.createElement('canvas');
+                img.width = 64; img.height = 64;
+                img.getContext('2d').drawImage(firstFrame, 0, 0);
+                img.style.cssText = 'width:56px;height:56px;image-rendering:pixelated;display:block;margin:0 auto;';
+                img.draggable = false;
+
+                const label = document.createElement('div');
+                label.style.cssText = 'color:#4ecca3;font:8px monospace;text-align:center;margin-top:1px;';
+                label.textContent = `${animName} (${anim.frames.length}f)`;
+
+                cell.appendChild(img);
+                cell.appendChild(label);
+
+                cell.addEventListener('click', () => {
+                    this._previewAnim(anim, animName, groupName);
+                });
+
+                animGrid.appendChild(cell);
+            }
+            leftCol.appendChild(animGrid);
+        }
+
+        // ── Preview panel interno ────────────────────────────────────────
+        this._buildPreviewPanel(rightCol);
+
+        // ── Cerrar al hacer clic fuera ───────────────────────────────────
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) this.hideDebugGrid();
+        });
+
+        document.body.appendChild(overlay);
+        this._debugOverlay = overlay;
+    }
+
+    /** Construye el contenido del panel de vista previa */
+    static _buildPreviewPanel(panel) {
+        panel.innerHTML = '';
+
+        // Canvas grande
+        const cv = document.createElement('canvas');
+        cv.width = 256; cv.height = 256;
+        cv.style.cssText = [
+            'width:256px;height:256px;display:block;margin:8px auto;',
+            'image-rendering:pixelated;background:#111;border-radius:8px;',
+        ].join('');
+        panel.appendChild(cv);
+        this._previewCanvas = cv;
+        this._previewCtx = cv.getContext('2d');
+
+        // Info label
+        const infoLabel = document.createElement('p');
+        infoLabel.style.cssText = 'color:#ffe97d;font:bold 11px monospace;text-align:center;margin:4px 0 2px;';
+        infoLabel.id = 'sprite-preview-name';
+        infoLabel.textContent = 'Selecciona un sprite';
+        panel.appendChild(infoLabel);
+        this._refs.infoLabel = infoLabel;
+
+        // Dimensiones
+        const dimLabel = document.createElement('p');
+        dimLabel.style.cssText = 'color:#666;font:10px monospace;text-align:center;margin:0 0 6px;';
+        dimLabel.id = 'sprite-preview-dims';
+        panel.appendChild(dimLabel);
+        this._refs.dimLabel = dimLabel;
+
+        // ── Rotación ─────────────────────────────────────────────────────
+        const rotSection = document.createElement('div');
+        rotSection.style.cssText = 'margin:6px 0;';
+
+        const rotHeader = document.createElement('p');
+        rotHeader.style.cssText = 'color:#aaa;font:10px monospace;margin:0 0 2px;';
+        rotHeader.textContent = 'Rotación';
+        rotSection.appendChild(rotHeader);
+
+        const rotSlider = document.createElement('input');
+        rotSlider.type = 'range';
+        rotSlider.min = 0; rotSlider.max = 360; rotSlider.value = 0;
+        rotSlider.style.cssText = 'width:100%;height:4px;cursor:pointer;accent-color:#4ecca3;';
+        rotSlider.addEventListener('input', () => {
+            this._previewAngle = parseFloat(rotSlider.value);
+            this._refs.angleLabel.textContent = `${rotSlider.value}°`;
+            this._renderPreview();
+        });
+        rotSection.appendChild(rotSlider);
+
+        const angleLabel = document.createElement('span');
+        angleLabel.style.cssText = 'color:#4ecca3;font:10px monospace;margin-left:4px;';
+        angleLabel.textContent = '0°';
+        rotSection.appendChild(angleLabel);
+        this._refs.angleLabel = angleLabel;
+
+        panel.appendChild(rotSection);
+
+        // ── Animación ────────────────────────────────────────────────────
+        const animSection = document.createElement('div');
+        animSection.id = 'sprite-anim-controls';
+        animSection.style.cssText = 'margin:6px 0;display:none;';
+
+        const animHeader = document.createElement('p');
+        animHeader.style.cssText = 'color:#aaa;font:10px monospace;margin:0 0 2px;';
+        animHeader.textContent = 'Animación';
+        animSection.appendChild(animHeader);
+
+        // Play/Pause + frame counter
+        const animRow = document.createElement('div');
+        animRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin:2px 0;';
+
+        const playBtn = document.createElement('button');
+        playBtn.textContent = '▶';
+        playBtn.style.cssText = [
+            'background:rgba(78,204,163,0.2);border:1px solid #4ecca3;color:#4ecca3;',
+            'border-radius:4px;padding:2px 10px;font:12px monospace;cursor:pointer;',
+        ].join('');
+        playBtn.onclick = () => {
+            this._animPlaying = !this._animPlaying;
+            playBtn.textContent = this._animPlaying ? '⏸' : '▶';
+            if (this._animPlaying) this._animLoop();
+        };
+        animSection.appendChild(playBtn);
+        this._refs.playBtn = playBtn;
+
+        const frameLabel = document.createElement('span');
+        frameLabel.style.cssText = 'color:#fff;font:10px monospace;margin:0 4px;';
+        frameLabel.textContent = 'Frame 0/0';
+        animRow.appendChild(frameLabel);
+        this._refs.frameLabel = frameLabel;
+
+        animSection.appendChild(animRow);
+
+        // Frame slider
+        const frameSlider = document.createElement('input');
+        frameSlider.type = 'range';
+        frameSlider.min = 0; frameSlider.max = 0; frameSlider.value = 0;
+        frameSlider.style.cssText = 'width:100%;height:4px;cursor:pointer;accent-color:#4ecca3;';
+        frameSlider.addEventListener('input', () => {
+            if (!this._previewData?.frames) return;
+            this._animFrame = parseInt(frameSlider.value);
+            this._refs.frameLabel.textContent = `Frame ${this._animFrame + 1}/${this._previewData.frames.length}`;
+            this._renderPreview();
+        });
+        animSection.appendChild(frameSlider);
+        this._refs.frameSlider = frameSlider;
+
+        // Speed slider
+        const speedRow = document.createElement('div');
+        speedRow.style.cssText = 'display:flex;align-items:center;gap:4px;margin:2px 0;';
+
+        const speedLabel = document.createElement('span');
+        speedLabel.style.cssText = 'color:#888;font:9px monospace;';
+        speedLabel.textContent = 'Vel:';
+        speedRow.appendChild(speedLabel);
+
+        const speedSlider = document.createElement('input');
+        speedSlider.type = 'range';
+        speedSlider.min = 1; speedSlider.max = 20; speedSlider.value = 5;
+        speedSlider.style.cssText = 'flex:1;height:4px;cursor:pointer;accent-color:#4ecca3;';
+        speedSlider.addEventListener('input', () => {
+            this._animSpeed = parseInt(speedSlider.value);
+            this._refs.speedVal.textContent = `${speedSlider.value} fps`;
+        });
+        speedRow.appendChild(speedSlider);
+
+        const speedVal = document.createElement('span');
+        speedVal.style.cssText = 'color:#4ecca3;font:9px monospace;';
+        speedVal.textContent = '5 fps';
+        speedRow.appendChild(speedVal);
+        this._refs.speedVal = speedVal;
+
+        animSection.appendChild(speedRow);
+
+        // Loop toggle
+        const loopRow = document.createElement('div');
+        loopRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin:4px 0;';
+
+        const loopCheck = document.createElement('input');
+        loopCheck.type = 'checkbox';
+        loopCheck.checked = true;
+        loopCheck.style.cssText = 'accent-color:#4ecca3;cursor:pointer;';
+        loopCheck.addEventListener('change', () => {
+            this._animLooping = loopCheck.checked;
+            loopStatus.textContent = loopCheck.checked ? 'Bucle infinito' : 'Estado sin bucle (se detiene al final)';
+        });
+        loopRow.appendChild(loopCheck);
+
+        const loopStatus = document.createElement('span');
+        loopStatus.style.cssText = 'color:#4ecca3;font:9px monospace;';
+        loopStatus.textContent = 'Bucle infinito';
+        loopRow.appendChild(loopStatus);
+
+        animSection.appendChild(loopRow);
+
+        panel.appendChild(animSection);
+        this._refs.animSection = animSection;
+        this._refs.loopCheck = loopCheck;
+        this._refs.loopStatus = loopStatus;
+
+        // Texto de ayuda inicial
+        const hint = document.createElement('p');
+        hint.style.cssText = 'color:#555;font:10px monospace;text-align:center;margin-top:12px;';
+        hint.textContent = 'Haz clic en cualquier sprite o animación de la cuadrícula para previsualizarlo';
+        panel.appendChild(hint);
+    }
+
+    /** Muestra un sprite individual en el preview */
+    static _previewSprite(texture, name, dims) {
+        this._previewData = { texture, name, info: dims };
+        this._previewMode = 'sprite';
+        this._previewAngle = this._previewAngle || 0;
+        this._animPlaying = false;
+        if (this._animRAF) { cancelAnimationFrame(this._animRAF); this._animRAF = null; }
+
+        // Ocultar controles de animación
+        this._refs.animSection.style.display = 'none';
+
+        this._refs.infoLabel.textContent = name;
+        this._refs.dimLabel.textContent = dims ? `${dims.w}×${dims.h}` : '';
+        this._refs.previewPanel.style.display = 'block';
+        this._refs.angleLabel.textContent = `${this._previewAngle}°`;
+
+        this._renderPreview();
+    }
+
+    /** Muestra una animación en el preview */
+    static _previewAnim(anim, name, group) {
+        this._previewData = { frames: anim.frames, name, group };
+        this._previewMode = 'anim';
+        this._previewAngle = this._previewAngle || 0;
+        this._animFrame = 0;
+        this._animPlaying = false;
+        this._animLooping = true;
+        if (this._animRAF) { cancelAnimationFrame(this._animRAF); this._animRAF = null; }
+
+        // Mostrar controles de animación
+        this._refs.animSection.style.display = 'block';
+        this._refs.playBtn.textContent = '▶';
+        this._refs.frameSlider.max = anim.frames.length - 1;
+        this._refs.frameSlider.value = 0;
+        this._refs.frameLabel.textContent = `Frame 1/${anim.frames.length}`;
+        if (this._refs.loopCheck) {
+            this._refs.loopCheck.checked = true;
+            this._refs.loopStatus.textContent = 'Bucle infinito';
+        }
+
+        this._refs.infoLabel.textContent = `${group} › ${name}`;
+        this._refs.dimLabel.textContent = `${anim.frames.length} frames`;
+        this._refs.previewPanel.style.display = 'block';
+        this._refs.angleLabel.textContent = `${this._previewAngle}°`;
+
+        this._renderPreview();
+    }
+
+    /** Renderiza el preview actual con rotación */
+    static _renderPreview() {
+        const ctx = this._previewCtx;
+        const cv = this._previewCanvas;
+        if (!ctx || !cv) return;
+        const size = 256;
+
+        ctx.clearRect(0, 0, size, size);
+
+        // Obtener textura
+        let tex = null;
+        if (this._previewMode === 'sprite' && this._previewData?.texture) {
+            tex = this._previewData.texture;
+        } else if (this._previewMode === 'anim' && this._previewData?.frames?.length) {
+            tex = this._previewData.frames[this._animFrame] || this._previewData.frames[0];
+        }
+        if (!tex) return;
+
+        ctx.save();
+        ctx.translate(size / 2, size / 2);
+        ctx.rotate(this._previewAngle * Math.PI / 180);
+        const s = Math.min(size / tex.width, size / tex.height) * 0.85;
+        ctx.drawImage(tex, -tex.width * s / 2, -tex.height * s / 2, tex.width * s, tex.height * s);
+
+        // Ejes de referencia (si hay rotación)
+        if (this._previewAngle !== 0) {
+            ctx.strokeStyle = 'rgba(78,204,163,0.2)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(-size / 2, 0);
+            ctx.lineTo(size / 2, 0);
+            ctx.moveTo(0, -size / 2);
+            ctx.lineTo(0, size / 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        ctx.restore();
+    }
+
+    /** Bucle de animación */
+    static _animLoop() {
+        if (!this._animPlaying || !this._previewData?.frames) return;
+        const fps = this._animSpeed || 5;
+        this._animRAF = setTimeout(() => {
+            if (!this._animPlaying) return;
+            const next = this._animFrame + 1;
+            if (next >= this._previewData.frames.length) {
+                if (this._animLooping) {
+                    this._animFrame = 0;
+                } else {
+                    this._animPlaying = false;
+                    if (this._refs.playBtn) this._refs.playBtn.textContent = '▶';
+                    return;
+                }
+            } else {
+                this._animFrame = next;
+            }
+            this._refs.frameSlider.value = this._animFrame;
+            this._refs.frameLabel.textContent = `Frame ${this._animFrame + 1}/${this._previewData.frames.length}`;
+            this._renderPreview();
+            this._animLoop();
+        }, 1000 / fps);
+    }
+
+    static hideDebugGrid() {
+        if (this._animRAF) {
+            if (typeof this._animRAF === 'number') cancelAnimationFrame(this._animRAF);
+            else clearTimeout(this._animRAF);
+            this._animRAF = null;
+        }
+        this._animPlaying = false;
+        this._previewData = null;
+        this._previewMode = null;
+        if (this._debugOverlay) {
+            this._debugOverlay.remove();
+            this._debugOverlay = null;
+        }
+    }
+
+    static toggleDebugGrid(manager) {
+        if (this._debugOverlay) {
+            this.hideDebugGrid();
+        } else if (manager) {
+            this.showDebugGrid(manager);
+        }
+    }
+
+    /** Crea una celda individual en la cuadrícula */
+    static _debugCell(parent, texture, label, color = '#aaa') {
+        const cell = document.createElement('div');
+        cell.style.cssText = [
+            'width:66px;text-align:center;background:rgba(255,255,255,0.04);',
+            'border-radius:4px;padding:2px;cursor:pointer;transition:background 0.15s;',
+        ].join('');
+        cell.onmouseenter = () => { cell.style.background = 'rgba(255,255,255,0.12)'; };
+        cell.onmouseleave = () => { cell.style.background = 'rgba(255,255,255,0.04)'; };
+
+        const img = document.createElement('canvas');
+        img.width = 64; img.height = 64;
+        img.getContext('2d').drawImage(texture, 0, 0);
+        img.style.cssText = 'width:56px;height:56px;image-rendering:pixelated;display:block;margin:0 auto;';
+        img.draggable = false;
+
+        const lbl = document.createElement('div');
+        lbl.style.cssText = `color:${color};font:8px monospace;text-align:center;margin-top:1px;user-select:none;`;
+        lbl.textContent = label;
+
+        cell.appendChild(img);
+        cell.appendChild(lbl);
+        parent.appendChild(cell);
+        return cell;
+    }
 }
 
 class SpriteManager {
@@ -423,6 +965,7 @@ class SpriteManager {
         this.animations = {};
         this.groups = {};
         this.imagePaths = {};
+        this.compositions = {};
         
         SpriteProcessor.setEngineType(this.engineType);
     }
@@ -621,6 +1164,15 @@ class SpriteManager {
         return movieClip;
     }
 
+    compose(entityName, slotDefs) {
+        this.compositions[entityName] = new EntityComposer(this, slotDefs);
+        return this.compositions[entityName];
+    }
+
+    getComposition(name) {
+        return this.compositions[name] || null;
+    }
+
     getEngineType() {
         return this.engineType;
     }
@@ -631,6 +1183,346 @@ class SpriteManager {
     }
 }
 
+class EntityComposer {
+    constructor(manager, slotDefs = {}) {
+        this.manager = manager;
+        this.slots = {};
+        this._animState = {};
+        this._slotAnimations = {};
+        
+        for (const [slotName, def] of Object.entries(slotDefs)) {
+            this.addSlot(slotName, def);
+        }
+    }
+
+    addSlot(name, def) {
+        const { group, sprite, x = 0, y = 0, z = 0, animations = null } = def;
+        this.slots[name] = { group, sprite, x, y, z };
+
+        if (animations) {
+            this._slotAnimations[name] = {};
+            const sprites = this.manager.getAllSprites(group);
+            for (const [animName, animConfig] of Object.entries(animations)) {
+                if (typeof animConfig === 'string') {
+                    const resolved = SpriteProcessor._parseFrameRange(animConfig, animName);
+                    const frameList = resolved.values.map(i => `${resolved.prefix}${i}`);
+                    this._slotAnimations[name][animName] =
+                        SpriteProcessor.createAnimation(sprites, frameList, { speed: 10, loop: true });
+                } else {
+                    const { frames, speed, loop } = animConfig;
+                    let frameList;
+                    if (typeof frames === 'string') {
+                        const resolved = SpriteProcessor._parseFrameRange(frames, animName);
+                        frameList = resolved.values.map(i => `${resolved.prefix}${i}`);
+                    } else {
+                        frameList = frames;
+                    }
+                    this._slotAnimations[name][animName] =
+                        SpriteProcessor.createAnimation(sprites, frameList, { speed, loop: loop !== false });
+                }
+            }
+        }
+
+        return this;
+    }
+
+    setAnimation(slotName, animName) {
+        this._animState[slotName] = animName;
+        return this;
+    }
+
+    setAnimations(animMap) {
+        for (const [slot, anim] of Object.entries(animMap)) {
+            this.setAnimation(slot, anim);
+        }
+        return this;
+    }
+
+    getTexture(slotName) {
+        const slot = this.slots[slotName];
+        if (!slot) return null;
+
+        const animName = this._animState[slotName];
+        if (animName && this._slotAnimations[slotName] && this._slotAnimations[slotName][animName]) {
+            return this._slotAnimations[slotName][animName].getTexture();
+        }
+
+        const sprite = this.manager.getSprite(slot.group, slot.sprite);
+        return sprite ? sprite.texture : null;
+    }
+
+    getSprite(slotName) {
+        const slot = this.slots[slotName];
+        if (!slot) return null;
+
+        const animName = this._animState[slotName];
+        if (animName && this._slotAnimations[slotName] && this._slotAnimations[slotName][animName]) {
+            return { texture: this._slotAnimations[slotName][animName].getTexture() };
+        }
+
+        return this.manager.getSprite(slot.group, slot.sprite);
+    }
+
+    update(dt) {
+        for (const [slotName, animName] of Object.entries(this._animState)) {
+            const anim = this._slotAnimations[slotName] && this._slotAnimations[slotName][animName];
+            if (anim) anim.update(dt);
+        }
+    }
+
+    render(ctx, x, y) {
+        const sorted = Object.entries(this.slots).sort((a, b) => a[1].z - b[1].z);
+        for (const [slotName, slot] of sorted) {
+            const texture = this.getTexture(slotName);
+            if (texture) {
+                ctx.drawImage(texture, x + slot.x, y + slot.y);
+            }
+        }
+    }
+
+    toPIXI() {
+        if (typeof PIXI === 'undefined') throw new Error('PIXI is not available');
+        const container = new PIXI.Container();
+        const sorted = Object.entries(this.slots).sort((a, b) => a[1].z - b[1].z);
+        for (const [, slot] of sorted) {
+            const sprite = this.manager.getSprite(slot.group, slot.sprite);
+            if (sprite) {
+                const pixiSprite = SpriteProcessor.toPIXI(sprite);
+                pixiSprite.x = slot.x;
+                pixiSprite.y = slot.y;
+                container.addChild(pixiSprite);
+            }
+        }
+        return container;
+    }
+
+    toDOM() {
+        const container = document.createElement('div');
+        container.style.position = 'relative';
+        const sorted = Object.entries(this.slots).sort((a, b) => a[1].z - b[1].z);
+        for (const [, slot] of sorted) {
+            const sprite = this.manager.getSprite(slot.group, slot.sprite);
+            if (sprite) {
+                const el = SpriteProcessor.createDOMElement(sprite);
+                el.style.position = 'absolute';
+                el.style.left = `${slot.x}px`;
+                el.style.top = `${slot.y}px`;
+                container.appendChild(el);
+            }
+        }
+        return container;
+    }
+
+    getSlotNames() {
+        return Object.keys(this.slots);
+    }
+
+    getSlot(slotName) {
+        return this.slots[slotName] || null;
+    }
+
+    getAnimations(slotName) {
+        return this._slotAnimations[slotName] || null;
+    }
+
+    getCurrentAnimation(slotName) {
+        return this._animState[slotName] || null;
+    }
+}
+
+// ─── SISTEMA DE ESTADOS ──────────────────────────────────────────────────────
+// Define estados con animaciones (looping o no-looping) y transiciones automáticas.
+// Un estado sin loop reproduce la animación una vez y se detiene en el último frame.
+// Si tiene nextState, transiciona automáticamente al terminar.
+// Útil para proyectiles, explosiones, animaciones de muerte, etc.
+
+/**
+ * Un estado individual dentro de una máquina de estados.
+ * Cada estado tiene su propia animación (frames + velocidad) y comportamiento.
+ */
+class SpriteState {
+    /**
+     * @param {object} config
+     * @param {string}  config.name
+     * @param {Array<HTMLCanvasElement>} config.frames  - Texturas (canvas) de cada frame
+     * @param {number}  [config.speed=10]               - FPS de la animación
+     * @param {boolean} [config.loop=true]              - true: bucle infinito, false: una vez
+     * @param {string}  [config.nextState=null]          - Estado al que transicionar al terminar
+     * @param {function} [config.onEnter=null]           - callback(entity) al entrar
+     * @param {function} [config.onUpdate=null]          - callback(entity, dt) cada frame
+     * @param {function} [config.onExit=null]            - callback(entity) al salir
+     * @param {function} [config.onComplete=null]        - callback(entity) cuando la animación termina (solo no-loop)
+     */
+    constructor(config) {
+        this.name = config.name;
+        this.frames = config.frames || [];
+        this.speed = config.speed || 10;
+        this.loop = config.loop !== false;
+        this.nextState = config.nextState || null;
+        this.onEnter = config.onEnter || null;
+        this.onUpdate = config.onUpdate || null;
+        this.onExit = config.onExit || null;
+        this.onComplete = config.onComplete || null;
+
+        this.currentFrame = 0;
+        this.elapsed = 0;
+        this.completed = false;
+    }
+
+    reset() {
+        this.currentFrame = 0;
+        this.elapsed = 0;
+        this.completed = false;
+    }
+
+    /**
+     * @param {number} dt - Delta time en segundos
+     */
+    update(dt) {
+        if (this.completed && !this.loop) return;
+        this.elapsed += dt;
+        const frameDuration = 1 / this.speed;
+        while (this.elapsed >= frameDuration) {
+            this.elapsed -= frameDuration;
+            this.currentFrame++;
+            if (this.currentFrame >= this.frames.length) {
+                if (this.loop) {
+                    this.currentFrame = 0;
+                } else {
+                    this.currentFrame = this.frames.length - 1;
+                    this.completed = true;
+                    if (this.onComplete) this.onComplete();
+                }
+            }
+        }
+    }
+
+    getTexture() {
+        return this.frames[this.currentFrame] || null;
+    }
+
+    get progress() {
+        if (this.frames.length <= 1) return 1;
+        return this.currentFrame / (this.frames.length - 1);
+    }
+}
+
+/**
+ * Máquina de estados para entidades con sprites.
+ * Administra transiciones entre estados y actualiza la animación activa.
+ *
+ * Ejemplo:
+ * ```js
+ * const fsm = new SpriteStateMachine(projectile, {
+ *   fly:  { frames: arrowFrames, loop: true },
+ *   hit:  { frames: explosionFrames, loop: false, nextState: 'done' },
+ *   done: { frames: [blank], loop: false },
+ * });
+ * fsm.setState('fly');
+ * ```
+ */
+class SpriteStateMachine {
+    /**
+     * @param {object} owner - Entidad dueña de la máquina (proyectil, enemigo, etc.)
+     * @param {object<string,object>} states - Mapa nombre → config de SpriteState
+     * @param {string} [initialState=null] - Estado inicial
+     */
+    constructor(owner, states = {}, initialState = null) {
+        this.owner = owner;
+        this.states = {};
+        this.currentStateName = null;
+        this.currentState = null;
+        this.prevStateName = null;
+        this.stateTime = 0;
+
+        for (const [name, config] of Object.entries(states)) {
+            this.addState(name, config);
+        }
+
+        if (initialState && this.states[initialState]) {
+            this.setState(initialState);
+        }
+    }
+
+    /**
+     * Agrega o reemplaza un estado.
+     * @param {string} name
+     * @param {object} config - Misma estructura que SpriteState constructor
+     */
+    addState(name, config) {
+        this.states[name] = new SpriteState({ name, ...config });
+    }
+
+    /**
+     * Cambia al estado indicado.
+     * @param {string} name
+     */
+    setState(name) {
+        const st = this.states[name];
+        if (!st) {
+            console.warn(`[SpriteStateMachine] Estado "${name}" no encontrado`);
+            return;
+        }
+        if (this.currentState && this.currentState.onExit) {
+            this.currentState.onExit(this.owner);
+        }
+        this.prevStateName = this.currentStateName;
+        this.currentStateName = name;
+        this.currentState = st;
+        this.currentState.reset();
+        this.stateTime = 0;
+        if (this.currentState.onEnter) {
+            this.currentState.onEnter(this.owner);
+        }
+    }
+
+    /**
+     * @param {number} dt - Delta time en segundos
+     */
+    update(dt) {
+        if (!this.currentState) return;
+        this.stateTime += dt;
+        this.currentState.update(dt);
+        if (this.currentState.onUpdate) {
+            this.currentState.onUpdate(this.owner, dt);
+        }
+        if (this.currentState.completed && this.currentState.nextState) {
+            this.setState(this.currentState.nextState);
+        }
+    }
+
+    /** @returns {HTMLCanvasElement|null} Textura del frame actual */
+    getTexture() {
+        return this.currentState?.getTexture() || null;
+    }
+
+    /** @returns {number} Progreso del estado actual (0-1) */
+    get progress() {
+        return this.currentState?.progress || 0;
+    }
+
+    /** ¿La animación del estado actual terminó? */
+    get completed() {
+        return this.currentState?.completed || false;
+    }
+
+    /** Tiempo en segundos desde que se entró al estado actual */
+    get elapsed() {
+        return this.stateTime;
+    }
+}
+
+// Al cargar el script, agrega listener global para tecla D
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'd' || e.key === 'D') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const mgr = window.spriteManager || (window.game?.spriteManager);
+        if (mgr) {
+            e.preventDefault();
+            SpriteProcessor.toggleDebugGrid(mgr);
+        }
+    }
+});
+
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SpriteProcessor, SpriteManager };
+    module.exports = { SpriteProcessor, SpriteManager, EntityComposer, SpriteState, SpriteStateMachine };
 }

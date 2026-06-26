@@ -4,6 +4,8 @@
 		"serve": "^14.2.6"
 	},
 	"scripts": {
-		"start": "serve ."
+		"start": "serve .",
+		"editor": "pnpm --dir editor dev",
+		"editor:build": "pnpm --dir editor build"
 	}
 }
