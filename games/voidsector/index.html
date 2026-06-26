@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Void Sector</title>
+    <meta property="og:title" content="Void Sector" />
+    <meta property="og:description" content="Space shooter con 1v1 y Co-op online" />
+    <meta property="og:image" content="og-image.svg" />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="canvas"></canvas>
+        <button id="back-btn" onclick="location.href='../../'">← Salir</button>
+
+        <!-- Mobile skill buttons (right side) -->
+        <div id="mobile-skills" class="hidden">
+            <div id="btn-bomb"   class="skill-btn inactive" style="--skill-color:#f44" data-skill="bomb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m4.93 19.07 1.41-1.41"></path><path d="m17.66 6.34 1.41-1.41"></path></svg><span class="skill-label">BOMBA</span></div>
+            <div id="btn-shield" class="skill-btn inactive" style="--skill-color:#0f0" data-skill="shield"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path></svg><span class="skill-label">ESCUDO</span></div>
+            <div id="btn-fire"   class="skill-btn active"   style="--skill-color:#0ff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg><span class="skill-label">FUEGO</span></div>
+        </div>
+
+        <!-- Mobile joystick (left side) -->
+        <div id="mobile-joystick-zone" class="hidden">
+             <div id="mobile-joystick-base"><div id="mobile-joystick-knob"></div></div>
+        </div>
+    </div>
+
+    <!-- Online UI (oculto por defecto) -->
+    <div id="online-ui" class="hidden">
+        <div id="online-panel">
+            <h2 id="online-title">Multijugador</h2>
+            <p id="online-status"></p>
+
+            <!-- Mode tabs: 1v1 / Co-op -->
+            <div id="online-mode-tabs">
+                <button class="mode-tab selected" id="tab-1v1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 21l2-2"></path><path d="M14.5 6.5L18 3h3v3l-3.5 3.5"></path><path d="M19 5l-6 6"></path><path d="M16 8l-4-4"></path><path d="M5 19l2-2"></path></svg> 1v1</button>
+                <button class="mode-tab coop"     id="tab-coop"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Co-op</button>
+            </div>
+
+            <!-- Crear sala — always visible -->
+            <button id="host-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"></path><path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h4"></path><path d="M2 18h4"></path><rect x="14" y="2" width="8" height="8" rx="2" ry="2"></rect><path d="M18 14v4"></path><path d="M18 22v-4"></path><path d="M14 18h8"></path></svg> Crear sala</button>
+
+            <!-- Code display — appears after hosting -->
+            <div id="host-view" class="hidden">
+                <p style="font-size:12px;color:#8ae">Comparte este código:</p>
+                <div id="room-code-display">------</div>
+                <button id="copy-btn">Copiar código</button>
+            </div>
+
+            <!-- Join section -->
+            <div id="join-view">
+                <input id="room-code-input" maxlength="6" placeholder="CÓDIGO" autocomplete="off" />
+                <button id="join-btn">Unirse</button>
+            </div>
+
+            <button id="online-back-btn">← Volver</button>
+        </div>
+    </div>
+
+    <script src="../../engine/engine.js"></script>
+    <script src="../../engine/input.js"></script>
+    <script src="../../engine/audio.js"></script>
+    <script src="../../engine/peerjs.min.js"></script>
+    <script src="../../engine/online.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

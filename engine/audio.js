@@ -16,24 +16,32 @@ class Audio {
 		.then(b => { this._buffers[name] = b; });
 	}
 	
-	static synth(name, type, freq, dur, vol = 0.3, slideFreq = null) {
+	static synth(opts) {
+		const { type = 'sine', freq = 440, duration = 0.1, volume = 0.3 } = opts || {};
+		if (duration <= 0) return;
+		this.resume();
 		const sr = this._ctx.sampleRate;
-		const len = sr * dur;
+		const len = Math.ceil(sr * duration);
 		const buf = this._ctx.createBuffer(1, len, sr);
 		const d = buf.getChannelData(0);
 		for (let i = 0; i < len; i++) {
 			const t = i / sr;
-			const f = slideFreq ? freq + (slideFreq - freq) * (t / dur) : freq;
 			let v = 0;
-			if (type === 'square') v = Math.sign(Math.sin(2 * Math.PI * f * t));
-			else if (type === 'sine') v = Math.sin(2 * Math.PI * f * t);
-			else if (type === 'saw') v = 2 * (f * t - Math.floor(f * t + 0.5));
+			if (type === 'square') v = Math.sign(Math.sin(2 * Math.PI * freq * t));
+			else if (type === 'sine') v = Math.sin(2 * Math.PI * freq * t);
+			else if (type === 'saw') v = 2 * (freq * t - Math.floor(freq * t + 0.5));
 			else if (type === 'noise') v = Math.random() * 2 - 1;
-			else v = Math.sin(2 * Math.PI * f * t);
-			const env = Math.min(1, 2 * t / dur, 2 * (dur - t) / dur);
-			d[i] = v * vol * Math.max(0, env);
+			else v = Math.sin(2 * Math.PI * freq * t);
+			const env = Math.min(1, 2 * t / duration, 2 * (duration - t) / duration);
+			d[i] = v * volume * Math.max(0, env);
 		}
-		this._buffers[name] = buf;
+		const s = this._ctx.createBufferSource();
+		s.buffer = buf;
+		const g = this._ctx.createGain();
+		g.gain.value = 1;
+		s.connect(g);
+		g.connect(this._ctx.destination);
+		s.start();
 	}
 	
 	static play(name, vol = 1, loop = false) {

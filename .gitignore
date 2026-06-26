@@ -44,8 +44,14 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+#Discarted Games
+discard_games/
+
 # Game ideas Logic & DOM
 idea.txt
 websockets.txt
 ideadom.txt
 ideadom-websockets.txt
+
+# Skill propia
+SKILL.md
