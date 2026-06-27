@@ -13,7 +13,7 @@ const gamesDir = join(root, 'games');
 
 /** Manifest de caché offline — fuente única para sw.js y main.js */
 const cacheConfig = {
-	name: 'js-games-v2',
+	name: 'js-games-v3',
 	hubPrecache: [
 		'./',
 		'./index.html',
@@ -31,10 +31,41 @@ const cacheConfig = {
 	],
 	gameBaseFiles: ['index.html', 'style.css', 'script.js'],
 	alwaysInclude: ['engine/game-shell.css'],
-	legacyCaches: ['js-games-v1'],
+	legacyCaches: ['js-games-v1', 'js-games-v2'],
 };
 
 const meta = {
+	domino: {
+		title: 'Domino',
+		description: '4-player online dominoes game',
+		color: '#1a1a2e',
+		tags: ['Multijugador', 'Online', 'Clásico'],
+		extraCacheFiles: ['games/domino/words.js'],
+	},
+	pacman: {
+		title: 'Pac-Man',
+		description: 'Classic maze chase - eat dots and avoid ghosts',
+		color: '#1a1a2e',
+		tags: ['Arcade', 'Clásico', 'Laberinto'],
+	},
+	spaceinvaders: {
+		title: 'Space Invaders',
+		description: 'Defend Earth from alien invaders',
+		color: '#1a1a2e',
+		tags: ['Arcade', 'Clásico', 'Disparos'],
+	},
+	voidsector: {
+		title: 'Void Sector',
+		description: 'Space combat game with online multiplayer',
+		color: '#1a1a2e',
+		tags: ['Arcade', 'Espacio', 'Multijugador'],
+	},
+	playeranimation: {
+		title: 'Player Animation',
+		description: 'Test sprite animations with PIXI.js',
+		color: '#1a1a2e',
+		tags: ['Sprites', 'Animaciones', 'PixieJS'],
+	},
 	tictactoe: {
 		title: 'Gato - Ateti',
 		description: 'Classic 3-in-a-row against AI',

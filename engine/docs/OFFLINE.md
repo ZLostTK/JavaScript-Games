@@ -24,7 +24,7 @@ main.js             ← botón descargar / eliminar / actualizar
 scan-games.js       ← genera games.json y detecta deps desde index.html
 ```
 
-Nombre de caché activa: **`js-games-v2`** (definido en `games.json → cache.name`).
+Nombre de caché activa: **`js-games-v3`** (definido en `games.json → cache.name`).
 
 ---
 
@@ -45,7 +45,7 @@ Equilibrar **actualizaciones rápidas online** con **juego offline** fiable.
 
 Ver `sw.js`:
 - `install` → lee `games.json` y precachea `cache.hubPrecache`.
-- `activate` → migra entradas de `js-games-v1` a `js-games-v2` y borra cachés legacy.
+- `activate` → migra entradas de `js-games-v1`/`js-games-v2` a `js-games-v3` y borra cachés legacy.
 - `fetch` → enruta según tipo de recurso.
 
 ---
@@ -105,7 +105,7 @@ node scripts/scan-games.js
 ```json
 {
   "cache": {
-    "name": "js-games-v2",
+    "name": "js-games-v3",
     "hubPrecache": ["./index.html", "./engine/theme.js", "..."],
     "gameBaseFiles": ["index.html", "style.css", "script.js"],
     "alwaysInclude": ["engine/game-shell.css"],
@@ -125,14 +125,14 @@ node scripts/scan-games.js
 
 ---
 
-## Migración de caché v1 → v2
+## Migración de caché v1 → v2 → v3
 
 ### ¿Por qué?
-La arquitectura del engine añadió módulos compartidos (`render-bridge.js`, `game-boot.js`, `game-shell.css`, etc.). Los juegos descargados con v1 no los incluían.
+La caché v3 añadió `game-boot.js`, `game-shell.css`, `sprite-processor.js`, y actualizó el nombre a `js-games-v3` con migración desde v1/v2.
 
 ### ¿Qué hace el SW al activarse?
-1. Copia todas las entradas de `js-games-v1` a `js-games-v2`.
-2. Elimina `js-games-v1`.
+1. Copia todas las entradas de `js-games-v1` y `js-games-v2` a `js-games-v3`.
+2. Elimina las cachés legacy (`js-games-v1`, `js-games-v2`).
 3. Los juegos ya descargados siguen funcionando; conviene **re-descargar** cada juego para incluir los nuevos módulos del engine.
 
 ---

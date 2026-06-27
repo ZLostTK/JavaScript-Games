@@ -25,7 +25,8 @@
       "engine/game-shell.css"
     ],
     "legacyCaches": [
-      "js-games-v1"
+      "js-games-v1",
+      "js-games-v2"
     ]
   },
   "games": [
@@ -104,12 +105,16 @@
     },
     {
       "id": "domino",
-      "title": "domino",
-      "description": "A JavaScript game",
+      "title": "Domino",
+      "description": "4-player online dominoes game",
       "path": "games/domino/",
       "image": "assets/imgs_games/domino.svg",
       "color": "#1a1a2e",
-      "tags": [],
+      "tags": [
+        "Multijugador",
+        "Online",
+        "Clásico"
+      ],
       "extraCacheFiles": [
         "engine/audio.js",
         "engine/dom-engine.js",
@@ -120,7 +125,8 @@
         "engine/online.js",
         "engine/peerjs.min.js",
         "engine/render-bridge.js",
-        "engine/theme.js"
+        "engine/theme.js",
+        "games/domino/words.js"
       ]
     },
     {
@@ -249,6 +255,7 @@
         "engine/audio.js",
         "engine/engine.js",
         "engine/game-boot.js",
+        "engine/game-shell.css",
         "engine/input.js",
         "engine/online-lobby.js",
         "engine/online.js",
@@ -260,12 +267,16 @@
     },
     {
       "id": "pacman",
-      "title": "pacman",
-      "description": "A JavaScript game",
+      "title": "Pac-Man",
+      "description": "Classic maze chase - eat dots and avoid ghosts",
       "path": "games/pacman/",
       "image": "assets/imgs_games/pacman.svg",
       "color": "#1a1a2e",
-      "tags": [],
+      "tags": [
+        "Arcade",
+        "Clásico",
+        "Laberinto"
+      ],
       "extraCacheFiles": [
         "engine/audio.js",
         "engine/engine.js",
@@ -274,6 +285,26 @@
         "engine/render-bridge.js",
         "engine/theme.js",
         "engine/ui-canvas.js"
+      ]
+    },
+    {
+      "id": "playeranimation",
+      "title": "Player Animation",
+      "description": "Test sprite animations with PIXI.js",
+      "path": "games/playeranimation/",
+      "image": "assets/imgs_games/playeranimation.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Sprites",
+        "Animaciones",
+        "PixieJS"
+      ],
+      "extraCacheFiles": [
+        "engine/audio.js",
+        "engine/input.js",
+        "engine/pixi-engine.js",
+        "engine/pixi.min.js",
+        "engine/sprite-processor.js"
       ]
     },
     {
@@ -302,12 +333,16 @@
     },
     {
       "id": "spaceinvaders",
-      "title": "spaceinvaders",
-      "description": "A JavaScript game",
+      "title": "Space Invaders",
+      "description": "Defend Earth from alien invaders",
       "path": "games/spaceinvaders/",
       "image": "assets/imgs_games/spaceinvaders.svg",
       "color": "#1a1a2e",
-      "tags": [],
+      "tags": [
+        "Arcade",
+        "Clásico",
+        "Disparos"
+      ],
       "extraCacheFiles": [
         "engine/audio.js",
         "engine/engine.js",
@@ -337,6 +372,7 @@
         "engine/audio.js",
         "engine/engine.js",
         "engine/game-boot.js",
+        "engine/game-shell.css",
         "engine/input.js",
         "engine/online-lobby.js",
         "engine/online.js",
@@ -396,16 +432,21 @@
     },
     {
       "id": "voidsector",
-      "title": "voidsector",
-      "description": "A JavaScript game",
+      "title": "Void Sector",
+      "description": "Space combat game with online multiplayer",
       "path": "games/voidsector/",
       "image": "assets/imgs_games/voidsector.svg",
       "color": "#1a1a2e",
-      "tags": [],
+      "tags": [
+        "Arcade",
+        "Espacio",
+        "Multijugador"
+      ],
       "extraCacheFiles": [
         "engine/audio.js",
         "engine/engine.js",
         "engine/game-boot.js",
+        "engine/game-shell.css",
         "engine/input.js",
         "engine/online-lobby.js",
         "engine/online.js",
@@ -436,30 +477,6 @@
         "engine/render-bridge.js",
         "engine/theme.js",
         "games/wordscramble/words.js"
-      ]
-    },
-    {
-      "id": "playeranimation",
-      "title": "Player Animation",
-      "description": "Test sprite animations",
-      "path": "games/playeranimation/",
-      "image": "assets/imgs_games/playeranimation.svg",
-      "color": "#1a1a2e",
-      "tags": [
-        "Sprites",
-        "Animaciones",
-        "PixieJS"
-      ],
-      "extraCacheFiles": [
-        "engine/audio.js",
-        "engine/game-boot.js",
-        "engine/input.js",
-        "engine/pixi-engine.js",
-        "engine/pixi.min.js",
-        "engine/render-bridge.js",
-        "engine/sprite-processor.js",
-        "engine/theme.js",
-        "games/playeranimation/spritesheet-characters-default.png"
       ]
     }
   ]
