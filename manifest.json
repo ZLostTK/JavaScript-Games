@@ -4,6 +4,7 @@
 	"description": "A collection of classic JavaScript arcade games",
 	"start_url": "./",
 	"display": "standalone",
+	"display_override": ["standalone", "fullscreen"],
 	"background_color": "#0f0f1a",
 	"theme_color": "#0f0f1a",
 	"icons": [

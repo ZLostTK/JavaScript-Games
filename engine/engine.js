@@ -28,11 +28,13 @@ class Engine {
 		const p = this.canvas.parentElement || document.body;
 		const pw = p.clientWidth;
 		const ph = p.clientHeight;
-		const s = Math.min(pw / this.W, ph / this.H);
+		const s = this.scaleMode === 'cover'
+			? Math.max(pw / this.W, ph / this.H)
+			: Math.min(pw / this.W, ph / this.H);
 		this._scale = s;
 		this.canvas.width = this.W;
 		this.canvas.height = this.H;
-		if (this.scaleMode === 'fit') {
+		if (this.scaleMode === 'fit' || this.scaleMode === 'cover') {
 			this.canvas.style.width = `${this.W * s}px`;
 			this.canvas.style.height = `${this.H * s}px`;
 		}

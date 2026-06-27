@@ -1246,4 +1246,10 @@ OnlineLobby.onCancel(() => {
     }
 });
 
-GameBoot.startCanvas(game, { canvasId: 'canvas', width: W, height: H, bg: '#000008' });
+GameBoot.startCanvas(game, {
+    canvasId: 'canvas',
+    width: W,
+    height: H,
+    bg: '#000008',
+    scaleMode: _isTouchDevice() ? 'cover' : 'fit',
+});
