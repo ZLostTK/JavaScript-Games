@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Test</title>
+    <style>
+        body {
+            background: #0f0f1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            flex-direction: column;
+            font-family: monospace;
+        }
+        #game-container { position: relative; }
+        #info {
+            color: #4ecca3;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        #info kbd {
+            background: #1a1a2e;
+            border: 1px solid #4ecca3;
+            border-radius: 3px;
+            padding: 1px 6px;
+            color: #ffe97d;
+        }
+        #info span { color: #555; }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <p id="info">
+        <kbd>←</kbd><kbd>→</kbd> <span>mover ·</span>
+        <kbd>↑</kbd> <span>saltar ·</span>
+        <kbd>↓</kbd> <span>agachar ·</span>
+        <kbd>D</kbd> <span>debug</span>
+    </p>
+
+    <script src="../../engine/theme.js"></script>
+<script src="../../engine/render-bridge.js"></script>
+<script src="../../engine/input.js"></script>
+<script src="../../engine/audio.js"></script>
+<script src="../../engine/pixi.min.js"></script>
+<script src="../../engine/pixi-engine.js"></script>
+<script src="../../engine/sprite-processor.js"></script>
+<script src="../../engine/game-boot.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
