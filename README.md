@@ -14,18 +14,19 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Arkanoid](./games/arkanoid/)** - Break bricks with paddle and ball
 - **[Busca Minas](./games/minesweeper/)** - Find the bombs using logic and arrays
 - **[Conecta 4](./games/connect4/)** - Connect 4 chips in a row before the AI
-- **[Dominó](./games/domino/)** - The classic board game Dominó. Local and online multiplayer for 4 players.
+- **[domino](./games/domino/)** - A JavaScript game
 - **[Efecto Mariposa](./games/butterfly-effect/)** - Chaotic visualization of the Lorenz Attractor
 - **[Flappy Bird](./games/flappybird/)** - Fly between pipes without crashing
 - **[Fuera Luces!](./games/lightsout/)** - Turn off all the lights in the fewest possible pulses
 - **[Gato - Ateti](./games/tictactoe/)** - Classic 3-in-a-row against AI
 - **[Othello - Reversi](./games/othello/)** - Classic strategy board game for two players
 - **[pacman](./games/pacman/)** - A JavaScript game
+- **[Player Animation](./games/playeranimation/)** - Test sprite animations
 - **[Snake Game](./games/snake/)** - Grow the snake by eating food
 - **[spaceinvaders](./games/spaceinvaders/)** - A JavaScript game
 - **[Sudoku](./games/sudoku/)** - Solve the sudoku puzzle
 - **[Typing Speed](./games/typingspeed/)** - Test your typing speed - ES / EN word pools
-- **[Void Sector](./games/voidsector/)** - Un juego de disparos en el espacio
+- **[voidsector](./games/voidsector/)** - A JavaScript game
 - **[Word Scramble](./games/wordscramble/)** - Unscramble the letters - ES / EN
 
 <!-- GAMES_END -->
