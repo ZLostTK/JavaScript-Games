@@ -1,9 +1,9 @@
 // Service Worker — caché híbrida para hub PWA y juegos descargados
-// Versión: 2026-06-27-01
+// Versión: 2026-06-27-02
 // Manifest: games.json → cache.name, cache.hubPrecache, cache.legacyCaches
 
-const CACHE = 'js-games-v2';
-const LEGACY_CACHES = ['js-games-v1'];
+const CACHE = 'js-games-v3';
+const LEGACY_CACHES = ['js-games-v1', 'js-games-v2'];
 
 const PRECACHE_FALLBACK = [
 	'./',

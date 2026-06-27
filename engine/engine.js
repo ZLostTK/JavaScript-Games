@@ -14,6 +14,10 @@ class Engine {
 		
 		this._resize();
 		window.addEventListener('resize', () => this._resize());
+		if (window.visualViewport) {
+			window.visualViewport.addEventListener('resize', () => this._resize());
+			window.visualViewport.addEventListener('scroll', () => this._resize());
+		}
 		
 		this._last = performance.now();
 		this._running = false;

@@ -1,6 +1,21 @@
 /* ── Reset ─────────────────────────────────────────────── */
 
 
+/* ── Void Sector: canvas a pantalla completa en móvil/PWA ── */
+@media (pointer: coarse), (display-mode: standalone) {
+	#game-container {
+		padding: 0;
+	}
+
+	#back-btn {
+		top: calc(6px + env(safe-area-inset-top, 0px));
+		left: calc(6px + env(safe-area-inset-left, 0px));
+		z-index: 30;
+		padding: 0.4rem 0.75rem;
+		font-size: 0.8rem;
+	}
+}
+
 /* ── Mobile skill buttons ─────────────────────────────── */
 #mobile-skills {
     position: fixed;

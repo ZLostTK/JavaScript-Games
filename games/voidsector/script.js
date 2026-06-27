@@ -25,6 +25,8 @@ let _joyVec              = {x:0, y:0};
 
 // Detect touch device
 const _isTouchDevice = () => ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+const _isMobileLayout = () => _isTouchDevice() || window.matchMedia('(display-mode: standalone)').matches;
+const HUD_Y = () => (_isMobileLayout() ? 40 : 12);
 
 function _initMobileButtons() {
     if (!_isTouchDevice()) return;
@@ -1030,7 +1032,9 @@ const game = {
 
     _renderHUD(ctx) {
         const p = this.player;
+        const hudTop = HUD_Y();
         ctx.save();
+        ctx.translate(0, hudTop - 12);
         ctx.font = "bold 11px 'Orbitron', monospace";
         ctx.textAlign = 'left'; ctx.textBaseline = 'top';
         ctx.fillStyle = '#0ff8'; ctx.fillText('SCORE', 12, 12);
@@ -1251,5 +1255,5 @@ GameBoot.startCanvas(game, {
     width: W,
     height: H,
     bg: '#000008',
-    scaleMode: _isTouchDevice() ? 'cover' : 'fit',
+    scaleMode: _isMobileLayout() ? 'cover' : 'fit',
 });

@@ -650,7 +650,7 @@ const game = {
 		hud.id = 'game-hud';
 		hud.innerHTML = `<h3>Puntuación</h3><div id="hud-scores"></div>`;
 		
-		const playScreen = DOMEngine.create('div', 'screen', DOMEngine.container);
+		const playScreen = DOMEngine.create('div', '', DOMEngine.container);
 		playScreen.id = 'play-screen';
 		
 		const boardFrame = DOMEngine.create('div', '', playScreen);

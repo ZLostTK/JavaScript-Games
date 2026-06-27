@@ -41,8 +41,23 @@ body {
 
 #game, #gameCanvas, #canvas {
 	display: block;
-	max-width: 100%;
-	max-height: 100%;
+}
+
+/* En móvil / PWA el canvas debe poder crecer con scaleMode "cover" */
+@media (pointer: coarse), (display-mode: standalone) {
+	#game-container {
+		align-items: stretch;
+		justify-content: stretch;
+	}
+
+	#game, #gameCanvas, #canvas {
+		flex: 1 1 auto;
+		min-width: 0;
+		min-height: 0;
+		max-width: none;
+		max-height: none;
+		align-self: stretch;
+	}
 }
 
 #back-btn {
