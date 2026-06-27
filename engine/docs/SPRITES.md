@@ -191,6 +191,11 @@ tank.setAnimation('turret', 'aim');
 | `setAnimation(slot, anim)` | Cambia la animación de una capa |
 | `setAnimations({slot: anim})` | Cambia animaciones de múltiples capas |
 | `getTexture(slot)` | Obtiene el canvas/textura actual de una capa |
+| `getSprite(slot)` | Obtiene el sprite o textura animada de una capa |
+| `getSlotNames()` | Lista los nombres de todas las capas |
+| `getSlot(slotName)` | Obtiene la configuración de una capa |
+| `getAnimations(slotName)` | Obtiene el mapa de animaciones de una capa |
+| `getCurrentAnimation(slotName)` | Obtiene el nombre de la animación activa en una capa |
 | `update(dt)` | Actualiza todas las animaciones activas |
 | `render(ctx, x, y)` | Renderiza en canvas ordenado por z |
 | `toPIXI()` | Crea un `PIXI.Container` con todas las capas |
@@ -233,7 +238,7 @@ const myHTMLElement = SpriteProcessor.toDOM(spriteData);
 
 ### Abrir el Debug Grid
 
-Presiona la tecla **`D`** (sin Ctrl/Alt/Meta) cuando haya un `SpriteManager` cargado (ej. `window.spriteManager`). Vuelve a presionar `D` o `Escape` para cerrar.
+Presiona **`Alt + D`** cuando haya un `SpriteManager` cargado (ej. `window.spriteManager`). Vuelve a presionar `Alt + D` o `Escape` para cerrar.
 
 ### Interfaz
 
@@ -290,6 +295,8 @@ const estado = new SpriteState({
 |-----------|------|-------------|
 | `name` | `string` | Nombre del estado |
 | `frames` | `Array<Canvas>` | Texturas de cada frame |
+| `speed` | `number` | FPS de la animación |
+| `elapsed` | `number` | Tiempo acumulado en segundos |
 | `currentFrame` | `number` | Frame actual |
 | `progress` | `number` | Progreso 0–1 |
 | `completed` | `boolean` | ¿Animación terminó? (no-loop) |
@@ -348,6 +355,7 @@ fsm.setState('hit');
 | `currentStateName` | `string` | Estado activo |
 | `prevStateName` | `string` | Estado anterior |
 | `stateTime` | `number` | Segundos en el estado actual |
+| `elapsed` | `number` | Alias de `stateTime` |
 | `progress` | `number` | Progreso del estado actual (0–1) |
 | `completed` | `boolean` | ¿El estado actual terminó? |
 

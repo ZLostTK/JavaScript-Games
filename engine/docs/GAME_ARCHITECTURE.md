@@ -233,6 +233,14 @@ OnlineLobby.showStatusOnly('En línea', 'Esperando al host...');
 
 Pasa `{ hideOnConnect: false }` a `host()` / `prepareJoin()` si el overlay debe permanecer visible tras conectar (p. ej. lobby de varios jugadores).
 
+#### Métodos adicionales
+
+| Método | Descripción |
+|--------|-------------|
+| `getJoinCode()` | Obtiene el código ingresado en el campo de unirse |
+| `enableJoin(enabled)` | Habilita/deshabilita el botón de unirse |
+| `setJoinHandler(cb)` | Establece el callback que se ejecuta al presionar el botón unirse |
+
 ---
 
 ## MobileControls

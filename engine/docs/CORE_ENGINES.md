@@ -44,7 +44,7 @@ Engine.init(canvasId, options)
 - **`options`** *(object)*:
   - `width` (number): Ancho interno del juego (resolución lógica).
   - `height` (number): Alto interno del juego.
-  - `scaleMode` (string): Modo de escalado: `'fit'` (mantiene proporción), `'fill'` (estira), `'none'` (sin escalado).
+  - `scaleMode` (string): Modo de escalado: `'fit'` (mantiene proporción, recorta si es necesario), `'cover'` (cubre todo el contenedor, escala con `Math.max`).
   - `bg` (string): Color de fondo en formato CSS (ej. `'#1a1a2e'`).
 
 ### Métodos del Engine
@@ -104,11 +104,22 @@ DOMEngine.init(containerId, options)
 ### Métodos Principales
 
 - `DOMEngine.start(game)`: Inicia el loop. A diferencia del canvas, aquí `render()` suele ser manual o menos frecuente, enfocado en actualizar las clases CSS.
+- `DOMEngine.stop()`: Detiene el loop sin destruir el estado del juego.
+- `DOMEngine.resume()`: Reanuda el loop después de `stop()`.
+- `DOMEngine.render()`: Llama manualmente a `game.render()`. No se llama automáticamente en el loop.
 - `DOMEngine.el(id) -> HTMLElement`: Atajo para `document.getElementById()`.
 - `DOMEngine.create(tag, cls, parent) -> HTMLElement`: Crea un elemento (ej. `'div'`), le asigna clases separadas por espacio, y lo añade al `parent`.
+- `DOMEngine.clear(el)`: Elimina todos los hijos de un elemento.
+- `DOMEngine.setText(el, text)`: Establece `textContent`.
+- `DOMEngine.setHTML(el, html)`: Establece `innerHTML`.
+- `DOMEngine.addClass(el, ...cls)`: Añade una o varias clases CSS.
+- `DOMEngine.removeClass(el, ...cls)`: Elimina una o varias clases CSS.
+- `DOMEngine.toggleClass(el, cls, force)`: Alterna una clase CSS.
 - `DOMEngine.setStyle(el, styles)`: Aplica múltiples estilos CSS desde un objeto a un elemento.
 - `DOMEngine.on(target, event, handler, opts) -> fn`: Añade un Event Listener que es seguro limpiar después (devuelve una función de limpieza).
 - `DOMEngine.createGrid(parent, rows, cols, onClick, onCtx)`: Crea rápidamente un tablero (grid) de celdas. Devuelve una matriz 2D con los elementos.
+- `DOMEngine.showOverlay(message, subMessage, onDismiss) -> HTMLElement`: Muestra un overlay modal (win/lose/pausa). Se elimina al hacer clic si `onDismiss` está definido.
+- `DOMEngine.hideOverlay()`: Elimina el overlay creado por `showOverlay()`.
 
 ### Ejemplo de Uso Completo
 
@@ -150,9 +161,15 @@ PIXIEngine.init(containerId, options)
   - `width` y `height` (number): Resolución.
   - `bg` (number hexadecimal): Color de fondo (ej. `0x1a1a2e`).
 
+### Propiedades
+
+- `PIXIEngine.W`: Ancho lógico del juego.
+- `PIXIEngine.H`: Alto lógico del juego.
+
 ### Métodos Principales
 
 - `PIXIEngine.start(game)`: Inicia la aplicación PIXI.
+- `PIXIEngine.stop()`: Detiene el juego y destruye la aplicación PIXI.
 - `PIXIEngine.addChild(child)`: Añade un `PIXI.Sprite` o `PIXI.Container` a la escena principal (`stage`).
 - `PIXIEngine.removeChild(child)`: Quita un elemento de la escena.
 
@@ -208,6 +225,7 @@ LittleEngine.init(containerId, options)
 
 ### Métodos
 
+- `LittleEngine.rendererType`: Siempre `'little'`.
 - `LittleEngine.start(game)`: Inicia el loop LittleJS.
 - `LittleEngine.stop()`: Detiene y destruye objetos.
 - `LittleEngine.toGame(x, y)`: Convierte coordenadas de pantalla (compatible con `UICanvas.getPointer()`).

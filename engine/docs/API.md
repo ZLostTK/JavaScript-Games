@@ -26,9 +26,15 @@ DOMEngine.el(id)
 DOMEngine.create(tag, cls, parent)
 DOMEngine.clear(el)
 DOMEngine.setText(el, text)
+DOMEngine.setHTML(el, html)
+DOMEngine.addClass(el, ...cls)
+DOMEngine.removeClass(el, ...cls)
+DOMEngine.toggleClass(el, cls, force)
 DOMEngine.setStyle(el, styles)
 DOMEngine.on(target, event, handler, opts)
 DOMEngine.createGrid(parent, rows, cols, onClick, onCtx)
+DOMEngine.showOverlay(message, subMessage, onDismiss)
+DOMEngine.hideOverlay()
 ```
 
 ### `PIXIEngine` (WebGL)
@@ -86,7 +92,7 @@ Audio.init()
 Audio.resume()
 Audio.load(name, url)
 Audio.play(name, volume, loop)
-Audio.synth({ type, freq, duration, volume })
+Audio.synth(name, type, freq, duration, volume)
 Audio.toggleMute()
 ```
 
@@ -112,18 +118,77 @@ const manager = new SpriteManager(EngineClass, engineType)
 manager.load(imagePath, spriteData, options)
 manager.getSprite(group, name)
 manager.getAnimation(group, animationName)
+manager.getGroup(group)
+manager.getAllSprites(group)
+manager.createAnimation(group, name, frameNames, options)
 manager.createAnimationAs(group, animationName, options) // hereda speed/loop/onComplete de la definición
 manager.createAnimatedDOM(group, animationName, options)
+manager.createDOMElement(group, spriteName, options)
+manager.createDOMElements(group, options)
+manager.clearGroup(group)
+manager.getImagePath(group)
+manager.getSpriteAs(group, name, options)
+manager.getAllSpritesAs(group, options)
+manager.compose(entityName, slotDefs)
+manager.getComposition(name)
+manager.getEngineType()
+manager.detectAndSetEngine()
 ```
 
 ### `SpriteProcessor` (Estático)
 ```javascript
+SpriteProcessor.detectEngine()
+SpriteProcessor.setEngineType(type)
+SpriteProcessor.getEngineType()
 SpriteProcessor.loadSpriteSheet(path, data, opts)
 SpriteProcessor.processGrid(path, opts)
-SpriteProcessor.createAnimation(sprites, frames, opts)
+SpriteProcessor.processJSON(imagePath, jsonData, opts)
+SpriteProcessor.processWithNaming(path, data, namingConfig)
+SpriteProcessor.createAnimation(sprites, frameNames, opts)
+SpriteProcessor.createSpriteGroup(sprites, config)
+SpriteProcessor.defineAnimations(sprites, animationDefs)
+SpriteProcessor.clearCache()
+SpriteProcessor.createDOMElement(sprite, opts)
+SpriteProcessor.createCanvasTexture(sprite, context)
 SpriteProcessor.toPIXI(sprite)
 SpriteProcessor.toCanvas(sprite)
 SpriteProcessor.toDOM(sprite)
+SpriteProcessor.getFormattedSprite(sprite, opts)
+SpriteProcessor.showDebugGrid(manager)   // Alt+D
+SpriteProcessor.hideDebugGrid()
+SpriteProcessor.toggleDebugGrid(manager)
+```
+
+### `EntityComposer` (composición por capas)
+```javascript
+const composer = new EntityComposer(manager, slotDefs)
+composer.addSlot(name, def)
+composer.setAnimation(slot, anim)
+composer.setAnimations({ slot: anim })
+composer.getTexture(slot)
+composer.getSprite(slot)
+composer.getSlotNames()
+composer.getSlot(slotName)
+composer.getAnimations(slotName)
+composer.getCurrentAnimation(slotName)
+composer.update(dt)
+composer.render(ctx, x, y)
+composer.toPIXI()
+composer.toDOM()
+```
+
+### `SpriteState` / `SpriteStateMachine`
+```javascript
+const state = new SpriteState({ name, frames, speed, loop, nextState, onEnter, onUpdate, onExit, onComplete })
+state.update(dt)
+state.getTexture()
+state.reset()
+
+const fsm = new SpriteStateMachine(owner, { idle: {...}, walk: {...} }, initialState)
+fsm.addState(name, config)
+fsm.setState(name)
+fsm.update(dt)
+fsm.getTexture()
 ```
 
 ## Utilidades compartidas de juegos
@@ -132,7 +197,7 @@ Ver [GAME_ARCHITECTURE.md](GAME_ARCHITECTURE.md) para la guía completa.
 
 ### `Theme`
 ```javascript
-Theme.colors.bg | .accent | .accent2 | .success | .warning | .muted | .text
+Theme.colors.bg | .accent | .accent2 | .success | .warning | .info | .muted | .text | .textMuted | .textDim
 Theme.font.mono | .ui
 ```
 
