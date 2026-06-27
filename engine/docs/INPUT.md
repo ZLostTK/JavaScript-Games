@@ -12,15 +12,19 @@ Siempre que tu juego requiera interacciones del usuario en tiempo real (moverse 
 
 ## Inicialización
 
-Debes inicializar el módulo pasándole el elemento HTML (usualmente el canvas) donde se van a capturar los eventos del ratón o táctiles. Si solo necesitas teclado, puedes pasar `null`.
+Debes inicializar el módulo pasándole el elemento HTML donde se capturan eventos de ratón o táctiles. Si solo necesitas teclado, puedes pasar `null`.
 
 ```javascript
-// Si usas Engine o PIXIEngine, pásale el canvas.
-const canvas = document.getElementById('my-canvas');
+// Manual — Engine pasa el canvas automáticamente en Engine.init()
 Input.init(canvas);
+
+// PIXIEngine y LittleEngine llaman RenderBridge.bindInput() tras crear el canvas
+// LittleEngine lo hace en el callback de engineInit
 ```
 
-**Importante:** En tu game loop principal (usualmente manejado por el motor automáticamente), al finalizar cada frame se debe llamar a `Input.endFrame()` para resetear los estados de "presionado este frame" a falso.
+**Retrocompatibilidad:** `Input`, `Audio` y `Online` funcionan igual con Engine, PIXIEngine y LittleEngine. Para coordenadas lógicas del puntero en menús canvas, usa `UICanvas.getPointer()` (delega en `RenderBridge.toGame()`).
+
+**Importante:** Los motores llaman `Input.endFrame()` automáticamente al final de cada frame. No lo llames manualmente salvo que implementes tu propio loop.
 
 ---
 

@@ -37,29 +37,7 @@ const game = {
     this.btnLeft = false;
     this.btnRight = false;
     this.btnAction = false;
-    if (!this.buttonsBound) {
-      const bindBtn = (id, prop) => {
-        const el = document.getElementById(id);
-        if (el) {
-          const down = (e) => { e.preventDefault(); this[prop] = true; };
-          const up = (e) => { e.preventDefault(); this[prop] = false; };
-          el.addEventListener('touchstart', down, {passive: false});
-          el.addEventListener('touchend', up, {passive: false});
-          el.addEventListener('mousedown', down);
-          el.addEventListener('mouseup', up);
-          el.addEventListener('mouseleave', up);
-        }
-      };
-      bindBtn('btn-left', 'btnLeft');
-      bindBtn('btn-right', 'btnRight');
-      bindBtn('btn-action', 'btnAction');
-      
-      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-        const mc = document.getElementById('mobile-controls');
-        if (mc) mc.classList.remove('hidden');
-      }
-      this.buttonsBound = true;
-    }
+    MobileControls.bind(this, { 'btn-left': 'btnLeft', 'btn-right': 'btnRight', 'btn-action': 'btnAction' });
   },
 
   update(dt) {
@@ -188,4 +166,4 @@ const game = {
   }
 };
 
-Engine.init('game', { width: 480, height: 640, bg: '#0f0f1a' }).start(game);
+GameBoot.start(game, { canvasId: 'game', width: 480, height: 640 });

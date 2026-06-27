@@ -174,29 +174,6 @@ function renderStars(ctx) {
 }
 
 // ── UI helpers ─────────────────────────────────────────────────────────────────
-function drawBtn(ctx, label, x, y, w, h, accent = '#0ff', hover = false) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, 8);
-    ctx.fillStyle = hover ? `${accent}28` : `${accent}10`;
-    ctx.fill();
-    ctx.strokeStyle = hover ? accent : `${accent}88`;
-    ctx.lineWidth = hover ? 2 : 1.5;
-    ctx.shadowBlur = hover ? 14 : 0;
-    ctx.shadowColor = accent;
-    ctx.stroke();
-    ctx.fillStyle = hover ? accent : `${accent}cc`;
-    ctx.font = "bold 14px 'Orbitron', monospace";
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.shadowBlur = hover ? 8 : 0;
-    ctx.fillText(label, x + w / 2, y + h / 2);
-    ctx.restore();
-}
-function hitBtn(gx, gy, btn) {
-    return gx >= btn.x && gx <= btn.x + btn.w && gy >= btn.y && gy <= btn.y + btn.h;
-}
-
 // ── Bullet ────────────────────────────────────────────────────────────────────
 class Bullet {
     constructor(x, y, angle, spd = 520, owner = 'player', dmg = 1, color = '#0ff', laser = false) {
@@ -806,13 +783,13 @@ const game = {
     // ──────────────────────────────────────────────────────────────────────────
     update(dt) {
         const gp = this._getGamePointer();
-        for (const k in this._btns) this._hover[k] = hitBtn(gp.x, gp.y, this._btns[k]);
+        for (const k in this._btns) this._hover[k] = UICanvas.hitTest(gp.x, gp.y, this._btns[k]);
 
         if (this.state === 'menu') {
             _showMobileControls(false);
             if (this._isPointerPressed()) {
-                if (hitBtn(gp.x, gp.y, this._btns.play))   this._startGame(null, null);
-                if (hitBtn(gp.x, gp.y, this._btns.online)) this._openOnline();
+                if (UICanvas.hitTest(gp.x, gp.y, this._btns.play))   this._startGame(null, null);
+                if (UICanvas.hitTest(gp.x, gp.y, this._btns.online)) this._openOnline();
             }
             if (Input.isPressed('Space') || Input.isPressed('Enter')) this._startGame(null, null);
             return;
@@ -1155,7 +1132,7 @@ const game = {
         // Buttons
         for (const k in this._btns) {
             const b = this._btns[k];
-            drawBtn(ctx, b.label, b.x, b.y, b.w, b.h, b.accent, !!this._hover[k]);
+            UICanvas.drawButton(ctx, b.label, b.x, b.y, b.w, b.h, b.accent, !!this._hover[k]);
         }
     },
 
@@ -1290,5 +1267,4 @@ const game = {
 };
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
-Engine.init('canvas', { width: W, height: H, bg: '#000008' });
-Engine.start(game);
+GameBoot.startCanvas(game, { canvasId: 'canvas', width: W, height: H, bg: '#000008' });

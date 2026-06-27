@@ -6,7 +6,7 @@ El módulo `Audio` envuelve la potente `Web Audio API` del navegador para ofrece
 Para cargar y reproducir recursos de audio MP3, WAV, OGG, etc., con control de volumen y loops. También permite generar pitidos y sonidos retro al vuelo sin cargar archivos pesados.
 
 ## ¿Cuándo utilizarlo?
-Siempre que tu juego necesite feedback sonoro (explosiones, saltos, colisiones) o música. Dado que los navegadores modernos bloquean el audio automático, la API gestiona la reanudación del contexto de audio al interactuar el jugador.
+Siempre que tu juego necesite feedback sonoro. Funciona con **Engine, PIXIEngine, LittleEngine y DOMEngine** — no depende del renderizador. Cada motor llama `Audio.init()` en su `init()`.
 
 ---
 

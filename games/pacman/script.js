@@ -127,28 +127,6 @@ function isWallEyes(map, r, c) {
 }
 
 // ── Botones de menú ──────────────────────────
-function drawBtn(ctx, label, x, y, w, h, accent, hover) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(x - w / 2, y - h / 2, w, h, 8);
-    ctx.fillStyle = hover ? accent + 'cc' : accent + '44';
-    ctx.fill();
-    ctx.strokeStyle = accent;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.fillStyle = C_TEXT;
-    ctx.font = "bold 18px 'Courier New', monospace";
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x, y);
-    ctx.restore();
-}
-
-function hitBtn(gx, gy, btn) {
-    return gx >= btn.x - btn.w / 2 && gx <= btn.x + btn.w / 2 &&
-    gy >= btn.y - btn.h / 2 && gy <= btn.y + btn.h / 2;
-}
-
 // ── Generador procedural de niveles ──────────
 /**
 * Genera un nuevo mapa basándose en el nivel actual.
@@ -795,9 +773,9 @@ const game = {
         if (this.state === 'menu') {
             this._hover = '';
             for (const [key, btn] of Object.entries(this._btns)) {
-                if (hitBtn(gx, gy, btn)) this._hover = key;
+                if (UICanvas.hitTest(gx, gy, btn)) this._hover = key;
             }
-            if (clicked && hitBtn(gx, gy, this._btns.play)) this._startGame();
+            if (clicked && UICanvas.hitTest(gx, gy, this._btns.play)) this._startGame();
             return;
         }
         if (this.state === 'gameover' || this.state === 'win') {
@@ -1012,7 +990,7 @@ const game = {
         Engine.text(`HI-SCORE: ${this.hiScore}`, cx, 290, '#ffaa00', 16);
         
         const btn = this._btns.play;
-        drawBtn(ctx, btn.label, btn.x, btn.y, btn.w, btn.h, btn.accent, this._hover === 'play');
+        UICanvas.drawButton(ctx, btn.label, btn.x, btn.y, btn.w, btn.h, btn.accent, this._hover === 'play');
         
         ctx.save();
         ctx.font = "13px 'Courier New', monospace";
@@ -1175,5 +1153,4 @@ const game = {
 };
 
 // ── Arranque ──────────────────────────────────
-Engine.init('gameCanvas', { width: LW, height: LH, bg: C_BG });
-Engine.start(game);
+GameBoot.startCanvas(game, { canvasId: 'gameCanvas', width: LW, height: LH, bg: C_BG });

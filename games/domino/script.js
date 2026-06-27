@@ -221,7 +221,7 @@ const game = {
 			};
 			
 			startOnlineBtn.onclick = () => {
-				onlineUI.classList.add('hidden');
+				OnlineLobby.hide();
 				hostView.classList.add('hidden');
 				this.onlineConnected = true;
 				this._broadcast({ type: 'start' });
@@ -234,11 +234,11 @@ const game = {
 			
 			hostView.classList.remove('hidden');
 			joinView.classList.add('hidden');
-			onlineUI.classList.remove('hidden');
+			OnlineLobby.show();
 			
 			onlineBackBtn.onclick = () => {
 				Online.destroy();
-				onlineUI.classList.add('hidden');
+				OnlineLobby.hide();
 				this._showOnlineMenu();
 			};
 		});
@@ -252,7 +252,7 @@ const game = {
 		hostView.classList.add('hidden');
 		joinView.classList.remove('hidden');
 		roomCodeInput.value = '';
-		onlineUI.classList.remove('hidden');
+		OnlineLobby.show();
 		
 		joinBtn.onclick = () => {
 			const code = roomCodeInput.value.trim().toUpperCase();
@@ -276,7 +276,7 @@ const game = {
 		
 		onlineBackBtn.onclick = () => {
 			Online.destroy();
-			onlineUI.classList.add('hidden');
+			OnlineLobby.hide();
 			this._showOnlineMenu();
 		};
 	},
@@ -343,7 +343,7 @@ const game = {
 	
 	_onDisconnect() {
 		Online.destroy();
-		onlineUI.classList.add('hidden');
+		OnlineLobby.hide();
 		DOMEngine.showOverlay('Desconectado', 'La conexión con la partida se ha perdido.', () => {
 			this.state = 'select';
 			this._buildMenu();
@@ -465,7 +465,7 @@ const game = {
 		this.myRole = 'guest';
 		this.onlineConnected = true;
 		// Hide lobby overlay — this is the definitive start signal for the guest
-		onlineUI.classList.add('hidden');
+		OnlineLobby.hide();
 		console.log('[Domino] guest _applyInitState: building game UI, myIndex=', this._myAssignedId);
 		this._buildGameUI();
 		DOMEngine.render();
@@ -1105,7 +1105,4 @@ game._handleNetData = function(data, connId) {
 	originalHandle(data, connId);
 };
 
-window.onload = () => {
-	DOMEngine.init('game-container', { fps: 60 });
-	DOMEngine.start(game);
-};
+GameBoot.startDOM(game);

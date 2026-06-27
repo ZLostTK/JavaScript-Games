@@ -55,27 +55,6 @@ const ALIEN_SCORES = [30, 20, 10];
 const ALIEN_COLORS = [C.alien0, C.alien1, C.alien2];
 
 // ── Button helpers ────────────────────────────────────────────────────────────
-function drawBtn(ctx, label, x, y, w, h, accent, hover) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, 8);
-    ctx.fillStyle = hover ? `${accent}33` : 'rgba(0,0,0,0.5)';
-    ctx.fill();
-    ctx.strokeStyle = hover ? accent : `${accent}88`;
-    ctx.lineWidth = hover ? 2 : 1;
-    ctx.stroke();
-    ctx.fillStyle = hover ? '#ffffff' : C.hud;
-    ctx.font = "bold 18px 'Courier New', monospace";
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + w / 2, y + h / 2);
-    ctx.restore();
-}
-
-function hitBtn(gx, gy, btn) {
-    return gx >= btn.x && gx <= btn.x + btn.w && gy >= btn.y && gy <= btn.y + btn.h;
-}
-
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function makeStars(n) {
     const s = [];
@@ -524,14 +503,14 @@ const game = {
     _updateMenu(dt) {
         const m  = Input.getMouse();
         const gm = Engine.toGame(m.x, m.y);
-        this._hover.solo   = hitBtn(gm.x, gm.y, this._btns.solo);
-        this._hover.local  = hitBtn(gm.x, gm.y, this._btns.local);
-        this._hover.online = hitBtn(gm.x, gm.y, this._btns.online);
+        this._hover.solo   = UICanvas.hitTest(gm.x, gm.y, this._btns.solo);
+        this._hover.local  = UICanvas.hitTest(gm.x, gm.y, this._btns.local);
+        this._hover.online = UICanvas.hitTest(gm.x, gm.y, this._btns.online);
 
         const check = (gx, gy) => {
-            if (hitBtn(gx, gy, this._btns.solo))   { this._startSolo(); return; }
-            if (hitBtn(gx, gy, this._btns.local))  { this._startLocal(); return; }
-            if (hitBtn(gx, gy, this._btns.online)) {
+            if (UICanvas.hitTest(gx, gy, this._btns.solo))   { this._startSolo(); return; }
+            if (UICanvas.hitTest(gx, gy, this._btns.local))  { this._startLocal(); return; }
+            if (UICanvas.hitTest(gx, gy, this._btns.online)) {
                 this._buildOnlineSetupBtns();
                 this.state = 'online-setup';
             }
@@ -549,15 +528,15 @@ const game = {
         const m  = Input.getMouse();
         const gm = Engine.toGame(m.x, m.y);
         for (const k of ['mode1v1','modeCoop','hostRoom','joinRoom','onlineBack'])
-            if (this._btns[k]) this._hover[k] = hitBtn(gm.x, gm.y, this._btns[k]);
+            if (this._btns[k]) this._hover[k] = UICanvas.hitTest(gm.x, gm.y, this._btns[k]);
 
         const check = (gx, gy) => {
-            if (this._btns.mode1v1   && hitBtn(gx, gy, this._btns.mode1v1))   { this._onlineSubMode = '1v1';  return; }
-            if (this._btns.modeCoop  && hitBtn(gx, gy, this._btns.modeCoop))  { this._onlineSubMode = 'coop'; return; }
-            if (this._btns.onlineBack && hitBtn(gx, gy, this._btns.onlineBack)) {
+            if (this._btns.mode1v1   && UICanvas.hitTest(gx, gy, this._btns.mode1v1))   { this._onlineSubMode = '1v1';  return; }
+            if (this._btns.modeCoop  && UICanvas.hitTest(gx, gy, this._btns.modeCoop))  { this._onlineSubMode = 'coop'; return; }
+            if (this._btns.onlineBack && UICanvas.hitTest(gx, gy, this._btns.onlineBack)) {
                 this._buildMenuBtns(); this.state = 'menu'; return;
             }
-            if (this._btns.hostRoom && hitBtn(gx, gy, this._btns.hostRoom)) {
+            if (this._btns.hostRoom && UICanvas.hitTest(gx, gy, this._btns.hostRoom)) {
                 this._setupOnlineCallbacks();
                 this._showOnlineUI('host');
                 document.getElementById('online-status').textContent = 'Iniciando servidor...';
@@ -568,7 +547,7 @@ const game = {
                 this.state = 'lobby';
                 return;
             }
-            if (this._btns.joinRoom && hitBtn(gx, gy, this._btns.joinRoom)) {
+            if (this._btns.joinRoom && UICanvas.hitTest(gx, gy, this._btns.joinRoom)) {
                 this._setupOnlineCallbacks();
                 this._showOnlineUI('join');
                 document.getElementById('online-status').textContent = 'Introduce el código de sala';
@@ -594,7 +573,7 @@ const game = {
         }
         const m  = Input.getMouse();
         const gm = Engine.toGame(m.x, m.y);
-        this._hover.restart = hitBtn(gm.x, gm.y, this._btns.restart);
+        this._hover.restart = UICanvas.hitTest(gm.x, gm.y, this._btns.restart);
 
         const doMenu = () => {
             Online.destroy();
@@ -608,7 +587,7 @@ const game = {
             const t = Input.getTouch(0);
             if (t) {
                 const gt = Engine.toGame(t.x, t.y);
-                if (this._btns.restart && hitBtn(gt.x, gt.y, this._btns.restart)) doMenu();
+                if (this._btns.restart && UICanvas.hitTest(gt.x, gt.y, this._btns.restart)) doMenu();
             }
         }
         if (Input.isPressed('Space') || Input.isPressed('Enter')) doMenu();
@@ -1170,9 +1149,9 @@ const game = {
         const pts = ['= 30 PTS', '= 20 PTS', '= 10 PTS'];
         for (let t = 0; t < 3; t++) Engine.text(pts[t], W/2-20, demoY[t+1]+12, C.hud, 15, 'left');
 
-        drawBtn(ctx, this._btns.solo.label,   this._btns.solo.x,   this._btns.solo.y,   this._btns.solo.w,   this._btns.solo.h,   C.accent, this._hover.solo);
-        drawBtn(ctx, this._btns.local.label,  this._btns.local.x,  this._btns.local.y,  this._btns.local.w,  this._btns.local.h,  C.p2,     this._hover.local);
-        drawBtn(ctx, this._btns.online.label, this._btns.online.x, this._btns.online.y, this._btns.online.w, this._btns.online.h, C.ufo,    this._hover.online);
+        UICanvas.drawButton(ctx, this._btns.solo.label,   this._btns.solo.x,   this._btns.solo.y,   this._btns.solo.w,   this._btns.solo.h,   C.accent, this._hover.solo);
+        UICanvas.drawButton(ctx, this._btns.local.label,  this._btns.local.x,  this._btns.local.y,  this._btns.local.w,  this._btns.local.h,  C.p2,     this._hover.local);
+        UICanvas.drawButton(ctx, this._btns.online.label, this._btns.online.x, this._btns.online.y, this._btns.online.w, this._btns.online.h, C.ufo,    this._hover.online);
 
         if (this.hi > 0) Engine.text(`MEJOR: ${this.hi}`, W/2, 598, '#555', 13);
     },
@@ -1189,15 +1168,15 @@ const game = {
         Engine.text('Modo de juego:', W/2, 274, '#777', 13);
 
         const is1v1 = this._onlineSubMode === '1v1';
-        drawBtn(ctx, this._btns.mode1v1.label,  this._btns.mode1v1.x,  this._btns.mode1v1.y,  this._btns.mode1v1.w,  this._btns.mode1v1.h,  C.accent, is1v1  || this._hover.mode1v1);
-        drawBtn(ctx, this._btns.modeCoop.label, this._btns.modeCoop.x, this._btns.modeCoop.y, this._btns.modeCoop.w, this._btns.modeCoop.h, C.p2,    !is1v1 || this._hover.modeCoop);
+        UICanvas.drawButton(ctx, this._btns.mode1v1.label,  this._btns.mode1v1.x,  this._btns.mode1v1.y,  this._btns.mode1v1.w,  this._btns.mode1v1.h,  C.accent, is1v1  || this._hover.mode1v1);
+        UICanvas.drawButton(ctx, this._btns.modeCoop.label, this._btns.modeCoop.x, this._btns.modeCoop.y, this._btns.modeCoop.w, this._btns.modeCoop.h, C.p2,    !is1v1 || this._hover.modeCoop);
 
         const desc = is1v1 ? 'Un jugador es el alien · el otro el shooter' : 'Cooperación · misma horda compartida';
         Engine.text(desc, W/2, 360, '#555', 12);
 
-        drawBtn(ctx, this._btns.hostRoom.label,   this._btns.hostRoom.x,   this._btns.hostRoom.y,   this._btns.hostRoom.w,   this._btns.hostRoom.h,   C.accent, this._hover.hostRoom);
-        drawBtn(ctx, this._btns.joinRoom.label,   this._btns.joinRoom.x,   this._btns.joinRoom.y,   this._btns.joinRoom.w,   this._btns.joinRoom.h,   C.p2,     this._hover.joinRoom);
-        drawBtn(ctx, this._btns.onlineBack.label, this._btns.onlineBack.x, this._btns.onlineBack.y, this._btns.onlineBack.w, this._btns.onlineBack.h, '#666',   this._hover.onlineBack);
+        UICanvas.drawButton(ctx, this._btns.hostRoom.label,   this._btns.hostRoom.x,   this._btns.hostRoom.y,   this._btns.hostRoom.w,   this._btns.hostRoom.h,   C.accent, this._hover.hostRoom);
+        UICanvas.drawButton(ctx, this._btns.joinRoom.label,   this._btns.joinRoom.x,   this._btns.joinRoom.y,   this._btns.joinRoom.w,   this._btns.joinRoom.h,   C.p2,     this._hover.joinRoom);
+        UICanvas.drawButton(ctx, this._btns.onlineBack.label, this._btns.onlineBack.x, this._btns.onlineBack.y, this._btns.onlineBack.w, this._btns.onlineBack.h, '#666',   this._hover.onlineBack);
     },
 
     _renderLobby(ctx) {
@@ -1509,7 +1488,7 @@ const game = {
             const bw = 220, bh = 50;
             this._btns.restart = { x: W/2-bw/2, y: H/2+60, w: bw, h: bh, label: '▶  MENÚ' };
         }
-        drawBtn(ctx, this._btns.restart.label, this._btns.restart.x, this._btns.restart.y,
+        UICanvas.drawButton(ctx, this._btns.restart.label, this._btns.restart.x, this._btns.restart.y,
             this._btns.restart.w, this._btns.restart.h, C.accent, this._hover.restart);
         Engine.text('ESPACIO · ENTER para continuar', W/2, H/2+140, '#444', 13);
     },
@@ -1634,21 +1613,21 @@ const game = {
             if (!playingStates.includes(self.state)) return null;
             const L = self._getTouchBtnLayout();
             // P1 buttons (siempre disponibles)
-            if (hitBtn(gx, gy, L.left))  return 'left';
-            if (hitBtn(gx, gy, L.right)) return 'right';
-            if (hitBtn(gx, gy, L.fire))  return 'fire';
+            if (UICanvas.hitTest(gx, gy, L.left))  return 'left';
+            if (UICanvas.hitTest(gx, gy, L.right)) return 'right';
+            if (UICanvas.hitTest(gx, gy, L.fire))  return 'fire';
             // P2 buttons (en local, o en online si soy el alien)
             if (self.state === 'playing-local') {
-                if (hitBtn(gx, gy, L.p2left))  return 'p2left';
-                if (hitBtn(gx, gy, L.p2right)) return 'p2right';
-                if (hitBtn(gx, gy, L.p2up))    return 'p2up';
-                if (hitBtn(gx, gy, L.p2down))  return 'p2down';
-                if (hitBtn(gx, gy, L.p2fire))  return 'p2fire';
+                if (UICanvas.hitTest(gx, gy, L.p2left))  return 'p2left';
+                if (UICanvas.hitTest(gx, gy, L.p2right)) return 'p2right';
+                if (UICanvas.hitTest(gx, gy, L.p2up))    return 'p2up';
+                if (UICanvas.hitTest(gx, gy, L.p2down))  return 'p2down';
+                if (UICanvas.hitTest(gx, gy, L.p2fire))  return 'p2fire';
             }
             // En online 1v1 como alien: arriba/abajo usan p2up/p2down del layout
             if (self.state === 'playing-online' && self.mode === 'online-1v1' && self.onlinePlayerNum === 2) {
-                if (hitBtn(gx, gy, L.p2up))   return 'p2up';
-                if (hitBtn(gx, gy, L.p2down)) return 'p2down';
+                if (UICanvas.hitTest(gx, gy, L.p2up))   return 'p2up';
+                if (UICanvas.hitTest(gx, gy, L.p2down)) return 'p2down';
             }
             return null;
         };
@@ -1706,6 +1685,10 @@ const game = {
 };
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
-Engine.init('gameCanvas', { width: W, height: H, bg: '#05050f' });
-game.setupTouchButtons(Engine.canvas);
-Engine.start(game);
+GameBoot.startCanvas(game, {
+  canvasId: 'gameCanvas',
+  width: W,
+  height: H,
+  bg: '#05050f',
+  beforeStart: (g, engine) => g.setupTouchButtons(engine.canvas),
+});

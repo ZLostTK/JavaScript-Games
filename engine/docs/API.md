@@ -36,11 +36,33 @@ DOMEngine.createGrid(parent, rows, cols, onClick, onCtx)
 PIXIEngine.init(containerId, { width, height, bg })
 PIXIEngine.start(game)
 PIXIEngine.stop()
+PIXIEngine.toGame(x, y)
 PIXIEngine.addChild(child)
 PIXIEngine.removeChild(child)
 ```
 
+### `LittleEngine` (LittleJS)
+```javascript
+LittleEngine.init(containerId, { width, height, tileSize, padding, images })
+LittleEngine.start(game)
+LittleEngine.stop()
+LittleEngine.toGame(x, y)
+```
+
 ---
+
+## [RenderBridge](GAME_ARCHITECTURE.md) — puente entre motores
+
+```javascript
+RenderBridge.setActive(engine)   // llamado automáticamente por cada motor
+RenderBridge.active()
+RenderBridge.type()              // 'canvas' | 'pixi' | 'little'
+RenderBridge.W | RenderBridge.H
+RenderBridge.toGame(x, y)
+RenderBridge.ctx                 // solo Engine (Canvas 2D)
+RenderBridge.canvas
+RenderBridge.bindInput()
+```
 
 ## [Input](INPUT.md)
 ```javascript
@@ -90,7 +112,7 @@ const manager = new SpriteManager(EngineClass, engineType)
 manager.load(imagePath, spriteData, options)
 manager.getSprite(group, name)
 manager.getAnimation(group, animationName)
-manager.createAnimationAs(group, animationName, options)
+manager.createAnimationAs(group, animationName, options) // hereda speed/loop/onComplete de la definición
 manager.createAnimatedDOM(group, animationName, options)
 ```
 
@@ -102,4 +124,48 @@ SpriteProcessor.createAnimation(sprites, frames, opts)
 SpriteProcessor.toPIXI(sprite)
 SpriteProcessor.toCanvas(sprite)
 SpriteProcessor.toDOM(sprite)
+```
+
+## Utilidades compartidas de juegos
+
+Ver [GAME_ARCHITECTURE.md](GAME_ARCHITECTURE.md) para la guía completa.
+
+### `Theme`
+```javascript
+Theme.colors.bg | .accent | .accent2 | .success | .warning | .muted | .text
+Theme.font.mono | .ui
+```
+
+### `UICanvas`
+```javascript
+UICanvas.drawButton(ctx, label, x, y, w, h, accent, hover, disabled?)
+UICanvas.hitTest(gx, gy, btn)
+UICanvas.hitFirst(gx, gy, buttons)
+UICanvas.getPointer()
+UICanvas.layoutButtons(count, opts)
+```
+
+### `OnlineLobby`
+```javascript
+OnlineLobby.onCancel(cb)
+OnlineLobby.show() | .hide() | .isVisible()
+OnlineLobby.setStatus(msg) | .setTitle(msg)
+OnlineLobby.host({ onConnected, onData, onDisconnect, onError })
+OnlineLobby.prepareJoin({ onConnected, onData, onDisconnect, onError })
+OnlineLobby.cancel()
+```
+
+### `MobileControls`
+```javascript
+MobileControls.bind(game, { 'btn-up': 'btnUp', ... })
+```
+
+### `GameBoot`
+```javascript
+GameBoot.start(game, { renderer, canvasId, containerId, width, height, bg, engine, beforeStart })
+GameBoot.startCanvas(game, opts)   // Engine (Canvas 2D)
+GameBoot.startPIXI(game, opts)
+GameBoot.startLittle(game, opts)   // LittleJS
+GameBoot.startDOM(game, opts)
+// renderer: 'canvas' (default) | 'pixi' | 'little'
 ```

@@ -10,44 +10,6 @@ const MINES = 15;
 const RED = 1;
 const YEL = 2;
 
-// ── DOM refs ──────────────────────────────────────────────
-const onlineUI      = document.getElementById('online-ui');
-const onlineTitle   = document.getElementById('online-title');
-const onlineStatus  = document.getElementById('online-status');
-const hostView      = document.getElementById('host-view');
-const joinView      = document.getElementById('join-view');
-const roomCodeDisp  = document.getElementById('room-code-display');
-const roomCodeInput = document.getElementById('room-code-input');
-const copyBtn       = document.getElementById('copy-btn');
-const joinBtn       = document.getElementById('join-btn');
-const onlineBackBtn = document.getElementById('online-back-btn');
-
-// ── PeerJS state handled by Online class ────────────────────
-// Online abstraction used here
-
-// ── Canvas button helpers ─────────────────────────────────
-function drawBtn(ctx, label, x, y, w, h, accent, hover) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, 10);
-    ctx.fillStyle = hover ? accent + 'cc' : accent + '33';
-    ctx.fill();
-    ctx.strokeStyle = accent + 'aa';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.fillStyle = hover ? '#fff' : accent;
-    ctx.font = "bold 17px 'Courier New', monospace";
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + w / 2, y + h / 2);
-    ctx.restore();
-}
-
-function hitBtn(gx, gy, btn) {
-    return gx >= btn.x && gx <= btn.x + btn.w && gy >= btn.y && gy <= btn.y + btn.h;
-}
-
-// ── Main game object ──────────────────────────────────────
 const game = {
     state: 'select',      // 'select'|'online-setup'|'playing'|'gameover'
     mode: null,           // 'p1'|'p2'|'online'
@@ -93,7 +55,7 @@ const game = {
 
         Engine.canvas.addEventListener('contextmenu', e => {
             e.preventDefault();
-            if (!onlineUI.classList.contains('hidden') || game.state !== 'playing') return;
+            if (OnlineLobby.isVisible() || game.state !== 'playing') return;
 
             const rect = Engine.canvas.getBoundingClientRect();
             const s = Engine._scale || 1;
@@ -304,7 +266,7 @@ const game = {
 
     _returnToSelect() {
         Online.destroy();
-        onlineUI.classList.add('hidden');
+        OnlineLobby.hide();
         this.state = 'select';
         this.mode = null;
         this.board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
@@ -323,7 +285,7 @@ const game = {
 
     update(dt) {
         // Si el overlay online está visible, no procesar clicks del canvas
-        const overlayVisible = !onlineUI.classList.contains('hidden');
+        const overlayVisible = OnlineLobby.isVisible();
 
         const mouseRaw = Input.getMouse();
         const gm = Engine.toGame(mouseRaw.x, mouseRaw.y);
@@ -355,18 +317,18 @@ const game = {
 
         if (this.state === 'select') {
             if (clickPos) {
-                if (this._btns.p1     && hitBtn(clickPos.x, clickPos.y, this._btns.p1))     this.startGame('p1');
-                if (this._btns.p2     && hitBtn(clickPos.x, clickPos.y, this._btns.p2))     this.startGame('p2');
-                if (this._btns.online && hitBtn(clickPos.x, clickPos.y, this._btns.online)) this.state = 'online-setup';
+                if (this._btns.p1     && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.p1))     this.startGame('p1');
+                if (this._btns.p2     && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.p2))     this.startGame('p2');
+                if (this._btns.online && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.online)) this.state = 'online-setup';
             }
             return;
         }
 
         if (this.state === 'online-setup') {
             if (clickPos) {
-                if (this._btns.host && hitBtn(clickPos.x, clickPos.y, this._btns.host)) this._hostGame();
-                if (this._btns.join && hitBtn(clickPos.x, clickPos.y, this._btns.join)) this._joinGame();
-                if (this._btns.back && hitBtn(clickPos.x, clickPos.y, this._btns.back)) this._cancelOnline();
+                if (this._btns.host && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.host)) this._hostGame();
+                if (this._btns.join && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.join)) this._joinGame();
+                if (this._btns.back && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.back)) this._cancelOnline();
             }
             return;
         }
@@ -558,9 +520,9 @@ const game = {
                 p2:     { x: bx, y: 210, w: bw, h: bh },
                 online: { x: bx, y: 280, w: bw, h: bh }
             };
-            drawBtn(ctx, '1 Jugador',   bx, 140, bw, bh, '#4ecca3', hitBtn(mx, my, this._btns.p1));
-            drawBtn(ctx, '2 Jugadores', bx, 210, bw, bh, '#f5c518', hitBtn(mx, my, this._btns.p2));
-            drawBtn(ctx, 'En línea',    bx, 280, bw, bh, '#e94560', hitBtn(mx, my, this._btns.online));
+            UICanvas.drawButton(ctx, '1 Jugador',   bx, 140, bw, bh, '#4ecca3', UICanvas.hitTest(mx, my, this._btns.p1));
+            UICanvas.drawButton(ctx, '2 Jugadores', bx, 210, bw, bh, '#f5c518', UICanvas.hitTest(mx, my, this._btns.p2));
+            UICanvas.drawButton(ctx, 'En línea',    bx, 280, bw, bh, '#e94560', UICanvas.hitTest(mx, my, this._btns.online));
             Engine.text('Buscaminas · Vanilla JS', W/2, H-20, '#303050', 11);
         } else if (this.state === 'online-setup') {
             Engine.text('🌐 En línea',           W/2, 50, '#e94560', 28);
@@ -571,74 +533,39 @@ const game = {
                 join: { x: bx, y: 210, w: bw, h: bh },
                 back: { x: bx, y: 310, w: bw, h: bh }
             };
-            drawBtn(ctx, 'Crear partida', bx, 140, bw, bh, '#e94560', hitBtn(mx, my, this._btns.host));
-            drawBtn(ctx, 'Unirse',        bx, 210, bw, bh, '#533483', hitBtn(mx, my, this._btns.join));
-            drawBtn(ctx, '← Volver',     bx, 310, bw, bh, '#606070', hitBtn(mx, my, this._btns.back));
+            UICanvas.drawButton(ctx, 'Crear partida', bx, 140, bw, bh, '#e94560', UICanvas.hitTest(mx, my, this._btns.host));
+            UICanvas.drawButton(ctx, 'Unirse',        bx, 210, bw, bh, '#533483', UICanvas.hitTest(mx, my, this._btns.join));
+            UICanvas.drawButton(ctx, '← Volver',     bx, 310, bw, bh, '#606070', UICanvas.hitTest(mx, my, this._btns.back));
         }
     },
 
-    // ── PeerJS Host ───────────────────────────────────────
     _hostGame() {
-        Online.on('onHostReady', () => { onlineStatus.textContent = 'Esperando conexión...'; });
-        Online.on('onConnected', () => {
-            onlineUI.classList.add('hidden'); hostView.classList.add('hidden');
-            this.onlineConnected = true; this.startGame('online', 'host');
-        });
-        Online.on('onData', (data) => {
-            this._handleNetData(data);
-        });
-        Online.on('onDisconnect', () => this._onDisconnect());
-        Online.on('onError', (err) => {
-            onlineStatus.textContent = 'Error: ' + err.type;
-            if (err.type === 'unavailable-id') {
-                onlineStatus.textContent = 'ID ocupado, generando nuevo...';
-                setTimeout(() => this._hostGame(), 500);
-            }
-        });
-
-        Online.host((code) => {
-            onlineTitle.textContent = 'Crear partida';
-            onlineStatus.textContent = 'Creando sala...';
-            hostView.classList.remove('hidden'); joinView.classList.add('hidden');
-            roomCodeDisp.textContent = code; onlineUI.classList.remove('hidden');
+        OnlineLobby.host({
+            onConnected: () => {
+                this.onlineConnected = true;
+                this.startGame('online', 'host');
+            },
+            onData: (data) => this._handleNetData(data),
+            onDisconnect: () => this._onDisconnect(),
+            onError: (err) => {
+                if (err?.type === 'unavailable-id') {
+                    OnlineLobby.setStatus('ID ocupado, generando nuevo...');
+                    setTimeout(() => this._hostGame(), 500);
+                }
+            },
         });
     },
 
-    // ── PeerJS Join ───────────────────────────────────────
     _joinGame() {
-        Online.destroy();
-        onlineTitle.textContent  = 'Unirse a partida';
-        onlineStatus.textContent = 'Introduce el código del anfitrión';
-        hostView.classList.add('hidden');
-        joinView.classList.remove('hidden');
-        roomCodeInput.value = '';
-        onlineUI.classList.remove('hidden');
-
-        Online.on('onError', (err) => {
-            onlineStatus.textContent = 'Error: ' + err.type;
-            joinBtn.disabled = false;
+        OnlineLobby.prepareJoin({
+            onConnected: () => {
+                this.onlineConnected = true;
+                this.startGame('online', 'guest');
+            },
+            onData: (data) => this._handleNetData(data),
+            onDisconnect: () => this._onDisconnect(),
+            onError: (err) => OnlineLobby.setStatus('Error: ' + (err?.type || err)),
         });
-
-        Online.on('onConnected', () => {
-            onlineUI.classList.add('hidden');
-            joinView.classList.add('hidden');
-            this.onlineConnected = true;
-            this.startGame('online', 'guest');
-        });
-
-        Online.on('onData', (data) => {
-            this._handleNetData(data);
-        });
-
-        Online.on('onDisconnect', () => this._onDisconnect());
-
-        joinBtn.onclick = () => {
-            const code = roomCodeInput.value.trim().toUpperCase();
-            if (code.length < 4) { onlineStatus.textContent = 'Código demasiado corto'; return; }
-            onlineStatus.textContent = 'Conectando a ' + code + '...';
-            joinBtn.disabled = true;
-            Online.join(code);
-        };
     },
 
     // ── Manejo de datos de red ────────────────────────────
@@ -656,30 +583,12 @@ const game = {
 
     _cancelOnline() {
         Online.destroy();
-        onlineUI.classList.add('hidden');
+        OnlineLobby.hide();
         this.state = 'select';
     }
 };
 
-// ── HTML button wiring ────────────────────────────────────
-copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(roomCodeDisp.textContent).then(() => {
-        copyBtn.textContent = '¡Copiado!';
-        setTimeout(() => { copyBtn.textContent = 'Copiar código'; }, 1800);
-    });
-});
-
-onlineBackBtn.addEventListener('click', () => {
-    game._cancelOnline();
-});
-
-// Evitar que el engine capture los inputs de teclado y bloquee la escritura
-roomCodeInput.addEventListener('keydown', e => e.stopPropagation());
-roomCodeInput.addEventListener('keyup', e => e.stopPropagation());
-
 // ── Boot ──────────────────────────────────────────────────
-window.onload = () => {
-    Engine.init('game', { width: 480, height: 580, bg: '#0f0f1a' });
-    Engine.start(game);
-};
+OnlineLobby.onCancel(() => game._cancelOnline());
+GameBoot.start(game, { canvasId: 'game', width: 480, height: 580 });
 //Test update

@@ -38,7 +38,7 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **Procedural Audio** - `Audio` class synthesises sounds at runtime (square, sine, saw, noise waves with envelope shaping); no external audio files required
 - **Hub Page** - Minimalist game grid reads `games.json` and auto-renders game cards with thumbnails, descriptions, and a Play button; fully responsive (auto-fill grid, 1 col on mobile)
 - **Auto-Discovery** - `scripts/scan-games.js` scans the `games/` directory and updates `games.json` automatically. This runs via a GitHub Workflow on every push.
-- **PWA (Hybrid Cache)** - Service worker uses a hybrid strategy: Network-First for core hub files (`index.html`, `games.json`, etc.) to ensure new games appear immediately when online, and Cache-First for static assets and manually saved game files.
+- **PWA (Hybrid Cache)** - Service worker (`sw.js`, caché `js-games-v2`) con estrategia híbrida: **Network-First** para código (`/engine/*`, `/games/*`, HTML/JS/CSS) y **Cache-First** para imágenes. Cada juego puede descargarse individualmente desde el hub; `scan-games.js` detecta dependencias del engine desde `index.html`. Ver [engine/docs/OFFLINE.md](./engine/docs/OFFLINE.md).
 - **Dark Mode** - Full dark theme (`#0f0f1a` background) with a consistent red/purple accent palette across the hub and all games
 - **AI Opponent** - Tic Tac Toe features an AI that plays optimally; Arkanoid and Snake are single-player with progressive difficulty
 
@@ -120,7 +120,7 @@ Open `http://localhost:8000` in your browser. The hub lists all registered games
 ├── main.js                        # Hub logic - fetches games.json, renders cards
 ├── games.json                     # Game manifest
 ├── manifest.json                  # PWA manifest
-├── sw.js                          # Service worker (hybrid network-first/cache-first)
+├── sw.js                          # Service worker (js-games-v2, hybrid cache)
 └── icon.svg                       # PWA icon
 ```
 

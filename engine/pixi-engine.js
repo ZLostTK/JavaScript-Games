@@ -1,4 +1,5 @@
 class PIXIEngine {
+	static rendererType = 'pixi';
 	static app = null;
 	static W = 800;
 	static H = 600;
@@ -6,19 +7,20 @@ class PIXIEngine {
 	static _running = false;
 	static _last = 0;
 
-	static init(containerId, opts = {}) {
+	static async init(containerId, opts = {}) {
 		const container = document.getElementById(containerId);
 		if (!container) throw new Error(`PIXIEngine.init: no se encontró #${containerId}`);
-		
+
 		this.W = opts.width || 800;
 		this.H = opts.height || 600;
 		this._game = null;
 		this._running = false;
 
-		if (typeof Input !== 'undefined') Input.init(null);
-		if (typeof Audio !== 'undefined') Audio.init();
+		if (typeof Input !== 'undefined' && typeof Input.init === 'function') Input.init(null);
+		if (typeof Audio !== 'undefined' && typeof Audio.init === 'function') Audio.init();
 
-		this.app = new PIXI.Application({
+		this.app = new PIXI.Application();
+		await this.app.init({
 			width: this.W,
 			height: this.H,
 			backgroundColor: opts.bg ?? 0x1a1a2e,
@@ -31,10 +33,18 @@ class PIXIEngine {
 		this._resize();
 		window.addEventListener('resize', () => this._resize());
 
+		if (typeof RenderBridge !== 'undefined') {
+			RenderBridge.setActive(this);
+			RenderBridge.bindInput();
+		} else if (typeof Input !== 'undefined') {
+			Input.init(this.app.canvas);
+		}
+
 		return this;
 	}
 
 	static _resize() {
+		if (!this.app?.canvas) return;
 		const canvas = this.app.canvas;
 		const parent = canvas.parentElement || document.body;
 		const pw = parent.clientWidth;
@@ -50,11 +60,12 @@ class PIXIEngine {
 		return { x: x / s, y: y / s };
 	}
 
-	static start(game) {
+	static async start(game) {
 		this._game = game;
 		this._running = true;
 		this._last = performance.now();
-		if (game.init) game.init();
+		if (typeof RenderBridge !== 'undefined') RenderBridge.setActive(this);
+		if (game.init) await game.init();
 		this.app.ticker.add(() => this._loop());
 	}
 

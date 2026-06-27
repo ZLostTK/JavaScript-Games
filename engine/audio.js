@@ -16,8 +16,7 @@ class Audio {
 		.then(b => { this._buffers[name] = b; });
 	}
 	
-	static synth(opts) {
-		const { type = 'sine', freq = 440, duration = 0.1, volume = 0.3 } = opts || {};
+	static synth(name, type = 'sine', freq = 440, duration = 0.1, volume = 0.3) {
 		if (duration <= 0) return;
 		this.resume();
 		const sr = this._ctx.sampleRate;

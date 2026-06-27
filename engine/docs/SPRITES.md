@@ -2,7 +2,7 @@
 
 El engine provee tres clases para manejar gráficos 2D: `SpriteProcessor` (bajo nivel, utilidades estáticas), `SpriteManager` (alto nivel, orientado a objetos, agrupamiento y gestión) y `EntityComposer` (composición de entidades por capas).
 
-El sistema es **agnóstico del motor**, lo que significa que detectará automáticamente si estás usando `PIXIEngine`, `Engine` (Canvas) o `DOMEngine` y convertirá los sprites al formato necesario (`PIXI.Sprite`, un bloque de renderizado en Canvas, o un `HTMLElement`).
+El sistema es **agnóstico del motor**. `SpriteProcessor.detectEngine()` consulta `RenderBridge` para detectar el motor activo (`canvas`, `pixi`, `little` → canvas para sprites 2D) y convierte sprites al formato necesario.
 
 ---
 
@@ -91,6 +91,12 @@ render(ctx) {
     ctx.drawImage(texture, x, y);
 }
 ```
+
+> **Nota sobre `createAnimationAs`**: Cuando no se pasan opciones, el motor hereda automáticamente `speed`, `loop` y `onComplete` de la definición de la animación cargada con `manager.load()`. En PIXI, esto significa que `speed: 10` equivale a 10 fps en `PIXI.AnimatedSprite.animationSpeed`. Si necesitas sobrescribir algún valor al instanciar, pásalo como segundo argumento:
+> ```javascript
+> // Sobrescribe speed, hereda loop y onComplete de la definición
+> let anim = manager.createAnimationAs('hero', 'walk', { speed: 20 });
+> ```
 
 ### Usar Animaciones (DOMEngine)
 

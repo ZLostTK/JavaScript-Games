@@ -30,29 +30,6 @@ function makePRNG(seed) {
     };
 }
 
-// ── Canvas button helpers ─────────────────────────────────
-function drawBtn(ctx, label, x, y, w, h, accent, hover, disabled = false) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, 10);
-    ctx.fillStyle = disabled ? 'rgba(40,40,60,0.4)' : (hover ? accent + 'cc' : accent + '33');
-    ctx.fill();
-    ctx.strokeStyle = disabled ? 'rgba(80,80,100,0.35)' : accent + 'aa';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.fillStyle = disabled ? '#383858' : (hover ? '#fff' : accent);
-    ctx.font = "bold 16px 'Courier New', monospace";
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + w / 2, y + h / 2);
-    ctx.restore();
-}
-
-function hitBtn(gx, gy, btn) {
-    return btn && gx >= btn.x && gx <= btn.x + btn.w
-               && gy >= btn.y && gy <= btn.y + btn.h;
-}
-
 // ── Pájaro amarillo (jugador local / host) ────────────────
 function drawBird(ctx, x, y, angle, alpha = 1) {
     ctx.save();
@@ -566,9 +543,9 @@ const game = {
             this.birdY = GH / 2 - 30 + Math.sin(this._time * 2.8) * 10;
             const cp = this._getClickPos();
             if (cp) {
-                if (hitBtn(cp.x, cp.y, this._btns.play))   this._startGame('solo');
-                if (hitBtn(cp.x, cp.y, this._btns.online)) this._onClickOnline();
-                if (hitBtn(cp.x, cp.y, this._btns.shadow) && this.best > 0)
+                if (UICanvas.hitTest(cp.x, cp.y, this._btns.play))   this._startGame('solo');
+                if (UICanvas.hitTest(cp.x, cp.y, this._btns.online)) this._onClickOnline();
+                if (UICanvas.hitTest(cp.x, cp.y, this._btns.shadow) && this.best > 0)
                     this._startGame('shadow');
             }
             return;
@@ -1005,12 +982,12 @@ const game = {
         this._btns.online = b2;
         this._btns.shadow = b3;
 
-        drawBtn(ctx, 'Jugar',    b1.x, b1.y, b1.w, b1.h, '#f5c518', hitBtn(gm.x, gm.y, b1));
-        drawBtn(ctx, 'Online',  b2.x, b2.y, b2.w, b2.h, '#4ecca3', hitBtn(gm.x, gm.y, b2));
+        UICanvas.drawButton(ctx, 'Jugar',    b1.x, b1.y, b1.w, b1.h, '#f5c518', UICanvas.hitTest(gm.x, gm.y, b1));
+        UICanvas.drawButton(ctx, 'Online',  b2.x, b2.y, b2.w, b2.h, '#4ecca3', UICanvas.hitTest(gm.x, gm.y, b2));
 
         const shadowDisabled = this.best === 0;
-        drawBtn(ctx, 'vs Sombra', b3.x, b3.y, b3.w, b3.h, '#4fc3f7',
-            hitBtn(gm.x, gm.y, b3) && !shadowDisabled, shadowDisabled);
+        UICanvas.drawButton(ctx, 'vs Sombra', b3.x, b3.y, b3.w, b3.h, '#4fc3f7',
+            UICanvas.hitTest(gm.x, gm.y, b3) && !shadowDisabled, shadowDisabled);
 
         if (shadowDisabled) {
             ctx.save();
@@ -1064,9 +1041,9 @@ const game = {
         this._btns.join = b2;
         this._btns.back = b3;
 
-        drawBtn(ctx, 'Crear partida', b1.x, b1.y, b1.w, b1.h, '#f5c518', hitBtn(gm.x, gm.y, b1));
-        drawBtn(ctx, 'Unirse',        b2.x, b2.y, b2.w, b2.h, '#4ecca3', hitBtn(gm.x, gm.y, b2));
-        drawBtn(ctx, '← Volver',      b3.x, b3.y, b3.w, b3.h, '#606070', hitBtn(gm.x, gm.y, b3));
+        UICanvas.drawButton(ctx, 'Crear partida', b1.x, b1.y, b1.w, b1.h, '#f5c518', UICanvas.hitTest(gm.x, gm.y, b1));
+        UICanvas.drawButton(ctx, 'Unirse',        b2.x, b2.y, b2.w, b2.h, '#4ecca3', UICanvas.hitTest(gm.x, gm.y, b2));
+        UICanvas.drawButton(ctx, '← Volver',      b3.x, b3.y, b3.w, b3.h, '#606070', UICanvas.hitTest(gm.x, gm.y, b3));
 
         // Etiquetas de colores
         ctx.save();
@@ -1080,9 +1057,9 @@ const game = {
         ctx.restore();
 
         if (cp) {
-            if (hitBtn(cp.x, cp.y, b1)) this._hostOnline();
-            if (hitBtn(cp.x, cp.y, b2)) this._joinOnline();
-            if (hitBtn(cp.x, cp.y, b3)) this._returnToSelect();
+            if (UICanvas.hitTest(cp.x, cp.y, b1)) this._hostOnline();
+            if (UICanvas.hitTest(cp.x, cp.y, b2)) this._joinOnline();
+            if (UICanvas.hitTest(cp.x, cp.y, b3)) this._returnToSelect();
         }
 
         drawGround(ctx, this.groundOffset || 0);
@@ -1221,7 +1198,4 @@ const game = {
 };
 
 // ── Boot ──────────────────────────────────────────────────
-window.onload = () => {
-    Engine.init('game', { width: GW, height: GH, bg: '#0a1628' });
-    Engine.start(game);
-};
+GameBoot.start(game, { canvasId: 'game', width: GW, height: GH, bg: '#0a1628' });

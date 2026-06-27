@@ -1,15 +1,40 @@
 document.addEventListener('DOMContentLoaded', async () => {
 	const grid = document.getElementById('game-grid');
+	let cacheConfig = { name: 'js-games-v2', alwaysInclude: ['engine/game-shell.css'] };
+
 	try {
 		const res = await fetch('games.json');
 		const data = await res.json();
-		
+		if (data.cache) cacheConfig = data.cache;
+
+		const CACHE_NAME = cacheConfig.name || 'js-games-v2';
+
+		/** Lista completa de URLs a cachear para un juego descargado */
+		function buildGameCacheUrls(g) {
+			const files = new Set([
+				`./${g.path}`,
+				`./${g.image}`,
+			]);
+
+			(cacheConfig.gameBaseFiles || ['index.html', 'style.css', 'script.js']).forEach((f) => {
+				files.add(`./${g.path}${f}`);
+			});
+
+			(cacheConfig.alwaysInclude || []).forEach((f) => files.add(`./${f}`));
+
+			if (g.extraCacheFiles) {
+				g.extraCacheFiles.forEach((f) => files.add(`./${f}`));
+			}
+
+			return [...files];
+		}
+
 		data.games.forEach(g => {
 			const card = document.createElement('article');
 			card.className = 'game-card';
-			
+
 			const tagsHtml = g.tags ? g.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
-			
+
 			card.innerHTML = `
         <img class="game-card-img" src="${g.image}" alt="${g.title}" style="background-color: ${g.color}">
         <div class="game-card-body">
@@ -27,37 +52,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
 			grid.appendChild(card);
 		});
-		
-		// Agregar event listeners a los botones de caché
+
 		document.querySelectorAll('.cache-btn').forEach(btn => {
-			btn.addEventListener('click', async (e) => {
+			btn.addEventListener('click', async () => {
 				const path = btn.getAttribute('data-path');
-				const image = btn.getAttribute('data-image');
 				const cacheState = btn.getAttribute('data-cached');
-				
+
 				try {
-					const originalHTML = btn.innerHTML;
 					btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 					btn.disabled = true;
-					
-					const cache = await caches.open('js-games-v1');
-					const filesToCache = [
-						`./${path}`,
-						`./${path}index.html`,
-						`./${path}style.css`,
-						`./${path}script.js`,
-						`./${image}`
-					];
-					
+
+					const cache = await caches.open(CACHE_NAME);
 					const g = data.games.find(game => game.path === path);
-					if (g && g.extraCacheFiles) {
-						g.extraCacheFiles.forEach(file => {
-							filesToCache.push(`./${file}`);
-						});
-					}
-					
+					const filesToCache = g ? buildGameCacheUrls(g) : [];
+
 					if (cacheState === 'true') {
-						// Desinstalar (eliminar de caché)
 						for (const file of filesToCache) {
 							await cache.delete(file);
 						}
@@ -67,8 +76,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 						btn.title = 'Guardar para jugar sin conexión';
 						btn.disabled = false;
 					} else {
-						// Instalar o Actualizar (añadir a caché)
-						// Si es actualización, borramos lo viejo primero (aunque addAll sobrescribe, es más limpio)
 						if (cacheState === 'update') {
 							for (const file of filesToCache) {
 								await cache.delete(file);
@@ -86,7 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 					btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 					btn.style.color = '#ef4444';
 					btn.title = 'Error en la operación';
-					
+
 					setTimeout(() => {
 						const currentCacheState = btn.getAttribute('data-cached');
 						if (currentCacheState === 'update') {
@@ -107,17 +114,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 				}
 			});
 		});
-		
-		// Inicializar el estado visual de los botones según la caché actual
+
 		if ('caches' in window) {
-			caches.open('js-games-v1').then(cache => {
+			caches.open(CACHE_NAME).then(cache => {
 				document.querySelectorAll('.cache-btn').forEach(async btn => {
 					const path = btn.getAttribute('data-path');
 					const match = await cache.match(`./${path}index.html`);
 					if (match) {
 						let isDifferent = false;
 						try {
-							// Fetch HEAD del script principal para ver si ha cambiado
 							const headRes = await fetch(`./${path}script.js?_nocache=${Date.now()}`, { method: 'HEAD' });
 							if (headRes && headRes.ok) {
 								const matchScript = await cache.match(`./${path}script.js`);
@@ -126,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 									const cachedLastMod = matchScript.headers.get('Last-Modified');
 									const netSize = headRes.headers.get('Content-Length');
 									const cachedSize = matchScript.headers.get('Content-Length');
-									
+
 									if (netLastMod && cachedLastMod && netLastMod !== cachedLastMod) isDifferent = true;
 									else if (netSize && cachedSize && netSize !== cachedSize) isDifferent = true;
 								}
@@ -134,16 +139,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 						} catch (err) {
 							console.log('No se pudo comprobar actualización para', path);
 						}
-						
+
 						if (isDifferent) {
 							btn.setAttribute('data-cached', 'update');
 							btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
-							btn.style.color = '#3b82f6'; // Azul
+							btn.style.color = '#3b82f6';
 							btn.title = 'Actualizar juego (reemplazar caché)';
 						} else {
 							btn.setAttribute('data-cached', 'true');
 							btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-							btn.style.color = '#ef4444'; // Rojo
+							btn.style.color = '#ef4444';
 							btn.title = 'Eliminar de caché';
 						}
 					} else {
@@ -156,53 +161,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 		grid.innerHTML = '<p style="color:#e94560;text-align:center;padding:2rem">Error al cargar los juegos.</p>';
 		console.error(e);
 	}
-	
-	// PWA Install Prompt Logic
-	let deferredPrompt;
-	const pwaBanner = document.getElementById('pwa-banner');
-	const installBtn = document.getElementById('install-btn');
-	
-	window.addEventListener('beforeinstallprompt', (e) => {
-		e.preventDefault();
-		deferredPrompt = e;
-		// Show banner only if it's likely a mobile device or screen is small
-		if (window.innerWidth <= 768) {
-			pwaBanner.classList.remove('hidden');
-		}
-	});
-	
-	installBtn.addEventListener('click', async () => {
-		if (deferredPrompt) {
-			deferredPrompt.prompt();
-			const { outcome } = await deferredPrompt.userChoice;
-			if (outcome === 'accepted') {
-				pwaBanner.classList.add('hidden');
-			}
-			deferredPrompt = null;
-		}
-	});
-	
-	// Botón de borrar toda la caché con modal
+
 	const modal = document.getElementById('confirm-modal');
 	const modalText = document.getElementById('confirm-modal-text');
 	const modalCancel = document.getElementById('confirm-modal-cancel');
 	const modalOk = document.getElementById('confirm-modal-ok');
-	
+
 	document.getElementById('clear-cache-btn').addEventListener('click', () => {
 		modalText.textContent = '¿Borrar toda la caché? Se eliminarán todos los datos descargados y se recargará la página.';
 		modal.classList.remove('hidden');
 	});
-	
+
 	modalCancel.addEventListener('click', () => {
 		modal.classList.add('hidden');
 	});
-	
+
 	modalOk.addEventListener('click', async () => {
 		modal.classList.add('hidden');
 		const btn = document.getElementById('clear-cache-btn');
 		btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Borrando...';
 		btn.disabled = true;
-		
+
 		try {
 			if ('caches' in window) {
 				const keys = await caches.keys();
@@ -213,11 +192,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 		} catch (err) {
 			console.error('Error al borrar caché:', err);
 		}
-		
+
 		window.location.reload();
 	});
-	
-	// Registrar Service Worker
+
+	// PWA Install Prompt
+	let deferredPrompt;
+	const pwaBanner = document.getElementById('pwa-banner');
+	const installBtn = document.getElementById('install-btn');
+
+	window.addEventListener('beforeinstallprompt', (e) => {
+		e.preventDefault();
+		deferredPrompt = e;
+		if (window.innerWidth <= 768) {
+			pwaBanner.classList.remove('hidden');
+		}
+	});
+
+	installBtn.addEventListener('click', async () => {
+		if (deferredPrompt) {
+			deferredPrompt.prompt();
+			const { outcome } = await deferredPrompt.userChoice;
+			if (outcome === 'accepted') {
+				pwaBanner.classList.add('hidden');
+			}
+			deferredPrompt = null;
+		}
+	});
+
 	if ('serviceWorker' in navigator) {
 		window.addEventListener('load', () => {
 			navigator.serviceWorker.register('./sw.js').then(reg => {

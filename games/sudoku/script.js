@@ -2,8 +2,6 @@
 // Modos: Solo / Versus Local / Online 1v1 (PeerJS)
 // Resolución lógica: 480×760 - Sin assets externos. Mouse + Touch + Teclado.
 
-Engine.init('gameCanvas', { width: 480, height: 760, bg: '#0f0f1a' });
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // PALETA
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -157,10 +155,6 @@ const ACT_H     = 42;
 // ═══════════════════════════════════════════════════════════════════════════════
 const SCENE = { MENU: 'menu', GAME: 'game', WIN: 'win' };
 
-// ── DOM refs (lobby overlay - mismo patrón que otros juegos) ──────────────────
-const onlineUI      = document.getElementById('online-ui');
-const onlineTitle   = document.getElementById('online-title');
-const onlineStatus  = document.getElementById('online-status');
 const hostView      = document.getElementById('host-view');
 const joinView      = document.getElementById('join-view');
 const roomCodeDisp  = document.getElementById('room-code-display');
@@ -352,8 +346,8 @@ const state = {
 const OverlayUI = {
     _menuState: 'main',   // 'main' | 'online-setup'
 
-    show() { onlineUI.classList.remove('hidden'); },
-    hide() { onlineUI.classList.add('hidden'); },
+    show() { OnlineLobby.show(); },
+    hide() { OnlineLobby.hide(); },
 
     setStatus(msg) {
         onlineStatus.textContent = msg;
@@ -693,12 +687,8 @@ function hitGrid(x, y) {
     return (r < 0 || r > 8 || c < 0 || c > 8) ? null : { r, c };
 }
 
-function hitBtn(x, y, btn) {
-    return x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h;
-}
-
 function hitButtons(x, y, buttons) {
-    return buttons.find(b => hitBtn(x, y, b)) || null;
+    return buttons.find(b => UICanvas.hitTest(x, y, b)) || null;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -806,7 +796,7 @@ function handleClick(rawX, rawY) {
         return;
     }
 
-    if (state.mode === 'local' && state.passTurnBtn && hitBtn(x, y, state.passTurnBtn)) {
+    if (state.mode === 'local' && state.passTurnBtn && UICanvas.hitTest(x, y, state.passTurnBtn)) {
         GameModel.applyAction({ type: 'pass' });
     }
 }
@@ -1477,4 +1467,4 @@ onlineBackBtn.addEventListener('click', () => {
 roomCodeInput.addEventListener('keydown', e => e.stopPropagation());
 roomCodeInput.addEventListener('keyup',   e => e.stopPropagation());
 
-Engine.start(game);
+GameBoot.startCanvas(game, { canvasId: 'gameCanvas', width: 480, height: 760 });

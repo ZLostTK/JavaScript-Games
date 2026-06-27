@@ -3,10 +3,6 @@ OTHELLO / REVERSI  -  Full game for the shared-canvas engine
 Modes: Solo (vs CPU), Versus Local, Multiplayer Online (P2P)
 ═══════════════════════════════════════════════════════════════ */
 
-// ── DOM refs (lobby overlay - mismo patrón que otros juegos) ──────────────────
-const onlineUI      = document.getElementById('online-ui');
-const onlineTitle   = document.getElementById('online-title');
-const onlineStatus  = document.getElementById('online-status');
 const hostView      = document.getElementById('host-view');
 const joinView      = document.getElementById('join-view');
 const roomCodeDisp  = document.getElementById('room-code-display');
@@ -273,7 +269,7 @@ const game = {
         Online.on('onConnected', (role) => {
             this.onlineRole = role;
             this.myColor    = (role === 'host') ? BLACK : WHITE;
-            onlineUI.classList.add('hidden');
+            OnlineLobby.hide();
             this._startGame('online');
             
             if (role === 'host') {
@@ -486,7 +482,7 @@ const game = {
         onlineStatus.textContent = '¿Qué rol tomarás?';
         hostView.classList.add('hidden');
         joinView.classList.add('hidden');
-        onlineUI.classList.remove('hidden');
+        OnlineLobby.show();
         
         if (!this._lobbyBound) {
             this._lobbyBound = true;
@@ -540,7 +536,7 @@ const game = {
             
             onlineBackBtn.onclick = () => {
                 Online.destroy();
-                onlineUI.classList.add('hidden');
+                OnlineLobby.hide();
                 this.state = STATE.MENU;
             };
             
@@ -1017,5 +1013,4 @@ const game = {
 };
 
 // ── Boot ──────────────────────────────────────────────────────────
-Engine.init('gameCanvas', { width: W, height: H, bg: '#0b0f1a' });
-Engine.start(game);
+GameBoot.startCanvas(game, { canvasId: 'gameCanvas', width: W, height: H, bg: '#0b0f1a' });

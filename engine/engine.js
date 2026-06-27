@@ -1,4 +1,6 @@
 class Engine {
+	static rendererType = 'canvas';
+
 	static init(canvasId, opts = {}) {
 		this.canvas = document.getElementById(canvasId);
 		this.ctx = this.canvas.getContext('2d');
@@ -16,6 +18,8 @@ class Engine {
 		this._last = performance.now();
 		this._running = false;
 		this._game = null;
+
+		if (typeof RenderBridge !== 'undefined') RenderBridge.setActive(this);
 		
 		return this;
 	}
@@ -43,6 +47,7 @@ class Engine {
 	static start(game) {
 		this._game = game;
 		this._running = true;
+		if (typeof RenderBridge !== 'undefined') RenderBridge.setActive(this);
 		if (game.init) game.init();
 		this._loop(performance.now());
 	}

@@ -1,6 +1,10 @@
 # Sistema Online Multijugador
 
-El módulo `Online` es un envoltorio (wrapper) de [PeerJS](https://peerjs.com/), facilitando enormemente la creación de juegos multijugador P2P (Peer-to-Peer) utilizando WebRTC.
+El módulo `Online` es un wrapper de [PeerJS](https://peerjs.com/) para juegos multijugador P2P (WebRTC).
+
+**Compatible con todos los motores:** Engine, PIXIEngine, LittleEngine y DOMEngine. El networking es independiente del renderizado.
+
+Para la UI de lobby (crear/unirse/copiar código), usa **`OnlineLobby`** — ver [GAME_ARCHITECTURE.md](GAME_ARCHITECTURE.md).
 
 ## ¿Para qué sirve?
 Permite que dos o más jugadores se conecten entre sí sin necesidad de configurar ni mantener un servidor backend complejo (como Node.js o Socket.io). Uno de los jugadores hace de "Host" (servidor) y los demás se unen a su sala usando un código corto.
@@ -110,4 +114,5 @@ Cuando el juego termine o el jugador salga al menú principal, asegúrate de des
 
 ```javascript
 Online.destroy();
+OnlineLobby.cancel(); // destruye conexión y oculta overlay DOM
 ```

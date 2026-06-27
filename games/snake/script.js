@@ -24,30 +24,7 @@ const game = {
     this.btnLeft = false;
     this.btnRight = false;
     
-    if (!this.buttonsBound) {
-      const bindBtn = (id, prop) => {
-        const el = document.getElementById(id);
-        if (el) {
-          const down = (e) => { e.preventDefault(); this[prop] = true; this.lastPressed = prop; };
-          const up = (e) => { e.preventDefault(); this[prop] = false; if(this.lastPressed === prop) this.lastPressed = null; };
-          el.addEventListener('touchstart', down, {passive: false});
-          el.addEventListener('touchend', up, {passive: false});
-          el.addEventListener('mousedown', down);
-          el.addEventListener('mouseup', up);
-          el.addEventListener('mouseleave', up);
-        }
-      };
-      bindBtn('btn-up', 'btnUp');
-      bindBtn('btn-down', 'btnDown');
-      bindBtn('btn-left', 'btnLeft');
-      bindBtn('btn-right', 'btnRight');
-      
-      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-        const mc = document.getElementById('mobile-controls');
-        if (mc) mc.classList.remove('hidden');
-      }
-      this.buttonsBound = true;
-    }
+    MobileControls.bind(this, { 'btn-up': 'btnUp', 'btn-down': 'btnDown', 'btn-left': 'btnLeft', 'btn-right': 'btnRight' });
   },
 
   spawnFood() {
@@ -171,4 +148,4 @@ const game = {
   }
 };
 
-Engine.init('game', { width: 400, height: 400, bg: '#0f0f1a' }).start(game);
+GameBoot.start(game, { canvasId: 'game', width: 400, height: 400 });

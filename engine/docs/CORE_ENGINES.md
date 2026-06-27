@@ -1,6 +1,27 @@
 # Motores Core (Core Engines)
 
-El sistema soporta múltiples motores de renderizado para adaptarse a diferentes tipos de juegos. Todos siguen un patrón común para el Game Loop: un objeto `game` con los métodos `init()`, `update(dt)` y (opcionalmente) `render(ctx)`.
+El sistema soporta múltiples motores de renderizado. Todos siguen el contrato de **Game Object**: `init()`, `update(dt)` y (opcionalmente) `render()`.
+
+Los tres motores gráficos principales — **Engine**, **PIXIEngine** y **LittleEngine** — registran automáticamente el motor activo en `RenderBridge`, permitiendo que módulos compartidos (`UICanvas`, `GameBoot`, `SpriteProcessor`) funcionen sin acoplarse a uno concreto.
+
+---
+
+## RenderBridge (puente agnóstico)
+
+Carga obligatoria **antes** del motor, **después** de `theme.js`:
+
+```html
+<script src="../../engine/render-bridge.js"></script>
+```
+
+```javascript
+RenderBridge.W          // ancho lógico del motor activo
+RenderBridge.H          // alto lógico
+RenderBridge.toGame(x, y)  // pantalla → coordenadas de juego
+RenderBridge.type()     // 'canvas' | 'pixi' | 'little'
+RenderBridge.ctx        // contexto 2D (solo Engine)
+RenderBridge.canvas     // elemento canvas activo
+```
 
 ---
 
@@ -54,6 +75,9 @@ const myGame = {
 
 Engine.init('my-canvas', { width: 800, height: 600, scaleMode: 'fit' });
 Engine.start(myGame);
+
+// O con GameBoot (recomendado):
+GameBoot.start(myGame, { canvasId: 'my-canvas', width: 800, height: 600 });
 ```
 
 ---
@@ -150,11 +174,70 @@ const pixiGame = {
 
 PIXIEngine.init('game-container', { width: 800, height: 600, bg: 0x000000 });
 PIXIEngine.start(pixiGame);
+
+// O con GameBoot:
+GameBoot.startPIXI(pixiGame, { containerId: 'game-container', width: 800, height: 600 });
+// GameBoot.start(pixiGame, { renderer: 'pixi', ... })
 ```
+
+**Notas de compatibilidad:**
+- `PIXIEngine.toGame(x, y)` convierte coordenadas de pantalla a lógicas (igual que Engine).
+- `Input` se vincula automáticamente al canvas PIXI tras `init()`.
+- `render()` en el game object es opcional; PIXI renderiza la escena en cada tick.
 
 ---
 
-## 4. LittleEngine
+## 4. LittleEngine (LittleJS)
 
-Wrapper para el motor microscópico LittleJS.
-Ideal para juegos con estética pixel-art extremadamente ligeros y Game Jams. (Requiere documentación avanzada dependiente de LittleJS).
+Wrapper para [LittleJS](https://github.com/KilledByAPixel/LittleJS). Ideal para juegos pixel-art con tiles y sprites ligeros.
+
+### ¿Cuándo utilizarlo?
+Game jams, plataformas retro, juegos basados en tilemap donde LittleJS aporta física y renderizado integrados.
+
+### Declaración y Opciones
+
+```javascript
+LittleEngine.init(containerId, options)
+```
+- **`containerId`**: `<div>` donde LittleJS inyecta su canvas.
+- **`options`**:
+  - `width`, `height` (number): Resolución lógica.
+  - `tileSize` (number): Tamaño de tile por defecto.
+  - `padding` (number): Padding entre tiles.
+  - `images` (string[]): Rutas de imágenes a precargar.
+
+### Métodos
+
+- `LittleEngine.start(game)`: Inicia el loop LittleJS.
+- `LittleEngine.stop()`: Detiene y destruye objetos.
+- `LittleEngine.toGame(x, y)`: Convierte coordenadas de pantalla (compatible con `UICanvas.getPointer()`).
+- `LittleEngine.W`, `LittleEngine.H`: Dimensiones lógicas.
+
+### Ejemplo
+
+```javascript
+const littleGame = {
+    init() {
+        // Usar API LittleJS: new EngineObject(), tile(), etc.
+    },
+    update(dt) {
+        // dt = timeDelta de LittleJS
+    },
+    render() {
+        // postRender hook — dibujado adicional
+    }
+};
+
+GameBoot.startLittle(littleGame, {
+    containerId: 'game-container',
+    width: 640, height: 480,
+    tileSize: 16,
+    images: ['tilemap.png'],
+});
+```
+
+**Scripts requeridos:**
+```html
+<script src="../../engine/littlejs.min.js"></script>
+<script src="../../engine/littlejs-engine.js"></script>
+```

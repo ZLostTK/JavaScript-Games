@@ -458,7 +458,4 @@ const game = {
 	},
 };
 
-window.onload = () => {
-	DOMEngine.init('game-container', { fps: 60 });
-	DOMEngine.start(game);
-};
+GameBoot.startDOM(game);

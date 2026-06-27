@@ -5,48 +5,9 @@ Modes: vs. IA  |  1v1 (same device)  |  Online (PeerJS)
 
 const COLS  = 7;
 const ROWS  = 6;
-const RED   = 1;   // player 1 / host
-const YEL   = 2;   // player 2 / guest / AI
+const RED   = 1;
+const YEL   = 2;
 
-// ── DOM refs ──────────────────────────────────────────────
-const onlineUI      = document.getElementById('online-ui');
-const onlineTitle   = document.getElementById('online-title');
-const onlineStatus  = document.getElementById('online-status');
-const hostView      = document.getElementById('host-view');
-const joinView      = document.getElementById('join-view');
-const roomCodeDisp  = document.getElementById('room-code-display');
-const roomCodeInput = document.getElementById('room-code-input');
-const copyBtn       = document.getElementById('copy-btn');
-const joinBtn       = document.getElementById('join-btn');
-const onlineBackBtn = document.getElementById('online-back-btn');
-
-// ── PeerJS state handled by Online class ────────────────────
-// Online abstraction used here
-
-// ── Canvas button helpers ─────────────────────────────────
-function drawBtn(ctx, label, x, y, w, h, accent, hover) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, 10);
-    ctx.fillStyle = hover ? accent + 'cc' : accent + '33';
-    ctx.fill();
-    ctx.strokeStyle = accent + 'aa';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.fillStyle = hover ? '#fff' : accent;
-    ctx.font = "bold 17px 'Courier New', monospace";
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + w / 2, y + h / 2);
-    ctx.restore();
-}
-
-function hitBtn(gx, gy, btn) {
-    return gx >= btn.x && gx <= btn.x + btn.w &&
-    gy >= btn.y && gy <= btn.y + btn.h;
-}
-
-// ── Main game object ──────────────────────────────────────
 const game = {
     
     state: 'select',      // 'select'|'online-setup'|'playing'|'gameover'
@@ -257,60 +218,39 @@ const game = {
     
     // ── Navigation ────────────────────────────────────────
     _returnToSelect() {
-        Online.destroy(); onlineUI.classList.add('hidden');
+        Online.destroy(); OnlineLobby.hide();
         this.state = 'select'; this.mode = null;
         this.board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
         this.turn = RED; this.gameOver = false; this.winner = null;
         this.winCells = null; this.dropAnim = null; this._aiTimer = null; this.hoverCol = -1;
     },
     _showOnlineSetup() { this.state = 'online-setup'; },
-    _cancelOnline()    { Online.destroy(); onlineUI.classList.add('hidden'); this.state = 'select'; },
-    
-    // ── PeerJS Host ───────────────────────────────────────
-    _hostGame() {
-        Online.on('onHostReady', () => { onlineStatus.textContent = 'Esperando conexión...'; });
-        Online.on('onConnected', () => {
-            onlineUI.classList.add('hidden'); hostView.classList.add('hidden');
-            this.onlineConnected = true; this.startGame('online', 'host');
-        });
-        Online.on('onData', (data) => {
-            if (data.type === 'move') this.placePiece(data.col, this.turn, false);
-        });
-        Online.on('onDisconnect', () => this._onDisconnect());
-        Online.on('onError', (err) => { onlineStatus.textContent = 'Error: ' + err.type; });
+    _cancelOnline() { OnlineLobby.cancel(); this.state = 'select'; },
 
-        Online.host((code) => {
-            onlineTitle.textContent = 'Crear partida';
-            onlineStatus.textContent = 'Creando sala...';
-            hostView.classList.remove('hidden'); joinView.classList.add('hidden');
-            roomCodeDisp.textContent = code; onlineUI.classList.remove('hidden');
+    _hostGame() {
+        OnlineLobby.host({
+            onConnected: () => {
+                this.onlineConnected = true;
+                this.startGame('online', 'host');
+            },
+            onData: (data) => {
+                if (data.type === 'move') this.placePiece(data.col, this.turn, false);
+            },
+            onDisconnect: () => this._onDisconnect(),
         });
     },
-    
-    // ── PeerJS Join ───────────────────────────────────────
-    _joinGame() {
-        Online.destroy();
-        onlineTitle.textContent = 'Unirse a partida';
-        onlineStatus.textContent = 'Introduce el código del anfitrión';
-        hostView.classList.add('hidden'); joinView.classList.remove('hidden');
-        roomCodeInput.value = ''; onlineUI.classList.remove('hidden');
-        
-        Online.on('onError', (err) => { onlineStatus.textContent = 'Error al conectar'; joinBtn.disabled = false; });
-        Online.on('onConnected', () => {
-            onlineUI.classList.add('hidden'); joinView.classList.add('hidden');
-            this.onlineConnected = true; this.startGame('online', 'guest');
-        });
-        Online.on('onData', (data) => {
-            if (data.type === 'move') this.placePiece(data.col, this.turn, false);
-        });
-        Online.on('onDisconnect', () => this._onDisconnect());
 
-        joinBtn.onclick = () => {
-            const code = roomCodeInput.value.trim().toUpperCase();
-            if (code.length < 4) { onlineStatus.textContent = 'Código demasiado corto'; return; }
-            onlineStatus.textContent = 'Conectando...'; joinBtn.disabled = true;
-            Online.join(code);
-        };
+    _joinGame() {
+        OnlineLobby.prepareJoin({
+            onConnected: () => {
+                this.onlineConnected = true;
+                this.startGame('online', 'guest');
+            },
+            onData: (data) => {
+                if (data.type === 'move') this.placePiece(data.col, this.turn, false);
+            },
+            onDisconnect: () => this._onDisconnect(),
+        });
     },
     
     _onDisconnect() {
@@ -338,18 +278,18 @@ const game = {
         
         if (this.state === 'select') {
             if (clickPos) {
-                if (this._btns.ai     && hitBtn(clickPos.x, clickPos.y, this._btns.ai))     this.startGame('ai');
-                if (this._btns.pvp    && hitBtn(clickPos.x, clickPos.y, this._btns.pvp))    this.startGame('pvp');
-                if (this._btns.online && hitBtn(clickPos.x, clickPos.y, this._btns.online)) this._showOnlineSetup();
+                if (this._btns.ai     && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.ai))     this.startGame('ai');
+                if (this._btns.pvp    && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.pvp))    this.startGame('pvp');
+                if (this._btns.online && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.online)) this._showOnlineSetup();
             }
             return;
         }
         
         if (this.state === 'online-setup') {
             if (clickPos) {
-                if (this._btns.host && hitBtn(clickPos.x, clickPos.y, this._btns.host)) this._hostGame();
-                if (this._btns.join && hitBtn(clickPos.x, clickPos.y, this._btns.join)) this._joinGame();
-                if (this._btns.back && hitBtn(clickPos.x, clickPos.y, this._btns.back)) this._cancelOnline();
+                if (this._btns.host && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.host)) this._hostGame();
+                if (this._btns.join && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.join)) this._joinGame();
+                if (this._btns.back && UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.back)) this._cancelOnline();
             }
             return;
         }
@@ -414,9 +354,9 @@ const game = {
             const b2 = { x:bx, y:210, w:bw, h:bh };
             const b3 = { x:bx, y:280, w:bw, h:bh };
             this._btns.ai = b1; this._btns.pvp = b2; this._btns.online = b3;
-            drawBtn(ctx, 'vs. IA',   b1.x,b1.y,b1.w,b1.h, '#e94560', hitBtn(gm.x,gm.y,b1));
-            drawBtn(ctx, '1 vs 1',  b2.x,b2.y,b2.w,b2.h, '#f5c518', hitBtn(gm.x,gm.y,b2));
-            drawBtn(ctx, 'En línea',b3.x,b3.y,b3.w,b3.h, '#4ecca3', hitBtn(gm.x,gm.y,b3));
+            UICanvas.drawButton(ctx, 'vs. IA',   b1.x,b1.y,b1.w,b1.h, '#e94560', UICanvas.hitTest(gm.x,gm.y,b1));
+            UICanvas.drawButton(ctx, '1 vs 1',  b2.x,b2.y,b2.w,b2.h, '#f5c518', UICanvas.hitTest(gm.x,gm.y,b2));
+            UICanvas.drawButton(ctx, 'En línea',b3.x,b3.y,b3.w,b3.h, '#4ecca3', UICanvas.hitTest(gm.x,gm.y,b3));
             Engine.text('Conecta 4 · Vanilla JS', W/2, H-20, '#303050', 11);
             return;
         }
@@ -429,9 +369,9 @@ const game = {
             const b2 = { x:bx, y:210, w:bw, h:bh };
             const b3 = { x:bx, y:310, w:bw, h:bh };
             this._btns.host = b1; this._btns.join = b2; this._btns.back = b3;
-            drawBtn(ctx, 'Crear partida', b1.x,b1.y,b1.w,b1.h, '#4ecca3', hitBtn(gm.x,gm.y,b1));
-            drawBtn(ctx, 'Unirse',        b2.x,b2.y,b2.w,b2.h, '#533483', hitBtn(gm.x,gm.y,b2));
-            drawBtn(ctx, '← Volver',     b3.x,b3.y,b3.w,b3.h, '#606070', hitBtn(gm.x,gm.y,b3));
+            UICanvas.drawButton(ctx, 'Crear partida', b1.x,b1.y,b1.w,b1.h, '#4ecca3', UICanvas.hitTest(gm.x,gm.y,b1));
+            UICanvas.drawButton(ctx, 'Unirse',        b2.x,b2.y,b2.w,b2.h, '#533483', UICanvas.hitTest(gm.x,gm.y,b2));
+            UICanvas.drawButton(ctx, '← Volver',     b3.x,b3.y,b3.w,b3.h, '#606070', UICanvas.hitTest(gm.x,gm.y,b3));
             return;
         }
         
@@ -538,14 +478,6 @@ const game = {
     }
 };
 
-// ── HTML button wiring ────────────────────────────────────
-copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(roomCodeDisp.textContent).then(() => {
-        copyBtn.textContent = '¡Copiado!';
-        setTimeout(() => { copyBtn.textContent = 'Copiar código'; }, 1800);
-    });
-});
-onlineBackBtn.addEventListener('click', () => { game._cancelOnline(); });
-
 // ── Boot ──────────────────────────────────────────────────
-Engine.init('game', { width: 480, height: 580, bg: '#0f0f1a' }).start(game);
+OnlineLobby.onCancel(() => game._cancelOnline());
+GameBoot.start(game, { canvasId: 'game', width: 480, height: 580 });

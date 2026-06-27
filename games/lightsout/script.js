@@ -160,5 +160,4 @@ class LightsOutGame {
     }
 }
 
-Engine.init('gameCanvas', { width: 480, height: 640, bg: '#0d0d1a' });
-Engine.start(new LightsOutGame());
+GameBoot.startCanvas(new LightsOutGame(), { canvasId: 'gameCanvas', width: 480, height: 640, bg: '#0d0d1a' });
