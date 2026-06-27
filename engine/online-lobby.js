@@ -119,14 +119,90 @@ class OnlineLobby {
 		if (e?.joinBtn) e.joinBtn.disabled = !enabled;
 	}
 
-	static host(handlers = {}) {
+	static setCode(code) {
+		const e = this._ensure();
+		if (e?.codeDisplay) e.codeDisplay.textContent = code;
+	}
+
+	static showHostView() {
+		const e = this._ensure();
+		e?.hostView?.classList.remove('hidden');
+		e?.joinView?.classList.add('hidden');
+	}
+
+	static showJoinView() {
+		const e = this._ensure();
+		e?.hostView?.classList.add('hidden');
+		e?.joinView?.classList.remove('hidden');
+	}
+
+	static showStatusOnly(title, status) {
+		const e = this._ensure();
+		if (!e) return;
+		this.setTitle(title);
+		this.setStatus(status);
+		e.hostView?.classList.add('hidden');
+		e.joinView?.classList.add('hidden');
+		this.show();
+	}
+
+	static updateLobbyList(items) {
+		const e = this._ensure();
+		if (!e?.lobbyList) return;
+		e.lobbyList.innerHTML = '';
+		for (const item of items) {
+			const li = document.createElement('li');
+			li.textContent = item;
+			e.lobbyList.appendChild(li);
+		}
+	}
+
+	static setLobbyLabel(text) {
+		const e = this._ensure();
+		if (e?.lobbyLabel) e.lobbyLabel.textContent = text;
+	}
+
+	static enableStart(enabled, text) {
+		const e = this._ensure();
+		if (!e?.startOnlineBtn) return;
+		e.startOnlineBtn.disabled = !enabled;
+		if (text !== undefined) e.startOnlineBtn.textContent = text;
+	}
+
+	static onStartClick(cb) {
+		const e = this._ensure();
+		if (!e?.startOnlineBtn) return;
+		e.startOnlineBtn.onclick = () => cb?.();
+	}
+
+	static setJoinHandler(cb) {
+		this._joinHandler = cb;
+	}
+
+	static wireDefaultJoin(joinFn) {
+		this._joinHandler = () => {
+			const code = this.getJoinCode();
+			if (code.length < 4) {
+				this.setStatus('Código demasiado corto');
+				return;
+			}
+			this.setStatus('Conectando...');
+			this.enableJoin(false);
+			joinFn(code);
+		};
+	}
+
+	static host(handlers = {}, options = {}) {
 		if (typeof Online === 'undefined') return;
 		const { onReady, onConnected, onData, onDisconnect, onError } = handlers;
+		const hideOnConnect = options.hideOnConnect !== false;
 
 		Online.on('onHostReady', () => this.setStatus('Esperando conexión...'));
 		Online.on('onConnected', (role) => {
-			this.hide();
-			this._ensure()?.hostView?.classList.add('hidden');
+			if (hideOnConnect) {
+				this.hide();
+				this._ensure()?.hostView?.classList.add('hidden');
+			}
 			onConnected?.(role);
 		});
 		Online.on('onData', onData);
@@ -140,35 +216,29 @@ class OnlineLobby {
 		onReady?.();
 	}
 
-	static prepareJoin(handlers = {}) {
+	static prepareJoin(handlers = {}, options = {}) {
 		if (typeof Online === 'undefined') return;
 		const { onConnected, onData, onDisconnect, onError } = handlers;
+		const hideOnConnect = options.hideOnConnect !== false;
 
 		Online.destroy();
 		this.showJoinPanel();
 
-		Online.on('onError', () => {
+		Online.on('onError', (err) => {
 			this.setStatus('Error al conectar');
 			this.enableJoin(true);
-			onError?.();
+			onError?.(err);
 		});
 		Online.on('onConnected', (role) => {
-			this.hide();
-			this._ensure()?.joinView?.classList.add('hidden');
+			if (hideOnConnect) {
+				this.hide();
+				this._ensure()?.joinView?.classList.add('hidden');
+			}
 			onConnected?.(role);
 		});
 		Online.on('onData', onData);
 		Online.on('onDisconnect', onDisconnect);
 
-		this._joinHandler = () => {
-			const code = this.getJoinCode();
-			if (code.length < 4) {
-				this.setStatus('Código demasiado corto');
-				return;
-			}
-			this.setStatus('Conectando...');
-			this.enableJoin(false);
-			Online.join(code);
-		};
+		this.wireDefaultJoin((code) => Online.join(code));
 	}
 }

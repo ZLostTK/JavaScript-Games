@@ -317,21 +317,6 @@ const ShadowBot = {
 // ── PeerJS state handled by Online class ────────────────────
 // Online abstraction used here
 
-// Wiring del HTML (botones del panel)
-document.getElementById('copy-btn').addEventListener('click', () => {
-    const code = document.getElementById('room-code-display').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-        const btn = document.getElementById('copy-btn');
-        btn.textContent = '¡Copiado!';
-        setTimeout(() => { btn.textContent = 'Copiar código'; }, 1800);
-    });
-});
-document.getElementById('online-back-btn').addEventListener('click', () => {
-    Online.destroy();
-    document.getElementById('online-ui').classList.add('hidden');
-    game._returnToSelect();
-});
-
 // ── Objeto principal del juego ────────────────────────────
 const game = {
     // Estado general
@@ -702,13 +687,10 @@ const game = {
 
     _hostOnline() {
         Online.on('onHostReady', () => {
-            const el = document.getElementById('online-status');
-            if (el) el.textContent = 'Código listo - esperando rival...';
+            OnlineLobby.setStatus('Código listo - esperando rival...');
         });
         Online.on('onConnected', () => {
-            const el = document.getElementById('online-status');
-            if (el) el.textContent = 'Conectado';
-            document.getElementById('online-ui').classList.add('hidden');
+            OnlineLobby.hide();
             const seed = Math.random() * 0xFFFFFFFF | 0;
             this._startGame('online', 'host', seed);
             Online.send({ type: 'start', seed });
@@ -716,33 +698,21 @@ const game = {
         Online.on('onData', (data) => this._onOnlineMessage(data));
         Online.on('onDisconnect', () => this._onOnlineDisconnect());
         Online.on('onError', (err) => {
-            const el = document.getElementById('online-status');
-            if (el) el.textContent = 'Error: ' + err.type;
+            OnlineLobby.setStatus('Error: ' + err.type);
         });
 
         Online.host((code) => {
-            document.getElementById('online-title').textContent = 'Crear partida';
-            const el = document.getElementById('online-status');
-            if (el) el.textContent = 'Esperando a un rival...';
-            document.getElementById('host-view').classList.remove('hidden');
-            document.getElementById('join-view').classList.add('hidden');
-            document.getElementById('room-code-display').textContent = code;
-            document.getElementById('online-ui').classList.remove('hidden');
+            OnlineLobby.showHostPanel(code);
+            OnlineLobby.setStatus('Esperando a un rival...');
         });
     },
 
     _joinOnline() {
-        document.getElementById('online-title').textContent = 'Unirse a partida';
-        const el = document.getElementById('online-status');
-        if (el) el.textContent = 'Introduce el código del anfitrión';
-        document.getElementById('host-view').classList.add('hidden');
-        document.getElementById('join-view').classList.remove('hidden');
-        document.getElementById('room-code-input').value = '';
-        document.getElementById('online-ui').classList.remove('hidden');
+        OnlineLobby.showJoinPanel();
+        OnlineLobby.enableJoin(true);
 
         Online.on('onConnected', () => {
-            if (el) el.textContent = 'Conectado';
-            document.getElementById('online-ui').classList.add('hidden');
+            OnlineLobby.hide();
             this._onlineRole = 'guest';
             this.state = 'online-waiting';
             Online.send({ type: 'ready' });
@@ -750,18 +720,11 @@ const game = {
         Online.on('onData', (data) => this._onOnlineMessage(data));
         Online.on('onDisconnect', () => this._onOnlineDisconnect());
         Online.on('onError', (err) => {
-            if (el) el.textContent = 'Error: ' + err.type;
-            document.getElementById('join-btn').disabled = false;
+            OnlineLobby.setStatus('Error: ' + err.type);
+            OnlineLobby.enableJoin(true);
         });
 
-        const joinBtn = document.getElementById('join-btn');
-        joinBtn.disabled = false;
-        joinBtn.onclick = () => {
-            const code = document.getElementById('room-code-input').value.trim().toUpperCase();
-            if (code.length < 4) { if (el) el.textContent = 'Código demasiado corto'; return; }
-            if (el) el.textContent = 'Conectando...'; joinBtn.disabled = true;
-            Online.join(code);
-        };
+        OnlineLobby.wireDefaultJoin((code) => Online.join(code));
     },
 
     _onOnlineMessage(data) {
@@ -1198,4 +1161,9 @@ const game = {
 };
 
 // ── Boot ──────────────────────────────────────────────────
+OnlineLobby.onCancel(() => {
+    Online.destroy();
+    game._returnToSelect();
+});
+
 GameBoot.start(game, { canvasId: 'game', width: GW, height: GH, bg: '#0a1628' });

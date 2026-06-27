@@ -149,9 +149,14 @@ UICanvas.layoutButtons(count, opts)
 ```javascript
 OnlineLobby.onCancel(cb)
 OnlineLobby.show() | .hide() | .isVisible()
-OnlineLobby.setStatus(msg) | .setTitle(msg)
-OnlineLobby.host({ onConnected, onData, onDisconnect, onError })
-OnlineLobby.prepareJoin({ onConnected, onData, onDisconnect, onError })
+OnlineLobby.setStatus(msg) | .setTitle(msg) | .setCode(code)
+OnlineLobby.showHostPanel(code) | .showJoinPanel() | .showHostView() | .showJoinView()
+OnlineLobby.showStatusOnly(title, status)   // solo mensaje (p. ej. guest esperando)
+OnlineLobby.updateLobbyList(items)          // lista de jugadores (domino 4p)
+OnlineLobby.setLobbyLabel(text) | .enableStart(enabled, text?) | .onStartClick(cb)
+OnlineLobby.wireDefaultJoin((code) => Online.join(code))
+OnlineLobby.host(handlers, { hideOnConnect: true })
+OnlineLobby.prepareJoin(handlers, { hideOnConnect: true })
 OnlineLobby.cancel()
 ```
 

@@ -214,6 +214,25 @@ _cancelOnline() {
 
 La lógica de red sigue en `Online.send()` / `Online.on('onData')` — ver [ONLINE.md](ONLINE.md).
 
+**Lobbies custom** (domino 4 jugadores, void sector con tabs 1v1/co-op, hangman con pantalla de espera): usa los helpers de panel sin reimplementar copy/join/back:
+
+```javascript
+// Host multijugador (no ocultar al primer connect)
+OnlineLobby.showHostPanel(code);
+OnlineLobby.updateLobbyList(['Tú (Host)', 'Jugador 2']);
+OnlineLobby.enableStart(false, 'Esperando jugadores...');
+OnlineLobby.onStartClick(() => { /* iniciar partida */ });
+
+// Guest
+OnlineLobby.showJoinPanel();
+OnlineLobby.wireDefaultJoin((code) => Online.join(code));
+
+// Pantalla de espera sin host/join views
+OnlineLobby.showStatusOnly('En línea', 'Esperando al host...');
+```
+
+Pasa `{ hideOnConnect: false }` a `host()` / `prepareJoin()` si el overlay debe permanecer visible tras conectar (p. ej. lobby de varios jugadores).
+
 ---
 
 ## MobileControls

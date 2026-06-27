@@ -1153,118 +1153,97 @@ const game = {
 
     // ── Online panel ──────────────────────────────────────────────────────────
     _openOnline() {
-        const ui     = document.getElementById('online-ui');
-        const title  = document.getElementById('online-title');
-        const status = document.getElementById('online-status');
-        const hostV  = document.getElementById('host-view');
-        const joinV  = document.getElementById('join-view');
-        const codeD  = document.getElementById('room-code-display');
-        const codeI  = document.getElementById('room-code-input');
-        const hostB  = document.getElementById('host-btn');   // "Crear sala" — siempre visible
-        const copyB  = document.getElementById('copy-btn');   // "Copiar código" — dentro de host-view
-        const joinB  = document.getElementById('join-btn');
-        const backB  = document.getElementById('online-back-btn');
-        const tabs   = document.getElementById('online-mode-tabs');
+        const hostB = document.getElementById('host-btn');
+        const tabs  = document.getElementById('online-mode-tabs');
         const tab1v1 = document.getElementById('tab-1v1');
-        const tabCoop= document.getElementById('tab-coop');
+        const tabCoop = document.getElementById('tab-coop');
 
-        // ── Reset state ──────────────────────────────────────
-        title.textContent  = 'VOID SECTOR ONLINE';
-        status.textContent = 'Elige modo y acción';
-        hostV.classList.add('hidden');  // ocultar display del código
-        joinV.classList.remove('hidden'); // join siempre visible
-        tabs.classList.remove('hidden');
+        OnlineLobby.setTitle('VOID SECTOR ONLINE');
+        OnlineLobby.setStatus('Elige modo y acción');
+        OnlineLobby.showJoinView();
+        tabs?.classList.remove('hidden');
         hostB.disabled = false;
-        joinB.disabled = false;
+        OnlineLobby.enableJoin(true);
         this.selectedOnlineMode = '1v1';
-        tab1v1.classList.add('selected'); tabCoop.classList.remove('selected');
-        codeD.textContent = '------'; codeI.value = '';
-        ui.classList.remove('hidden');
+        tab1v1?.classList.add('selected');
+        tabCoop?.classList.remove('selected');
+        OnlineLobby.setCode('------');
+        OnlineLobby.show();
 
         const _resetHostBtn = () => {
-            hostB.disabled  = false;
+            hostB.disabled = false;
             hostB.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"></path><path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h4"></path><path d="M2 18h4"></path><rect x="14" y="2" width="8" height="8" rx="2" ry="2"></rect><path d="M18 14v4"></path><path d="M18 22v-4"></path><path d="M14 18h8"></path></svg> Crear sala';
             hostB.classList.remove('coop-style');
         };
 
-        // ── Tab switching ────────────────────────────────────
         tab1v1.onclick = () => {
             this.selectedOnlineMode = '1v1';
-            tab1v1.classList.add('selected'); tabCoop.classList.remove('selected');
-            status.textContent = '1v1 — enfréntate a otro jugador';
+            tab1v1.classList.add('selected');
+            tabCoop.classList.remove('selected');
+            OnlineLobby.setStatus('1v1 — enfréntate a otro jugador');
             hostB.classList.remove('coop-style');
         };
         tabCoop.onclick = () => {
             this.selectedOnlineMode = 'coop';
-            tabCoop.classList.add('selected'); tab1v1.classList.remove('selected');
-            status.textContent = 'Co-op — juega junto a otro jugador';
+            tabCoop.classList.add('selected');
+            tab1v1.classList.remove('selected');
+            OnlineLobby.setStatus('Co-op — juega junto a otro jugador');
             hostB.classList.add('coop-style');
         };
 
-        // ── Crear sala ───────────────────────────────────────
         hostB.onclick = () => {
             const selMode = this.selectedOnlineMode;
             hostB.disabled = true;
             hostB.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Creando...';
             Online.destroy();
             Online.host((code) => {
-                codeD.textContent = code;
-                status.textContent = `Esperando jugador... (${selMode.toUpperCase()})`;
-                hostV.classList.remove('hidden');
-                // Copy button inside host-view
-                copyB.onclick = () => {
-                    navigator.clipboard.writeText(code).catch(()=>{});
-                    const prev = status.textContent;
-                    status.textContent = '¡Código copiado!';
-                    setTimeout(() => { status.textContent = prev; }, 1800);
-                };
+                OnlineLobby.setCode(code);
+                OnlineLobby.setStatus(`Esperando jugador... (${selMode.toUpperCase()})`);
+                OnlineLobby.showHostView();
             });
             Online.on('onConnected', () => {
-                status.textContent = 'Conectado. Iniciando...';
+                OnlineLobby.setStatus('Conectado. Iniciando...');
                 setTimeout(() => {
-                    ui.classList.add('hidden');
+                    OnlineLobby.hide();
                     this._startGame(selMode, 'host');
                 }, 700);
             });
             Online.on('onError', (e) => {
-                status.textContent = 'Error: ' + (e.type || e);
+                OnlineLobby.setStatus('Error: ' + (e.type || e));
                 _resetHostBtn();
-                hostV.classList.add('hidden');
+                OnlineLobby.showHostView();
             });
         };
 
-        // ── Unirse ───────────────────────────────────────────
-        joinB.onclick = () => {
-            const code = codeI.value.trim().toUpperCase();
-            if (code.length < 4) { status.textContent = 'Código inválido (mín. 4 chars)'; return; }
+        OnlineLobby.wireDefaultJoin((code) => {
             const selMode = this.selectedOnlineMode;
-            status.textContent = 'Conectando...';
-            joinB.disabled = true;
             Online.destroy();
             Online.join(code);
             Online.on('onConnected', () => {
-                status.textContent = 'Conectado. Iniciando...';
+                OnlineLobby.setStatus('Conectado. Iniciando...');
                 setTimeout(() => {
-                    ui.classList.add('hidden');
+                    OnlineLobby.hide();
                     this._startGame(selMode, 'guest');
-                    joinB.disabled = false;
+                    OnlineLobby.enableJoin(true);
                 }, 700);
             });
             Online.on('onError', () => {
-                status.textContent = 'No se encontró la sala.';
-                joinB.disabled = false;
+                OnlineLobby.setStatus('No se encontró la sala.');
+                OnlineLobby.enableJoin(true);
             });
-        };
-
-        // ── Volver ───────────────────────────────────────────
-        backB.onclick = () => {
-            Online.destroy();
-            ui.classList.add('hidden');
-            hostV.classList.add('hidden');
-            _resetHostBtn();
-        };
+        });
     },
 };
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
+OnlineLobby.onCancel(() => {
+    Online.destroy();
+    const hostB = document.getElementById('host-btn');
+    if (hostB) {
+        hostB.disabled = false;
+        hostB.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"></path><path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h4"></path><path d="M2 18h4"></path><rect x="14" y="2" width="8" height="8" rx="2" ry="2"></rect><path d="M18 14v4"></path><path d="M18 22v-4"></path><path d="M14 18h8"></path></svg> Crear sala';
+        hostB.classList.remove('coop-style');
+    }
+});
+
 GameBoot.startCanvas(game, { canvasId: 'canvas', width: W, height: H, bg: '#000008' });

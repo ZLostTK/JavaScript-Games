@@ -1,16 +1,3 @@
-const onlineUI        = document.getElementById('online-ui');
-const onlineTitle     = document.getElementById('online-title');
-const onlineStatus    = document.getElementById('online-status');
-const hostView        = document.getElementById('host-view');
-const joinView        = document.getElementById('join-view');
-const roomCodeDisp    = document.getElementById('room-code-display');
-const roomCodeInput   = document.getElementById('room-code-input');
-const copyBtn         = document.getElementById('copy-btn');
-const startOnlineBtn  = document.getElementById('start-online-btn');
-const joinBtn         = document.getElementById('join-btn');
-const onlineBackBtn   = document.getElementById('online-back-btn');
-const lobbyList       = document.getElementById('lobby-list');
-
 const game = {
 	state: 'select', // 'select' | 'playing' | 'gameover'
 	mode: null,      // 'ai' | 'online'
@@ -174,120 +161,93 @@ const game = {
 		this.networkPlayers = [];
 		const max = this.maxPlayers;
 		const maxGuests = max - 1;
-		
+
 		Online.on('onHostReady', () => {
-			onlineStatus.textContent = `Esperando jugadores... (1/${max})`;
+			OnlineLobby.setStatus(`Esperando jugadores... (1/${max})`);
 			this._updateLobbyList(['Tú (Host)']);
 		});
-		
+
 		Online.on('onData', (data, connId) => {
 			if (data.type === 'join') {
 				if (this.state === 'playing') {
 					Online.send({ type: 'error', msg: 'La partida ya inició' }, connId);
 				} else if (this.networkPlayers.length < maxGuests) {
 					this.networkPlayers.push(connId);
-					this._updateLobbyList(['Tú (Host)', ...this.networkPlayers.map((_,i) => `Jugador ${i+2}`)]);
-					onlineStatus.textContent = `Esperando jugadores... (${this.networkPlayers.length + 1}/${max})`;
-					
+					this._updateLobbyList(['Tú (Host)', ...this.networkPlayers.map((_, i) => `Jugador ${i + 2}`)]);
+					OnlineLobby.setStatus(`Esperando jugadores... (${this.networkPlayers.length + 1}/${max})`);
+
 					if (this.networkPlayers.length === maxGuests) {
-						startOnlineBtn.disabled = false;
-						startOnlineBtn.textContent = 'Iniciar Partida';
-						onlineStatus.textContent = '¡Sala llena!';
+						OnlineLobby.enableStart(true, 'Iniciar Partida');
+						OnlineLobby.setStatus('¡Sala llena!');
 					}
-					
+
 					this._broadcast({ type: 'lobby_update', count: this.networkPlayers.length + 1, max });
 				} else {
 					Online.send({ type: 'error', msg: 'Sala llena' }, connId);
 				}
-			}
-			else {
+			} else {
 				this._handleNetData(data, connId);
 			}
 		});
-		
+
 		Online.on('onDisconnect', () => {
 			this._onDisconnect();
 		});
-		
+
 		Online.host(code => {
-			onlineTitle.textContent = 'Crear partida';
-			onlineStatus.textContent = 'Creando sala...';
-			roomCodeDisp.textContent = code;
-			
-			copyBtn.onclick = () => {
-				navigator.clipboard.writeText(code);
-				copyBtn.textContent = '¡Copiado!';
-				setTimeout(() => copyBtn.textContent = 'Copiar código', 2000);
-			};
-			
-			startOnlineBtn.onclick = () => {
+			OnlineLobby.setTitle('Crear partida');
+			OnlineLobby.setStatus('Creando sala...');
+			OnlineLobby.setCode(code);
+			OnlineLobby.setLobbyLabel(`Jugadores (1/${max})`);
+			OnlineLobby.enableStart(false, 'Iniciar Partida (Faltan jugadores)');
+
+			const hint = document.querySelector('#host-view .hint');
+			if (hint) {
+				hint.textContent =
+					`Comparte este código para que hasta ${maxGuests} jugador${maxGuests > 1 ? 'es' : ''} se unan`;
+			}
+
+			OnlineLobby.onStartClick(() => {
 				OnlineLobby.hide();
-				hostView.classList.add('hidden');
 				this.onlineConnected = true;
 				this._broadcast({ type: 'start' });
 				this._startGame('online', 'host');
-			};
-			
-			document.getElementById('lobby-label').textContent = `Jugadores (1/${max})`;
-			document.querySelector('#host-view .hint').textContent =
-			`Comparte este código para que hasta ${maxGuests} jugador${maxGuests > 1 ? 'es' : ''} se unan`;
-			
-			hostView.classList.remove('hidden');
-			joinView.classList.add('hidden');
+			});
+
+			OnlineLobby.showHostView();
 			OnlineLobby.show();
-			
-			onlineBackBtn.onclick = () => {
-				Online.destroy();
-				OnlineLobby.hide();
-				this._showOnlineMenu();
-			};
 		});
 	},
-	
+
 	_joinGame() {
 		Online.destroy();
 		this.myRole = 'guest';
-		onlineTitle.textContent = 'Unirse a partida';
-		onlineStatus.textContent = 'Introduce el código';
-		hostView.classList.add('hidden');
-		joinView.classList.remove('hidden');
-		roomCodeInput.value = '';
+		OnlineLobby.setTitle('Unirse a partida');
+		OnlineLobby.setStatus('Introduce el código');
+		OnlineLobby.showJoinView();
 		OnlineLobby.show();
-		
-		joinBtn.onclick = () => {
-			const code = roomCodeInput.value.trim().toUpperCase();
-			if (code.length < 4) return;
-			onlineStatus.textContent = `Conectando a ${code}...`;
-			joinBtn.disabled = true;
+		OnlineLobby.enableJoin(true);
+
+		OnlineLobby.wireDefaultJoin((code) => {
+			OnlineLobby.setStatus(`Conectando a ${code}...`);
 			Online.join(code);
-		};
-		
+		});
+
 		Online.on('onConnected', () => {
-			onlineStatus.textContent = 'Conectado. Esperando al Host...';
+			OnlineLobby.setStatus('Conectado. Esperando al Host...');
 			Online.send({ type: 'join' });
 		});
-		
+
 		Online.on('onData', data => this._handleNetData(data));
 		Online.on('onDisconnect', () => this._onDisconnect());
 		Online.on('onError', err => {
-			onlineStatus.textContent = 'Error: ' + err.type;
-			joinBtn.disabled = false;
+			OnlineLobby.setStatus('Error: ' + err.type);
+			OnlineLobby.enableJoin(true);
 		});
-		
-		onlineBackBtn.onclick = () => {
-			Online.destroy();
-			OnlineLobby.hide();
-			this._showOnlineMenu();
-		};
 	},
-	
+
 	_updateLobbyList(list) {
-		DOMEngine.clear(lobbyList);
-		list.forEach(item => {
-			const li = document.createElement('li');
-			li.textContent = item;
-			lobbyList.appendChild(li);
-		});
+		OnlineLobby.updateLobbyList(list);
 	},
 	
 	_broadcast(data, excludeConnId = null) {
@@ -304,7 +264,7 @@ const game = {
 		switch (data.type) {
 			case 'lobby_update':
 			if (this.myRole === 'guest') {
-				onlineStatus.textContent = `Conectado. Esperando al Host... (${data.count}/${data.max || 4})`;
+				OnlineLobby.setStatus(`Conectado. Esperando al Host... (${data.count}/${data.max || 4})`);
 			}
 			break;
 			case 'start':
@@ -332,9 +292,9 @@ const game = {
 			DOMEngine.render();
 			break;
 			case 'error':
-			onlineStatus.textContent = data.msg;
+			OnlineLobby.setStatus(data.msg);
 			if (this.myRole === 'guest') {
-				joinBtn.disabled = false;
+				OnlineLobby.enableJoin(true);
 				Online.destroy();
 			}
 			break;
@@ -1106,3 +1066,7 @@ game._handleNetData = function(data, connId) {
 };
 
 GameBoot.startDOM(game);
+
+OnlineLobby.onCancel(() => {
+	game._showOnlineMenu();
+});

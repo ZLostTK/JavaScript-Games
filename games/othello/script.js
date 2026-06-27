@@ -3,14 +3,6 @@ OTHELLO / REVERSI  -  Full game for the shared-canvas engine
 Modes: Solo (vs CPU), Versus Local, Multiplayer Online (P2P)
 ═══════════════════════════════════════════════════════════════ */
 
-const hostView      = document.getElementById('host-view');
-const joinView      = document.getElementById('join-view');
-const roomCodeDisp  = document.getElementById('room-code-display');
-const roomCodeInput = document.getElementById('room-code-input');
-const copyBtn       = document.getElementById('copy-btn');
-const joinBtn       = document.getElementById('join-btn');
-const onlineBackBtn = document.getElementById('online-back-btn');
-
 // ── Constants ────────────────────────────────────────────────────
 const W = 480, H = 640;
 const BOARD_SIZE  = 8;
@@ -186,8 +178,6 @@ const STATE = {
     MENU:           'menu',
     PLAYING:        'playing',
     GAME_OVER:      'game_over',
-    ONLINE_LOBBY:   'online_lobby',
-    ONLINE_WAITING: 'online_waiting',
 };
 
 // ── Button helper ────────────────────────────────────────────────
@@ -227,7 +217,9 @@ const game = {
     t:             0,      // global timer for animations
     
     // Menu state
+    menuSubState:  'main',  // 'main' | 'online-setup'
     menuBtns:      [],
+    onlineSetupBtns: [],
     menuAnim:      0,
     
     // Game-over state
@@ -262,30 +254,32 @@ const game = {
     _setupOnlineCallbacks() {
         Online.on('onHostReady', (code) => {
             this.roomCode = code;
-            roomCodeDisp.textContent = code;
-            onlineStatus.textContent = 'Esperando rival…';
+            OnlineLobby.setCode(code);
+            OnlineLobby.setStatus('Esperando rival…');
         });
-        
+
         Online.on('onConnected', (role) => {
             this.onlineRole = role;
             this.myColor    = (role === 'host') ? BLACK : WHITE;
             OnlineLobby.hide();
+            this.menuSubState = 'main';
             this._startGame('online');
-            
+
             if (role === 'host') {
                 Online.send({ type: 'init', board: this.board, currentPlayer: this.currentPlayer });
             }
         });
-        
+
         Online.on('onData', (data) => {
             this._handleNetData(data);
         });
-        
+
         Online.on('onError', (err) => {
             console.warn('[Othello] online error', err);
-            onlineStatus.textContent = 'Error de conexión. Intenta de nuevo.';
+            OnlineLobby.setStatus('Error de conexión. Intenta de nuevo.');
+            OnlineLobby.enableJoin(true);
         });
-        
+
         Online.on('onDisconnect', () => {
             if (this.state === STATE.PLAYING || this.state === STATE.GAME_OVER) {
                 this._showDisconnect();
@@ -463,86 +457,49 @@ const game = {
         this.menuAnim = (this.menuAnim + dt) % (Math.PI * 2);
         const click = this._getLogicalClick();
         if (!click) return;
-        
+
+        if (this.menuSubState === 'online-setup') {
+            for (let i = 0; i < this.onlineSetupBtns.length; i++) {
+                if (btnHit(this.onlineSetupBtns[i], click.x, click.y)) {
+                    Audio.play('click');
+                    if (i === 0) {
+                        Online.destroy();
+                        OnlineLobby.showHostPanel('------');
+                        Online.host((code) => {
+                            OnlineLobby.setCode(code);
+                            OnlineLobby.setStatus('Esperando rival…');
+                        });
+                    } else if (i === 1) {
+                        Online.destroy();
+                        OnlineLobby.showJoinPanel();
+                    } else if (i === 2) {
+                        this.menuSubState = 'main';
+                    }
+                    return;
+                }
+            }
+            return;
+        }
+
         for (let i = 0; i < this.menuBtns.length; i++) {
             if (btnHit(this.menuBtns[i], click.x, click.y)) {
                 Audio.play('click');
                 if (i === 0) { this._startGame('solo'); }
                 else if (i === 1) { this._startGame('local'); }
-                else if (i === 2) { this._openOnlineMenu(); }
+                else if (i === 2) { this._openOnlineSetup(); }
                 return;
             }
         }
     },
-    
-    _openOnlineMenu() {
-        this.state = STATE.ONLINE_LOBBY;
-        // Mostrar sección host en el #online-ui (igual que otros juegos)
-        onlineTitle.textContent  = 'Multijugador Online';
-        onlineStatus.textContent = '¿Qué rol tomarás?';
-        hostView.classList.add('hidden');
-        joinView.classList.add('hidden');
-        OnlineLobby.show();
-        
-        if (!this._lobbyBound) {
-            this._lobbyBound = true;
-            
-            // Botón "Crear Sala" - inyectado dinámicamente si no existe
-            if (!document.getElementById('btn-oth-host')) {
-                const btnHost = document.createElement('button');
-                btnHost.id = 'btn-oth-host';
-                btnHost.textContent = '★ Crear Sala (Host)';
-                btnHost.onclick = () => {
-                    onlineTitle.textContent  = 'Crear Partida';
-                    onlineStatus.textContent = 'Generando código…';
-                    hostView.classList.remove('hidden');
-                    joinView.classList.add('hidden');
-                    Online.host((code) => {
-                        roomCodeDisp.textContent = code;
-                        onlineStatus.textContent = 'Esperando rival…';
-                    });
-                };
-                document.getElementById('online-panel').insertBefore(btnHost, onlineBackBtn);
 
-                const btnJoin = document.createElement('button');
-                btnJoin.id = 'btn-oth-join';
-                btnJoin.textContent = '↗ Unirse con código';
-                btnJoin.style.cssText = 'background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.25);';
-                btnJoin.onclick = () => {
-                    onlineTitle.textContent  = 'Unirse a Partida';
-                    onlineStatus.textContent = 'Introduce el código del anfitrión';
-                    hostView.classList.add('hidden');
-                    joinView.classList.remove('hidden');
-                    roomCodeInput.value = '';
-                    setTimeout(() => roomCodeInput.focus(), 80);
-                };
-                document.getElementById('online-panel').insertBefore(btnJoin, onlineBackBtn);
-            }
-            
-            copyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(roomCodeDisp.textContent).then(() => {
-                    copyBtn.textContent = '¡Copiado!';
-                    setTimeout(() => { copyBtn.textContent = 'Copiar código'; }, 1800);
-                });
-            });
-            
-            joinBtn.onclick = () => {
-                const code = roomCodeInput.value.trim().toUpperCase();
-                if (code.length < 4) return;
-                onlineStatus.textContent = 'Conectando…';
-                joinBtn.disabled = true;
-                Online.join(code);
-            };
-            
-            onlineBackBtn.onclick = () => {
-                Online.destroy();
-                OnlineLobby.hide();
-                this.state = STATE.MENU;
-            };
-            
-            roomCodeInput.addEventListener('keydown', e => e.stopPropagation());
-            roomCodeInput.addEventListener('keyup',   e => e.stopPropagation());
-        }
+    _openOnlineSetup() {
+        this.menuSubState = 'online-setup';
+        const cx = W / 2;
+        this.onlineSetupBtns = [
+            makeBtn('★ Crear Sala (Host)',  cx, 300, 280, 52, 'primary'),
+            makeBtn('↗ Unirse con código', cx, 375, 280, 52, 'accent'),
+            makeBtn('← Cancelar',          cx, 460, 200, 44, 'ghost'),
+        ];
     },
     
     _updatePlaying(dt) {
@@ -593,7 +550,8 @@ const game = {
                     // Replay same mode
                     if (this.mode === 'online') {
                         Online.destroy();
-                        this._openOnlineMenu();
+                        this.state = STATE.MENU;
+                        this._openOnlineSetup();
                     } else {
                         this._startGame(this.mode);
                     }
@@ -620,8 +578,6 @@ const game = {
             case STATE.PLAYING:       this._renderGame(ctx);    break;
             case STATE.GAME_OVER:     this._renderGame(ctx);
             this._renderGameOver(ctx); break;
-            case STATE.ONLINE_LOBBY:  this._renderMenuBg(ctx);  break;
-            case STATE.ONLINE_WAITING:this._renderMenuBg(ctx);  break;
         }
     },
     
@@ -629,6 +585,23 @@ const game = {
     _renderMenu(ctx) {
         this._renderMenuBg(ctx);
         const cx = W / 2;
+
+        if (this.menuSubState === 'online-setup') {
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = "bold 32px 'Courier New', monospace";
+            ctx.fillStyle = C.accent;
+            ctx.fillText('Multijugador Online', cx, 200);
+            ctx.font = "14px 'Courier New', monospace";
+            ctx.fillStyle = C.mutedLight;
+            ctx.fillText('¿Qué rol tomarás?', cx, 240);
+            ctx.restore();
+            for (const btn of this.onlineSetupBtns) {
+                this._drawMenuBtn(ctx, btn);
+            }
+            return;
+        }
         
         // Hero disc cluster (animated)
         const t = this.t;
@@ -1013,4 +986,14 @@ const game = {
 };
 
 // ── Boot ──────────────────────────────────────────────────────────
+OnlineLobby.onCancel(() => {
+    Online.destroy();
+    game.menuSubState = 'main';
+});
+
+OnlineLobby.wireDefaultJoin((code) => {
+    OnlineLobby.setStatus('Conectando…');
+    Online.join(code);
+});
+
 GameBoot.startCanvas(game, { canvasId: 'gameCanvas', width: W, height: H, bg: '#0b0f1a' });

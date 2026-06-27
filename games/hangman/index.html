@@ -85,33 +85,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Online Lobby overlay -->
-        <div id="online-lobby-overlay" class="overlay hidden">
-            <div id="online-lobby-panel" class="panel">
-                <h2 id="online-lobby-title">Crear partida</h2>
-                <p id="online-lobby-status" style="text-align: center; margin-bottom: 1rem; color: #a0a0b0;">Conectando al servidor...</p>
-                
-                <!-- Host view -->
-                <div id="host-view" class="hidden">
-                    <p style="font-size: 0.85rem; color: #c0c0d0; font-weight: 700; text-transform: uppercase; text-align: center;">Código de la sala</p>
-                    <p id="room-code-display" style="font-size: 2rem; font-weight: 800; text-align: center; color: #4ecca3; margin: 0.5rem 0;">------</p>
-                    <button id="copy-btn" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem;">Copiar código</button>
-                    <p style="font-size: 0.8rem; color: #606080; text-align: center;">Comparte este código con tu oponente</p>
-                </div>
-                
-                <!-- Join view -->
-                <div id="join-view" class="hidden">
-                    <div class="form-group" style="margin-bottom: 1rem;">
-                        <label for="room-code-input">Código de la sala:</label>
-                        <input type="text" id="room-code-input" placeholder="Ej: ABCDEF" maxlength="6" style="text-transform: uppercase;">
-                    </div>
-                    <button id="connect-btn" class="btn-primary" style="width: 100%; margin-bottom: 0.5rem;">Conectar</button>
-                </div>
-                
-                <button id="lobby-back-btn" class="btn-secondary" style="width: 100%; margin-top: 1rem;">← Volver</button>
-            </div>
-        </div>
         
         <!-- 1v1 Setup overlay -->
         <div id="setup-1v1-overlay" class="overlay hidden">
@@ -173,6 +146,29 @@
                 <p id="hint-text"></p>
                 <button id="close-hint-btn">×</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Online UI overlay (estándar del engine) -->
+    <div id="online-ui" class="hidden">
+        <div id="online-panel">
+            <h2 id="online-title">En línea</h2>
+            <p id="online-status">Conectando...</p>
+
+            <div id="host-view" class="hidden">
+                <p class="label">Código de partida</p>
+                <p id="room-code-display">------</p>
+                <button id="copy-btn">Copiar código</button>
+                <p class="hint">Comparte este código con tu oponente</p>
+            </div>
+
+            <div id="join-view" class="hidden">
+                <p class="label">Introduce el código</p>
+                <input id="room-code-input" type="text" maxlength="6" placeholder="XXXXXX" autocomplete="off" spellcheck="false">
+                <button id="join-btn">Conectar</button>
+            </div>
+
+            <button id="online-back-btn">← Cancelar</button>
         </div>
     </div>
     

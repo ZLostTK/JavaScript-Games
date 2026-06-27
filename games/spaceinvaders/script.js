@@ -208,49 +208,29 @@ const game = {
     // ONLINE HTML UI
     // ─────────────────────────────────────────────────────────────────────────
     _setupOnlineUI() {
-        document.getElementById('online-back-btn')?.addEventListener('click', () => {
-            Online.destroy();
-            this._hideOnlineUI();
+        OnlineLobby.onCancel(() => {
             this._buildOnlineSetupBtns();
             this.state = 'online-setup';
         });
 
-        document.getElementById('copy-btn')?.addEventListener('click', () => {
-            const code = document.getElementById('room-code-display').textContent;
-            navigator.clipboard?.writeText(code).catch(() => {});
-            const btn = document.getElementById('copy-btn');
-            btn.textContent = '¡Copiado!';
-            setTimeout(() => { btn.textContent = 'Copiar código'; }, 1500);
+        OnlineLobby.wireDefaultJoin((code) => {
+            OnlineLobby.setStatus('Conectando...');
+            Online.join(code);
         });
-
-        document.getElementById('join-btn')?.addEventListener('click', () => {
-            const raw = document.getElementById('room-code-input').value.trim().toUpperCase();
-            if (raw.length < 4) return;
-            document.getElementById('online-status').textContent = 'Conectando...';
-            Online.join(raw);
-        });
-
-        const roomCodeInput = document.getElementById('room-code-input');
-        if (roomCodeInput) {
-            roomCodeInput.addEventListener('keydown', e => {
-                e.stopPropagation();
-                if (e.key === 'Enter') document.getElementById('join-btn')?.click();
-            });
-            roomCodeInput.addEventListener('keyup', e => {
-                e.stopPropagation();
-            });
-        }
     },
 
     _showOnlineUI(view) {
-        document.getElementById('online-ui')?.classList.remove('hidden');
-        document.getElementById('host-view')?.classList.add('hidden');
-        document.getElementById('join-view')?.classList.add('hidden');
-        if (view) document.getElementById(`${view}-view`)?.classList.remove('hidden');
+        if (view === 'host') {
+            OnlineLobby.showHostPanel('------');
+        } else if (view === 'join') {
+            OnlineLobby.showJoinPanel();
+        } else {
+            OnlineLobby.show();
+        }
     },
 
     _hideOnlineUI() {
-        document.getElementById('online-ui')?.classList.add('hidden');
+        OnlineLobby.hide();
     },
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -258,18 +238,17 @@ const game = {
     // ─────────────────────────────────────────────────────────────────────────
     _setupOnlineCallbacks() {
         Online.on('onHostReady', (code) => {
-            document.getElementById('room-code-display').textContent = code;
-            document.getElementById('online-status').textContent = 'Esperando rival...';
+            OnlineLobby.setCode(code);
+            OnlineLobby.setStatus('Esperando rival...');
         });
 
         Online.on('onConnected', (role) => {
             this.onlineRole = role;
-            document.getElementById('online-status').textContent = '¡Conectado! Iniciando...';
+            OnlineLobby.setStatus('¡Conectado! Iniciando...');
 
             setTimeout(() => {
                 this._hideOnlineUI();
                 if (role === 'host') {
-                    // En 1v1: asignar roles aleatoriamente
                     let p1role = 'shooter', p2role = 'alien';
                     const is1v1 = (!this._onlineSubMode || this._onlineSubMode === '1v1' || this._onlineSubMode !== 'coop');
                     if (is1v1 && Math.random() < 0.5) {
@@ -280,7 +259,6 @@ const game = {
                     const myRole = p1role;
                     this._startOnlineGame(role, this._onlineSubMode || '1v1', myRole);
                 }
-                // Guest espera 'game_init'
             }, 600);
         });
 
@@ -301,8 +279,8 @@ const game = {
         });
 
         Online.on('onError', (err) => {
-            const el = document.getElementById('online-status');
-            if (el) el.textContent = `Error: ${err.type || String(err)}`;
+            OnlineLobby.setStatus(`Error: ${err.type || String(err)}`);
+            OnlineLobby.enableJoin(true);
         });
     },
 
@@ -539,10 +517,10 @@ const game = {
             if (this._btns.hostRoom && UICanvas.hitTest(gx, gy, this._btns.hostRoom)) {
                 this._setupOnlineCallbacks();
                 this._showOnlineUI('host');
-                document.getElementById('online-status').textContent = 'Iniciando servidor...';
+                OnlineLobby.setStatus('Iniciando servidor...');
                 Online.host(code => {
-                    document.getElementById('room-code-display').textContent = code;
-                    document.getElementById('online-status').textContent = 'Esperando rival...';
+                    OnlineLobby.setCode(code);
+                    OnlineLobby.setStatus('Esperando rival...');
                 });
                 this.state = 'lobby';
                 return;
@@ -550,9 +528,7 @@ const game = {
             if (this._btns.joinRoom && UICanvas.hitTest(gx, gy, this._btns.joinRoom)) {
                 this._setupOnlineCallbacks();
                 this._showOnlineUI('join');
-                document.getElementById('online-status').textContent = 'Introduce el código de sala';
-                document.getElementById('room-code-input').value = '';
-                setTimeout(() => document.getElementById('room-code-input')?.focus(), 80);
+                OnlineLobby.setStatus('Introduce el código de sala');
                 this.state = 'lobby';
                 return;
             }

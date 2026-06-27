@@ -155,14 +155,6 @@ const ACT_H     = 42;
 // ═══════════════════════════════════════════════════════════════════════════════
 const SCENE = { MENU: 'menu', GAME: 'game', WIN: 'win' };
 
-const hostView      = document.getElementById('host-view');
-const joinView      = document.getElementById('join-view');
-const roomCodeDisp  = document.getElementById('room-code-display');
-const roomCodeInput = document.getElementById('room-code-input');
-const copyBtn       = document.getElementById('copy-btn');
-const joinBtn       = document.getElementById('join-btn');
-const onlineBackBtn = document.getElementById('online-back-btn');
-
 // ── Canvas menu buttons ────────────────────────────────────────────────────────
 const _menuBtns = {}; // populado en renderMenu()
 
@@ -344,17 +336,12 @@ const state = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // ── OverlayUI: ahora solo maneja el #online-ui panel (igual que los otros juegos) ──
 const OverlayUI = {
-    _menuState: 'main',   // 'main' | 'online-setup'
+    _menuState: 'main',
 
     show() { OnlineLobby.show(); },
     hide() { OnlineLobby.hide(); },
-
-    setStatus(msg) {
-        onlineStatus.textContent = msg;
-    },
-    setCode(code) {
-        roomCodeDisp.textContent = code;
-    },
+    setStatus(msg) { OnlineLobby.setStatus(msg); },
+    setCode(code) { OnlineLobby.setCode(code); },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -714,20 +701,14 @@ function handleClick(rawX, rawY) {
     if (state.scene === SCENE.MENU && OverlayUI._menuState === 'online-setup') {
         if (_menuBtns.os_host && hitMenuBtn(x, y, _menuBtns.os_host)) {
             state.mode = 'online'; state.role = 'host';
-            onlineTitle.textContent = 'Crear partida';
-            onlineStatus.textContent = 'Generando código…';
-            hostView.classList.remove('hidden'); joinView.classList.add('hidden');
-            OverlayUI.show();
+            OnlineLobby.showHostPanel('------');
+            OnlineLobby.setStatus('Generando código…');
             OnlineLayer.startHost();
             return;
         }
         if (_menuBtns.os_join && hitMenuBtn(x, y, _menuBtns.os_join)) {
             state.mode = 'online'; state.role = 'guest';
-            onlineTitle.textContent = 'Unirse a partida';
-            onlineStatus.textContent = 'Introduce el código del anfitrión';
-            hostView.classList.add('hidden'); joinView.classList.remove('hidden');
-            roomCodeInput.value = '';
-            OverlayUI.show();
+            OnlineLobby.showJoinPanel();
             return;
         }
         if (_menuBtns.os_back && hitMenuBtn(x, y, _menuBtns.os_back)) { OverlayUI._menuState = 'main'; return; }
@@ -1442,29 +1423,12 @@ function renderDisconnectOverlay(ctx) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // START
 // ═══════════════════════════════════════════════════════════════════════════════
-// ── HTML button wiring (lobby online) ──────────────────────────────────────────
-copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(roomCodeDisp.textContent).then(() => {
-        copyBtn.textContent = '¡Copiado!';
-        setTimeout(() => { copyBtn.textContent = 'Copiar código'; }, 1800);
-    });
-});
-
-joinBtn.onclick = () => {
-    const code = roomCodeInput.value.trim().toUpperCase();
-    if (code.length < 4) { onlineStatus.textContent = 'Código demasiado corto'; return; }
-    onlineStatus.textContent = 'Conectando a ' + code + '…';
-    joinBtn.disabled = true;
-    OnlineLayer.joinAs(code);
-};
-
-onlineBackBtn.addEventListener('click', () => {
+OnlineLobby.onCancel(() => {
     OnlineLayer.cancel();
     state.scene = SCENE.MENU;
     OverlayUI._menuState = 'main';
 });
 
-roomCodeInput.addEventListener('keydown', e => e.stopPropagation());
-roomCodeInput.addEventListener('keyup',   e => e.stopPropagation());
+OnlineLobby.wireDefaultJoin((code) => OnlineLayer.joinAs(code));
 
 GameBoot.startCanvas(game, { canvasId: 'gameCanvas', width: 480, height: 760 });
