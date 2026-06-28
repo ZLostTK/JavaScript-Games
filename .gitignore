@@ -50,12 +50,12 @@ discard_games/
 
 #Cosas propias
 editor
-tools/*/src/
-tools/*/index.html
-tools/*/package.json
-tools/*/pnpm-workspace.yaml
-tools/*/vite.config.js
-
+/tools/*/*
+!/tools/shared/
+!/tools/shared/**/*
+!/tools/*/dist/
+!/tools/*/dist/**/*
+# !/tools/*/index.html
 
 # Game ideas Logic & DOM
 idea.txt

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theme Studio — JavaScript Games</title>
+  <meta name="description" content="Editor visual de Theme.colors con preview en vivo. Exporta theme.js listo para engine/theme.js">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <script type="module" crossorigin src="./assets/index-Dn1VBfxP.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-VltdxBVq.css">
+</head>
+<body>
+  <!-- SVG filters for color blindness simulation -->
+  <svg class="svg-filters" aria-hidden="true">
+    <defs>
+      <filter id="filter-protanopia">
+        <feColorMatrix type="matrix" values="0.567,0.433,0,0,0 0.558,0.442,0,0,0 0,0.242,0.758,0,0 0,0,0,1,0"/>
+      </filter>
+      <filter id="filter-deuteranopia">
+        <feColorMatrix type="matrix" values="0.625,0.375,0,0,0 0.7,0.3,0,0,0 0,0.3,0.7,0,0 0,0,0,1,0"/>
+      </filter>
+      <filter id="filter-tritanopia">
+        <feColorMatrix type="matrix" values="0.95,0.05,0,0,0 0,0.433,0.567,0,0 0,0.475,0.525,0,0 0,0,0,1,0"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <div id="app">
+    <header class="app-header">
+      <h1>Theme Studio</h1>
+      <p class="subtitle">Editor de <code>Theme.colors</code> con preview en vivo → <code>engine/theme.js</code></p>
+      <button type="button" id="toggle-sidebar" class="mobile-toggle" aria-label="Mostrar panel de colores" title="Panel de colores">
+        <i class="fa-solid fa-palette"></i>
+      </button>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+          <h2>Paletas</h2>
+          <div class="preset-grid" id="preset-buttons"></div>
+          <div class="btn-row">
+            <button type="button" id="btn-reset" title="Restaurar colores originales de theme.js">
+              <i class="fa-solid fa-rotate-left"></i> Reset defaults
+            </button>
+            <button type="button" id="btn-random" title="Generar paleta armónica aleatoria">
+              <i class="fa-solid fa-shuffle"></i> Random
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Colores <span class="hint">Ctrl+Z deshacer</span></h2>
+          <div id="color-list" class="color-list"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Botones del menú <span class="hint">Color por slot</span></h2>
+          <div id="button-slots"></div>
+          <label class="slider-label" title="Radio de borde de los botones">
+            Borde redondeado
+            <input type="range" id="btn-radius-slider" min="0" max="24" value="10">
+            <output id="btn-radius-value">10px</output>
+          </label>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Tipografía</h2>
+          <label title="Fuente monoespaciada (Theme.font.mono)">
+            font.mono
+            <select id="font-mono"></select>
+          </label>
+          <label title="Fuente de interfaz (Theme.font.ui)">
+            font.ui
+            <select id="font-ui"></select>
+          </label>
+          <label class="slider-label" title="Tamaño de letra en el preview">
+            Tamaño preview
+            <input type="range" id="font-size-slider" min="12" max="28" value="18">
+            <output id="font-size-value">18px</output>
+          </label>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Testing visual</h2>
+          <label class="checkbox-label" title="Marcar colores con contraste WCAG AA insuficiente sobre bg">
+            <input type="checkbox" id="contrast-mode">
+            Modo contraste (WCAG AA)
+          </label>
+          <label title="Simular daltonismo en el preview">
+            Simulación daltonismo
+            <select id="color-blindness">
+              <option value="">Ninguna</option>
+              <option value="protanopia">Protanopia</option>
+              <option value="deuteranopia">Deuteranopia</option>
+              <option value="tritanopia">Tritanopia</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Exportación</h2>
+          <div class="btn-row">
+            <button type="button" id="btn-copy" class="primary" title="Copiar código al portapapeles">
+              <i class="fa-solid fa-copy"></i> Copy
+            </button>
+            <button type="button" id="btn-export" title="Descargar theme.js">
+              <i class="fa-solid fa-download"></i> Export .js
+            </button>
+            <button type="button" id="btn-export-css" title="Descargar variables CSS">
+              <i class="fa-solid fa-file-code"></i> CSS
+            </button>
+            <button type="button" id="btn-import" title="Importar theme.js o JSON">
+              <i class="fa-solid fa-file-import"></i> Import
+            </button>
+            <input type="file" id="theme-import-input" accept=".js,.json,text/javascript,application/json" hidden>
+          </div>
+          <pre class="code-preview" id="code-preview" aria-label="Vista previa del código generado"></pre>
+        </div>
+      </aside>
+
+      <section class="preview-area" aria-label="Preview del tema">
+        <div class="preview-toolbar">
+          <button type="button" id="btn-hover-toggle" title="Alternar modo normal / hover en botones">
+            <i class="fa-solid fa-hand-pointer"></i> Modo hover
+          </button>
+          <span class="toolbar-hint">Preview con <code>UICanvas.drawButton()</code> y <code>layoutButtons(3)</code></span>
+        </div>
+        <div class="preview-wrapper" id="preview-wrapper">
+          <canvas id="preview-canvas" width="480" height="640"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

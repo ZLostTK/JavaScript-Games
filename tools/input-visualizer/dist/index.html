@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Input Visualizer — JavaScript Games</title>
+  <meta name="description" content="Overlay de depuración de teclado, mouse, touch y FPS para cualquier juego del engine">
+  <script type="module" crossorigin src="./assets/demo-BdZj8L4d.js"></script>
+  <link rel="modulepreload" crossorigin href="./input-visualizer.js">
+  <link rel="stylesheet" crossorigin href="./assets/demo-D1_bCQoi.css">
+  <link rel="stylesheet" href="../../../engine/game-shell.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game"></canvas>
+    <button id="back-btn" onclick="location.href='../'">← Tools</button>
+  </div>
+
+  <aside class="demo-hint" aria-label="Instrucciones">
+    <p>Presiona <kbd>F1</kbd> o <kbd>`</kbd> para activar el overlay.</p>
+    <p>Inyectar en juegos: <code>&lt;script src="../../tools/input-visualizer/dist/input-visualizer.js"&gt;&lt;/script&gt;</code></p>
+  </aside>
+
+  <script src="../../../engine/theme.js"></script>
+  <script src="../../../engine/render-bridge.js"></script>
+  <script src="../../../engine/input.js"></script>
+  <script src="../../../engine/audio.js"></script>
+  <script src="../../../engine/engine.js"></script>
+</body>
+</html>
