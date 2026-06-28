@@ -8,6 +8,8 @@
 		"editor": "pnpm --dir editor dev",
 		"editor:build": "pnpm --dir editor build",
 		"sprite-cutter": "pnpm --dir tools/sprite-cutter dev",
-		"sprite-cutter:build": "pnpm --dir tools/sprite-cutter build"
+		"sprite-cutter:build": "pnpm --dir tools/sprite-cutter build",
+		"animation-previewer": "pnpm --dir tools/animation-previewer dev",
+		"animation-previewer:build": "pnpm --dir tools/animation-previewer build"
 	}
 }
