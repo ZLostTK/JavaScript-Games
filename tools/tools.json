@@ -1,0 +1,22 @@
+{
+  "tools": [
+    {
+      "id": "animation-previewer",
+      "title": "Animation Previewer",
+      "description": "Preview y exportación de animaciones cuadro a cuadro para SpriteProcessor.defineAnimations(). Arrastra imágenes, crea animaciones y exporta el JSON.",
+      "path": "animation-previewer/dist/",
+      "image": "../assets/imgs_tools/animation-previewer.svg",
+      "color": "#1a1a2e",
+      "tags": ["Animación", "Sprites", "Exportación"]
+    },
+    {
+      "id": "sprite-cutter",
+      "title": "Sprite Cutter",
+      "description": "Corta spritesheets en frames individuales. Define regiones, exporta sprites recortados y su configuración JSON.",
+      "path": "sprite-cutter/dist/",
+      "image": "../assets/imgs_tools/sprite-cutter.svg",
+      "color": "#1a2a1e",
+      "tags": ["Sprites", "Spritesheet", "Utilidad"]
+    }
+  ]
+}

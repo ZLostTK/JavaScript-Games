@@ -1,0 +1,102 @@
+/**
+ * Shared UI tokens for dev tools — readability & WCAG 2.2 AA contrast.
+ * Import from each tool: @import '../../shared/ui-base.css';
+ */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg: #0f0f1a;
+  --bg-panel: #12121f;
+  --bg-elevated: #1c1c30;
+  --accent: #e94560;
+  --accent2: #533483;
+  --success: #5eecc0;
+  --warning: #f5c518;
+  --info: #6fd4ff;
+  --border: rgba(255, 255, 255, 0.18);
+  --radius: 8px;
+
+  /* Text — contrast ≥ 4.5:1 on --bg */
+  --text: #ececf0;
+  --text-muted: #b8b8c8;
+  --muted: #9494a8;
+  --text-dim: #787890;
+
+  /* Typography — 16px base; never below 13px for UI copy */
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-xs: 0.8125rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --line-height: 1.5;
+  --line-height-tight: 1.35;
+
+  /* Interactive targets */
+  --tap-min: 2.75rem;
+  --input-padding: 0.5rem 0.625rem;
+  --btn-padding: 0.5rem 0.875rem;
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--info);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.9em;
+  color: var(--info);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* 16px inputs prevent iOS zoom on focus */
+input[type="text"],
+input[type="number"],
+input[type="color"],
+select,
+textarea {
+  font-size: var(--font-size-base);
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animation Previewer — JavaScript Games</title>
+  <meta name="description" content="Preview de animaciones cuadro a cuadro y exportación para SpriteProcessor.defineAnimations">
+  <script type="module" crossorigin src="./assets/index-CIxJMG3G.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Ci51apF7.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1>Animation Previewer</h1>
+      <p class="subtitle">Preview y exporta para <code>SpriteProcessor.defineAnimations()</code></p>
+    </header>
+
+    <main class="workspace">
+      <!-- Left: frames -->
+      <aside class="panel panel-left" id="panel-frames">
+        <div class="panel-header">
+          <h2>Frames <span class="badge" id="frame-count">0</span></h2>
+          <div class="panel-actions">
+            <label class="btn-sm" title="Cargar imágenes PNG, GIF, WebP">
+              <input type="file" id="file-input" accept="image/png,image/gif,image/webp,image/jpeg" multiple hidden>
+              + Imágenes
+            </label>
+            <button type="button" id="btn-sort-natural" class="btn-sm" title="Ordenar por nombre (numérico)"># Sort</button>
+            <button type="button" id="btn-sort-alpha" class="btn-sm" title="Ordenar alfabéticamente">A-Z</button>
+          </div>
+        </div>
+
+        <div class="sheet-load">
+          <label class="btn-sm secondary" title="JSON del Sprite Cutter + imagen del sheet">
+            <input type="file" id="sheet-json" accept=".json,application/json" hidden>
+            JSON
+          </label>
+          <label class="btn-sm secondary" title="Imagen del spritesheet">
+            <input type="file" id="sheet-image" accept="image/*" hidden>
+            Sheet
+          </label>
+          <button type="button" id="btn-load-sheet" class="btn-sm primary" title="Cargar spritesheet desde JSON + imagen" disabled>Load Sheet</button>
+        </div>
+
+        <div class="drop-zone" id="drop-zone">
+          <p>Arrastra imágenes aquí</p>
+        </div>
+
+        <ul id="frame-list" class="frame-list" aria-label="Lista de frames"></ul>
+      </aside>
+
+      <!-- Center: preview -->
+      <section class="preview-area">
+        <div class="preview-toolbar">
+          <button type="button" id="btn-play" title="Play / Pause (Space)">▶ Play</button>
+          <button type="button" id="btn-prev" title="Frame anterior (←)">◀</button>
+          <button type="button" id="btn-next" title="Frame siguiente (→)">▶</button>
+          <button type="button" id="btn-restart" title="Reiniciar (R)">↺</button>
+          <span class="frame-counter" id="frame-counter" title="Frame actual / total">0/0</span>
+          <span class="real-fps" id="real-fps" title="FPS real renderizado">— FPS</span>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="preview-canvas"></canvas>
+          <div class="engine-test-panel hidden" id="engine-test-panel">
+            <span>Test in Engine</span>
+            <canvas id="engine-canvas" width="160" height="160"></canvas>
+          </div>
+        </div>
+
+        <div class="scrub-row">
+          <input type="range" id="scrub-slider" min="0" max="0" value="0" title="Arrastrar para ir a cualquier frame">
+        </div>
+
+        <div class="preview-controls">
+          <label title="Fotogramas por segundo (1–60)">
+            FPS <span id="fps-value">10</span>
+            <input type="range" id="fps-slider" min="1" max="60" value="10">
+          </label>
+          <label class="toggle-label" title="Repetir animación al llegar al final">
+            <input type="checkbox" id="loop-toggle" checked>
+            Loop
+          </label>
+          <label title="Escala de preview">
+            Escala
+            <select id="scale-select">
+              <option value="1">1x</option>
+              <option value="2" selected>2x</option>
+              <option value="4">4x</option>
+              <option value="fit">Fit</option>
+            </select>
+          </label>
+          <label title="Fondo del canvas de preview">
+            Fondo
+            <select id="bg-select">
+              <option value="checker" selected>Checkerboard</option>
+              <option value="transparent">Transparente</option>
+              <option value="color">Color</option>
+            </select>
+          </label>
+          <label id="bg-color-wrap" class="hidden" title="Color de fondo personalizado">
+            Color <input type="color" id="bg-color" value="#1a1a2e">
+          </label>
+          <button type="button" id="btn-engine-test" title="Simular render en el motor del juego">🎮 Test in Engine</button>
+        </div>
+      </section>
+
+      <!-- Right: animations -->
+      <aside class="panel panel-right" id="panel-anims">
+        <div class="panel-header">
+          <h2>Animaciones <span class="badge" id="anim-count">0</span></h2>
+          <button type="button" id="btn-new-anim" class="btn-sm primary" title="Crear nueva animación">+ New</button>
+        </div>
+
+        <ul id="anim-list" class="anim-list"></ul>
+
+        <div id="anim-editor" class="anim-editor hidden">
+          <h3>Editar animación</h3>
+          <label title="Nombre de la animación">
+            Nombre
+            <input type="text" id="anim-name">
+          </label>
+          <label title="FPS de esta animación">
+            Speed (FPS)
+            <input type="number" id="anim-speed" min="1" max="60" value="10">
+          </label>
+          <label class="toggle-label" title="Bucle de esta animación">
+            <input type="checkbox" id="anim-loop" checked>
+            Loop
+          </label>
+          <p class="section-label">Frames en animación <span class="hint">(arrastra para reordenar)</span></p>
+          <ul id="anim-frame-list" class="anim-frame-list"></ul>
+          <div class="btn-row">
+            <button type="button" id="btn-dup-anim" title="Duplicar animación">Duplicar</button>
+            <button type="button" id="btn-del-anim" class="danger" title="Eliminar animación">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="export-section">
+          <h3>Exportación</h3>
+          <label class="toggle-label" title="Envolver en { animations: ... } para SpriteManager.load">
+            <input type="checkbox" id="export-wrap">
+            Formato SpriteManager.load()
+          </label>
+          <div class="btn-row">
+            <button type="button" id="btn-export" class="primary" title="Descargar JSON de animaciones">⬇ Export</button>
+            <button type="button" id="btn-copy" title="Copiar JSON al portapapeles">📋 Copy</button>
+          </div>
+          <pre class="json-preview" id="json-preview">{}</pre>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Modal: new animation -->
+  <dialog id="new-anim-dialog">
+    <form method="dialog" id="new-anim-form">
+      <h3>Nueva animación</h3>
+      <label>
+        Nombre
+        <input type="text" id="new-anim-name" required placeholder="walk">
+      </label>
+      <p class="section-label">Selecciona frames</p>
+      <div id="new-anim-frames" class="frame-picker"></div>
+      <div class="dialog-actions">
+        <button type="button" id="new-anim-cancel">Cancelar</button>
+        <button type="submit" class="primary">Crear</button>
+      </div>
+    </form>
+  </dialog>
+
+</body>
+</html>
