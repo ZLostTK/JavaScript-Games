@@ -6,6 +6,8 @@
 	"scripts": {
 		"start": "serve .",
 		"editor": "pnpm --dir editor dev",
-		"editor:build": "pnpm --dir editor build"
+		"editor:build": "pnpm --dir editor build",
+		"sprite-cutter": "pnpm --dir tools/sprite-cutter dev",
+		"sprite-cutter:build": "pnpm --dir tools/sprite-cutter build"
 	}
 }
