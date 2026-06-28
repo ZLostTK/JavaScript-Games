@@ -33,22 +33,22 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 
 ## Features
 
-- **Multi-Engine Rendering** — Three renderers: **Engine** (Canvas 2D), **PIXIEngine** (WebGL via PIXI.js), **LittleEngine** (LittleJS), plus **DOMEngine** for HTML/CSS games. All connected via `RenderBridge` for agnostic shared utilities.
-- **RenderBridge** — Agnostic bridge so shared modules (`UICanvas`, `GameBoot`, `SpriteProcessor`) work with any engine without coupling.
-- **Sprites & Animations** — `SpriteProcessor` cuts tilesets, `SpriteManager` groups sprites by character, `EntityComposer` builds layered entities, and `SpriteStateMachine` handles animation states. Debug grid (`Alt+D`) for preview.
-- **Unified Input** — `Input` class normalises keyboard, mouse, and multi-touch events into a single API with gesture detection (swipe) and just-pressed/released semantics.
-- **Procedural Audio** — `Audio` class synthesises sounds at runtime (square, sine, saw, noise waves with envelope shaping); no external audio files required.
-- **Online Multiplayer (P2P)** — `Online` module wraps PeerJS (WebRTC) for P2P multiplayer. `OnlineLobby` provides a shared DOM overlay for room creation/join with lobby list and code clipboard.
-- **Canvas UI Helpers** — `UICanvas` provides `drawButton()`, `hitTest()`, `getPointer()`, and `layoutButtons()` for canvas-based menus, compatible with all engines.
-- **Theme System** — `Theme` object provides a shared color palette (`bg`, `accent`, `success`, etc.) and font families (`mono`, `ui`) used by all games.
-- **Game Shell CSS** — `game-shell.css` provides base reset, safe-area-aware layout, back button, online lobby overlay UI, and mobile D-pad controls.
-- **Mobile Controls** — `MobileControls` binds on-screen D-pad buttons to game properties, auto-shown on touch devices.
-- **GameBoot** — Unified boot sequence: `GameBoot.start()` auto-detects the renderer. Also exposes `startCanvas()`, `startPIXI()`, `startLittle()`, `startDOM()`.
-- **Hub Page** — Minimalist game grid reads `games.json` and auto-renders game cards with thumbnails, descriptions, and a Play button; fully responsive (auto-fill grid, 1 col on mobile).
-- **Auto-Discovery** — `scripts/scan-games.js` scans the `games/` directory and updates `games.json` automatically. This runs via a GitHub Workflow on every push.
-- **PWA (Hybrid Cache)** — Service worker (`sw.js`, cache `js-games-v3`) with hybrid strategy: **Network-First** for code (`/engine/*`, `/games/*`, HTML/JS/CSS) and **Cache-First** for images. Each game can be downloaded individually from the hub; `scan-games.js` detects engine dependencies from `index.html`. Auto-migrates from v1/v2 caches. See [engine/docs/OFFLINE.md](./engine/docs/OFFLINE.md).
-- **Dark Mode** — Full dark theme (`#0f0f1a` background) with a consistent red/purple accent palette across the hub and all games.
-- **AI Opponent** — Tic Tac Toe features an AI that plays optimally; Connect 4 has AI opponent; Arkanoid and Snake are single-player with progressive difficulty.
+- **Multi-Engine Rendering** - Three renderers: **Engine** (Canvas 2D), **PIXIEngine** (WebGL via PIXI.js), **LittleEngine** (LittleJS), plus **DOMEngine** for HTML/CSS games. All connected via `RenderBridge` for agnostic shared utilities.
+- **RenderBridge** - Agnostic bridge so shared modules (`UICanvas`, `GameBoot`, `SpriteProcessor`) work with any engine without coupling.
+- **Sprites & Animations** - `SpriteProcessor` cuts tilesets, `SpriteManager` groups sprites by character, `EntityComposer` builds layered entities, and `SpriteStateMachine` handles animation states. Debug grid (`Alt+D`) for preview.
+- **Unified Input** - `Input` class normalises keyboard, mouse, and multi-touch events into a single API with gesture detection (swipe) and just-pressed/released semantics.
+- **Procedural Audio** - `Audio` class synthesises sounds at runtime (square, sine, saw, noise waves with envelope shaping); no external audio files required.
+- **Online Multiplayer (P2P)** - `Online` module wraps PeerJS (WebRTC) for P2P multiplayer. `OnlineLobby` provides a shared DOM overlay for room creation/join with lobby list and code clipboard.
+- **Canvas UI Helpers** - `UICanvas` provides `drawButton()`, `hitTest()`, `getPointer()`, and `layoutButtons()` for canvas-based menus, compatible with all engines.
+- **Theme System** - `Theme` object provides a shared color palette (`bg`, `accent`, `success`, etc.) and font families (`mono`, `ui`) used by all games.
+- **Game Shell CSS** - `game-shell.css` provides base reset, safe-area-aware layout, back button, online lobby overlay UI, and mobile D-pad controls.
+- **Mobile Controls** - `MobileControls` binds on-screen D-pad buttons to game properties, auto-shown on touch devices.
+- **GameBoot** - Unified boot sequence: `GameBoot.start()` auto-detects the renderer. Also exposes `startCanvas()`, `startPIXI()`, `startLittle()`, `startDOM()`.
+- **Hub Page** - Minimalist game grid reads `games.json` and auto-renders game cards with thumbnails, descriptions, and a Play button; fully responsive (auto-fill grid, 1 col on mobile).
+- **Auto-Discovery** - `scripts/scan-games.js` scans the `games/` directory and updates `games.json` automatically. This runs via a GitHub Workflow on every push.
+- **PWA (Hybrid Cache)** - Service worker (`sw.js`, cache `js-games-v3`) with hybrid strategy: **Network-First** for code (`/engine/*`, `/games/*`, HTML/JS/CSS) and **Cache-First** for images. Each game can be downloaded individually from the hub; `scan-games.js` detects engine dependencies from `index.html`. Auto-migrates from v1/v2 caches. See [engine/docs/OFFLINE.md](./engine/docs/OFFLINE.md).
+- **Dark Mode** - Full dark theme (`#0f0f1a` background) with a consistent red/purple accent palette across the hub and all games.
+- **AI Opponent** - Tic Tac Toe features an AI that plays optimally; Connect 4 has AI opponent; Arkanoid and Snake are single-player with progressive difficulty.
 
 ## Adding a New Game
 

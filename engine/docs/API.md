@@ -57,7 +57,7 @@ LittleEngine.toGame(x, y)
 
 ---
 
-## [RenderBridge](GAME_ARCHITECTURE.md) — puente entre motores
+## [RenderBridge](GAME_ARCHITECTURE.md) - puente entre motores
 
 ```javascript
 RenderBridge.setActive(engine)   // llamado automáticamente por cada motor

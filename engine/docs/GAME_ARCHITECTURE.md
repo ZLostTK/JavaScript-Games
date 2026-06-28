@@ -82,7 +82,7 @@ En lugar de `Engine.init(...).start(game)`, `window.onload = ...` o llamadas sue
 
 ### ¿Cómo usarlo?
 
-**Canvas 2D (Engine)** — comportamiento por defecto, retrocompatible:
+**Canvas 2D (Engine)** - comportamiento por defecto, retrocompatible:
 
 ```javascript
 GameBoot.start(game, { canvasId: 'game', width: 400, height: 480 });
@@ -150,12 +150,12 @@ Colores disponibles: `bg`, `accent`, `accent2`, `success`, `warning`, `info`, `m
 Helpers para menús dibujados en canvas: botones redondeados, hit-test de rectángulos y conversión del puntero a coordenadas lógicas vía `RenderBridge`.
 
 ### ¿Cuándo utilizarlo?
-En juegos con pantallas de selección (`'select'`, `'online-setup'`, `'gameover'`) renderizadas en canvas. **No** lo uses para UI basada en HTML — ahí usa `DOMEngine` o markup directo.
+En juegos con pantallas de selección (`'select'`, `'online-setup'`, `'gameover'`) renderizadas en canvas. **No** lo uses para UI basada en HTML - ahí usa `DOMEngine` o markup directo.
 
 | Función | Engine | PIXI | LittleJS |
 |---------|--------|------|----------|
 | `getPointer()`, `hitTest()` | ✓ | ✓ | ✓ |
-| `drawButton()` | ✓ | — | — |
+| `drawButton()` | ✓ | - | - |
 
 `drawButton()` requiere contexto Canvas 2D (`RenderBridge.ctx`). En PIXI/LittleJS dibuja la UI con sprites o la API nativa del motor; usa `hitTest` y `getPointer` para la lógica de clics.
 
@@ -186,14 +186,14 @@ Constructor de menús canvas **declarativo**. Sustituye el patrón repetido de `
 Define botones como datos (`id`, `label`, `y`, `accent`) y delega layout, hover, dibujo e input en un solo objeto.
 
 ### ¿Cuándo utilizarlo?
-En cualquier pantalla canvas con botones: menú principal (`'select'`), submenú online (`'online-setup'`), pausa o gameover con acciones. **No** lo uses en UI HTML/DOM — ahí usa markup o `DOMEngine`.
+En cualquier pantalla canvas con botones: menú principal (`'select'`), submenú online (`'online-setup'`), pausa o gameover con acciones. **No** lo uses en UI HTML/DOM - ahí usa markup o `DOMEngine`.
 
 Requiere: `theme.js`, `render-bridge.js`, `input.js`, `ui-canvas.js`, `ui-menu.js` y motor Canvas 2D para `draw()`.
 
 | Método | Engine | PIXI | LittleJS |
 |--------|--------|------|----------|
 | `handleClick()`, `handleInput()` | ✓ | ✓ | ✓ |
-| `draw()` | ✓ | — | — |
+| `draw()` | ✓ | - | - |
 
 ### ¿Cómo usarlo?
 
@@ -217,7 +217,7 @@ this.onlineMenu = UIMenu.onlineSetup();
 // En render:
 this.menu.draw(ctx);
 
-// En update — devuelve el id del botón pulsado o null:
+// En update - devuelve el id del botón pulsado o null:
 const id = this.menu.handleInput();
 if (id === 'play') this.startGame();
 ```
@@ -286,7 +286,7 @@ Pantalla de fin de partida unificada: overlay semitransparente + título + puntu
 Elimina ~30 líneas repetidas de `fillRect` + `Engine.text` en cada juego.
 
 ### ¿Cuándo utilizarlo?
-Al mostrar game over, victoria, derrota o desconexión online encima del tablero/juego. **No** sustituye gameovers muy custom (othello con disco ganador, flappybird con marcador rival) — en esos casos usa `GameOverlay.drawDim()` o combina `panel: true` con `lines` extra.
+Al mostrar game over, victoria, derrota o desconexión online encima del tablero/juego. **No** sustituye gameovers muy custom (othello con disco ganador, flappybird con marcador rival) - en esos casos usa `GameOverlay.drawDim()` o combina `panel: true` con `lines` extra.
 
 Requiere: `theme.js`, `render-bridge.js`, `game-overlay.js` y motor con `Engine.text` (Canvas 2D).
 
@@ -331,12 +331,12 @@ GameOverlay.canContinue(this.restartCd);  // true si se puede continuar
 ### ¿Para qué sirve?
 Encapsula el flujo **canvas** de multijugador: submenú host/join/back + wiring de `OnlineLobby.host()` / `prepareJoin()` + manejo por defecto de desconexión. Elimina ~80 líneas de boilerplate que se repiten en connect4, tictactoe, minesweeper, etc.
 
-Complementa a `OnlineLobby` (overlay DOM) — no lo reemplaza.
+Complementa a `OnlineLobby` (overlay DOM) - no lo reemplaza.
 
 ### ¿Cuándo utilizarlo?
 En juegos P2P con pantalla `'online-setup'` dibujada en canvas y markup estándar `#online-ui`. Usa `OnlineSetup.forGame()` cuando el flujo sea el típico: conectar → `startGame('online', role)` → sincronizar movimientos vía `onData`.
 
-**No** lo uses si el lobby es totalmente custom (domino 4 jugadores, void sector con tabs 1v1/co-op) — ahí mantén `OnlineLobby` directo.
+**No** lo uses si el lobby es totalmente custom (domino 4 jugadores, void sector con tabs 1v1/co-op) - ahí mantén `OnlineLobby` directo.
 
 Requiere: `ui-menu.js`, `online-lobby.js`, `online-setup.js`, `peerjs.min.js`, `online.js` y `#online-ui` en el HTML.
 
@@ -424,7 +424,7 @@ _cancelOnline() {
 }
 ```
 
-La lógica de red sigue en `Online.send()` / `Online.on('onData')` — ver [ONLINE.md](ONLINE.md).
+La lógica de red sigue en `Online.send()` / `Online.on('onData')` - ver [ONLINE.md](ONLINE.md).
 
 **Lobbies custom** (domino 4 jugadores, void sector con tabs 1v1/co-op, hangman con pantalla de espera): usa los helpers de panel sin reimplementar copy/join/back:
 
@@ -535,7 +535,7 @@ Como base al crear un juego nuevo o al migrar uno existente.
     <div id="game-container">
         <canvas id="game"></canvas>
         <button id="back-btn" onclick="location.href='../../'">← Volver</button>
-        <!-- #online-ui opcional — ver OnlineLobby -->
+        <!-- #online-ui opcional - ver OnlineLobby -->
     </div>
 
     <script src="../../engine/theme.js"></script>
@@ -589,8 +589,8 @@ En todo juego nuevo y al refactorizar uno existente.
 
 | Convención | Detalle |
 |------------|---------|
-| **Game object** | `{ init, update, render? }` — el motor invoca estos métodos |
-| **Máquina de estados** | `'select' → 'online-setup' → 'playing' → 'gameover'` — preferir `GameStates` |
+| **Game object** | `{ init, update, render? }` - el motor invoca estos métodos |
+| **Máquina de estados** | `'select' → 'online-setup' → 'playing' → 'gameover'` - preferir `GameStates` |
 | **Menús canvas** | `UIMenu` / presets `modeSelect()` / `onlineSetup()`, no `_btns` manuales |
 | **Game over** | `GameOverlay.draw()`, no `fillRect` + textos sueltos |
 | **Colores** | `Theme.colors.*`, no hex sueltos |
@@ -625,13 +625,13 @@ Ver sección **GameBoot**. Los módulos compartidos (`Theme`, `Input`, `Audio`, 
 | Módulo | Engine | PIXI | LittleJS | DOM |
 |--------|--------|------|----------|-----|
 | `Theme` | ✓ | ✓ | ✓ | ✓ |
-| `RenderBridge` | ✓ | ✓ | ✓ | — |
-| `UICanvas` (puntero/hit-test) | ✓ | ✓ | ✓ | — |
-| `UICanvas.drawButton` | ✓ | — | — | — |
-| `UIMenu` (input/hit-test) | ✓ | ✓ | ✓ | — |
-| `UIMenu.draw` | ✓ | — | — | — |
+| `RenderBridge` | ✓ | ✓ | ✓ | - |
+| `UICanvas` (puntero/hit-test) | ✓ | ✓ | ✓ | - |
+| `UICanvas.drawButton` | ✓ | - | - | - |
+| `UIMenu` (input/hit-test) | ✓ | ✓ | ✓ | - |
+| `UIMenu.draw` | ✓ | - | - | - |
 | `GameStates` | ✓ | ✓ | ✓ | ✓ |
-| `GameOverlay` | ✓ | — | — | — |
+| `GameOverlay` | ✓ | - | - | - |
 | `OnlineLobby` | ✓ | ✓ | ✓ | ✓ |
 | `OnlineSetup` | ✓ | ✓ | ✓ | ✓ |
 | `MobileControls` | ✓ | ✓ | ✓ | ✓ |
@@ -642,8 +642,8 @@ Ver sección **GameBoot**. Los módulos compartidos (`Theme`, `Input`, `Audio`, 
 
 ## Documentación relacionada
 
-- [Motores Core](CORE_ENGINES.md) — API de Engine, PIXIEngine, LittleEngine, DOMEngine
-- [Input](INPUT.md) — teclado, ratón, touch
-- [Online](ONLINE.md) — PeerJS, envío de mensajes
-- [Offline / Service Worker](OFFLINE.md) — descarga de juegos, caché PWA
-- [API](API.md) — referencia rápida de todos los módulos
+- [Motores Core](CORE_ENGINES.md) - API de Engine, PIXIEngine, LittleEngine, DOMEngine
+- [Input](INPUT.md) - teclado, ratón, touch
+- [Online](ONLINE.md) - PeerJS, envío de mensajes
+- [Offline / Service Worker](OFFLINE.md) - descarga de juegos, caché PWA
+- [API](API.md) - referencia rápida de todos los módulos

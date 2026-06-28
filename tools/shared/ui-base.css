@@ -1,5 +1,5 @@
 /**
- * Shared UI tokens for dev tools — readability & WCAG 2.2 AA contrast.
+ * Shared UI tokens for dev tools - readability & WCAG 2.2 AA contrast.
  * Import from each tool: @import '../../shared/ui-base.css';
  */
 :root {
@@ -17,13 +17,13 @@
   --border: rgba(255, 255, 255, 0.18);
   --radius: 8px;
 
-  /* Text — contrast ≥ 4.5:1 on --bg */
+  /* Text - contrast ≥ 4.5:1 on --bg */
   --text: #ececf0;
   --text-muted: #b8b8c8;
   --muted: #9494a8;
   --text-dim: #787890;
 
-  /* Typography — 16px base; never below 13px for UI copy */
+  /* Typography - 16px base; never below 13px for UI copy */
   --font-size-base: 1rem;
   --font-size-sm: 0.875rem;
   --font-size-xs: 0.8125rem;
@@ -39,7 +39,9 @@
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--info);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -54,7 +56,8 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: var(--font-size-base);
   line-height: var(--line-height);
   -webkit-font-smoothing: antialiased;
@@ -62,7 +65,7 @@ body {
 }
 
 code {
-  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-family: ui-monospace, "Cascadia Code", monospace;
   font-size: 0.9em;
   color: var(--info);
 }
@@ -94,7 +97,9 @@ textarea {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

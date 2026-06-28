@@ -147,5 +147,5 @@ La caché v3 añadió `game-boot.js`, `game-shell.css`, `sprite-processor.js`, y
 
 ## Documentación relacionada
 
-- [Arquitectura de Juegos](GAME_ARCHITECTURE.md) — módulos del engine cacheados
-- [README del repo](../../README.md) — visión general PWA
+- [Arquitectura de Juegos](GAME_ARCHITECTURE.md) - módulos del engine cacheados
+- [README del repo](../../README.md) - visión general PWA

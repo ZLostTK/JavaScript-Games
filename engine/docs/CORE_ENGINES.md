@@ -2,7 +2,7 @@
 
 El sistema soporta múltiples motores de renderizado. Todos siguen el contrato de **Game Object**: `init()`, `update(dt)` y (opcionalmente) `render()`.
 
-Los tres motores gráficos principales — **Engine**, **PIXIEngine** y **LittleEngine** — registran automáticamente el motor activo en `RenderBridge`, permitiendo que módulos compartidos (`UICanvas`, `GameBoot`, `SpriteProcessor`) funcionen sin acoplarse a uno concreto.
+Los tres motores gráficos principales - **Engine**, **PIXIEngine** y **LittleEngine** - registran automáticamente el motor activo en `RenderBridge`, permitiendo que módulos compartidos (`UICanvas`, `GameBoot`, `SpriteProcessor`) funcionen sin acoplarse a uno concreto.
 
 ---
 
@@ -242,7 +242,7 @@ const littleGame = {
         // dt = timeDelta de LittleJS
     },
     render() {
-        // postRender hook — dibujado adicional
+        // postRender hook - dibujado adicional
     }
 };
 

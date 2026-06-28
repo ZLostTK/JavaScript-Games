@@ -15,7 +15,7 @@ Siempre que tu juego requiera interacciones del usuario en tiempo real (moverse 
 Debes inicializar el módulo pasándole el elemento HTML donde se capturan eventos de ratón o táctiles. Si solo necesitas teclado, puedes pasar `null`.
 
 ```javascript
-// Manual — Engine pasa el canvas automáticamente en Engine.init()
+// Manual - Engine pasa el canvas automáticamente en Engine.init()
 Input.init(canvas);
 
 // PIXIEngine y LittleEngine llaman RenderBridge.bindInput() tras crear el canvas

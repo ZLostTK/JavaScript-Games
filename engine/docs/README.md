@@ -28,7 +28,7 @@ Todo juego declara un **Game Object** con este contrato:
 
 ```javascript
 const myGame = {
-    init() { /* setup — puede ser async con PIXI/LittleJS */ },
+    init() { /* setup - puede ser async con PIXI/LittleJS */ },
     update(dt) { /* lógica por frame */ },
     render(ctx) { /* opcional: Canvas recibe ctx; PIXI/LittleJS sin argumentos */ }
 };
