@@ -1,15 +1,26 @@
 {
 	"type": "module",
 	"devDependencies": {
-		"serve": "^14.2.6"
+		"jsdom": "^26.1.0",
+		"serve": "^14.2.6",
+		"vitest": "^3.2.4"
 	},
 	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"start": "serve .",
 		"editor": "pnpm --dir editor dev",
 		"editor:build": "pnpm --dir editor build",
 		"sprite-cutter": "pnpm --dir tools/sprite-cutter dev",
 		"sprite-cutter:build": "pnpm --dir tools/sprite-cutter build",
 		"animation-previewer": "pnpm --dir tools/animation-previewer dev",
-		"animation-previewer:build": "pnpm --dir tools/animation-previewer build"
+		"animation-previewer:build": "pnpm --dir tools/animation-previewer build",
+		"theme-studio": "pnpm --dir tools/theme-studio dev",
+		"theme-studio:build": "pnpm --dir tools/theme-studio build",
+		"input-visualizer": "pnpm --dir tools/input-visualizer dev",
+		"input-visualizer:build": "pnpm --dir tools/input-visualizer build",
+		"hitbox-debugger": "pnpm --dir tools/hitbox-debugger dev",
+		"hitbox-debugger:build": "pnpm --dir tools/hitbox-debugger build",
+		"all:build": "pnpm sprite-cutter:build && pnpm animation-previewer:build && pnpm theme-studio:build && pnpm input-visualizer:build && pnpm hitbox-debugger:build"
 	}
 }

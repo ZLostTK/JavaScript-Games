@@ -17,6 +17,33 @@
       "image": "../assets/imgs_tools/sprite-cutter.svg",
       "color": "#1a2a1e",
       "tags": ["Sprites", "Spritesheet", "Utilidad"]
+    },
+    {
+      "id": "theme-studio",
+      "title": "Theme Studio",
+      "description": "Editor visual de Theme.colors con preview en vivo de botones, texto y layouts. Exporta theme.js listo para engine/theme.js.",
+      "path": "theme-studio/dist/",
+      "image": "../assets/imgs_tools/theme-studio.svg",
+      "color": "#1a1a2e",
+      "tags": ["Theme", "Colores", "Exportación"]
+    },
+    {
+      "id": "input-visualizer",
+      "title": "Input Visualizer",
+      "description": "Overlay de depuración de teclado, mouse, touch y FPS. Inyectar con script en cualquier juego o probar en la demo incluida.",
+      "path": "input-visualizer/dist/",
+      "image": "../assets/imgs_tools/input-visualizer.svg",
+      "color": "#0a1a0f",
+      "tags": ["Debug", "Input", "Utilidad"]
+    },
+    {
+      "id": "hitbox-debugger",
+      "title": "Hitbox Debugger",
+      "description": "Overlay visual de regiones interactivas (botones, sliders, áreas clickeables). Auto-detecta _btns o registro manual. F2 para activar.",
+      "path": "hitbox-debugger/dist/",
+      "image": "../assets/imgs_tools/hitbox-debugger.svg",
+      "color": "#1a1a2e",
+      "tags": ["Debug", "UI", "Utilidad"]
     }
   ]
 }

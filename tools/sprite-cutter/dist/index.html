@@ -7,8 +7,8 @@
   <meta name="description" content="Herramienta visual para definir regiones de sprites y exportar JSON compatible con SpriteProcessor.loadSpriteSheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-  <script type="module" crossorigin src="./assets/index-I9QooM2V.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DyRYzp99.css">
+  <script type="module" crossorigin src="./assets/index-DWLKVwxX.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-D1CpuVjc.css">
 </head>
 <body>
   <div id="app">
@@ -27,6 +27,8 @@
           </label>
           <button type="button" id="btn-fit" title="Ajustar imagen al viewport">⊡ Fit</button>
           <button type="button" id="btn-reset-zoom" title="Restablecer zoom al 100%">1:1</button>
+          <button type="button" id="btn-undo" title="Deshacer (Ctrl+Z)" disabled><i class="fa-solid fa-rotate-left"></i></button>
+          <button type="button" id="btn-redo" title="Rehacer (Ctrl+Y)" disabled><i class="fa-solid fa-rotate-right"></i></button>
           <span class="zoom-label" id="zoom-label" title="Nivel de zoom actual">100%</span>
           <span class="coords-label" id="coords-label" title="Coordenadas del cursor">—</span>
         </div>
@@ -36,10 +38,11 @@
           <div class="drop-overlay hidden" id="drop-overlay">
             <p>Suelta la imagen aquí</p>
           </div>
+          <div id="toast" class="toast" role="status" aria-live="polite"></div>
           <canvas id="minimap" class="minimap" width="160" height="120" title="Mini-mapa"></canvas>
         </div>
 
-        <p class="canvas-hint">Rueda: zoom · Clic derecho + arrastrar: pan · Clic izquierdo: seleccionar / dibujar rectángulo</p>
+        <p class="canvas-hint">Rueda: zoom · Clic derecho: pan · Clic: seleccionar / dibujar · Shift/Ctrl+clic: multi-selección · Ctrl+Z/Y: deshacer/rehacer</p>
       </section>
 
       <aside class="sidebar" id="sidebar">
@@ -95,6 +98,7 @@
         <div class="sidebar-section">
           <h2>Rectángulo seleccionado</h2>
           <div id="no-selection" class="muted-text">Ninguno seleccionado</div>
+          <div id="multi-selection" class="multi-selection" hidden></div>
           <div id="selection-panel" hidden>
             <label title="Nombre del sprite para loadSpriteSheet">
               Nombre
@@ -106,8 +110,9 @@
               <span>W <output id="rect-w">0</output></span>
               <span>H <output id="rect-h">0</output></span>
             </div>
-            <button type="button" id="btn-delete-rect" class="danger" title="Eliminar rectángulo (Del / Backspace)"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+            <button type="button" id="btn-delete-rect" class="danger" title="Eliminar selección (Del / Backspace)"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
           </div>
+          <button type="button" id="btn-clear-all" class="danger-outline" title="Eliminar todos los rectángulos"><i class="fa-solid fa-eraser"></i> Clear all</button>
         </div>
 
         <div class="sidebar-section">
@@ -142,6 +147,7 @@
           </label>
           <div class="btn-row">
             <button type="button" id="btn-export" class="primary" title="Descargar archivo .json"><i class="fa-solid fa-download"></i> Export JSON</button>
+            <button type="button" id="btn-export-sprites" class="primary" title="Descargar sprites recortados como ZIP"><i class="fa-solid fa-file-image"></i> Export sprites</button>
             <button type="button" id="btn-copy" title="Copiar JSON al portapapeles"><i class="fa-solid fa-copy"></i> Copy</button>
           </div>
           <pre class="json-preview" id="json-preview" aria-label="Vista previa del JSON">[]</pre>

@@ -7,8 +7,8 @@
   <meta name="description" content="Preview de animaciones cuadro a cuadro y exportación para SpriteProcessor.defineAnimations">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-  <script type="module" crossorigin src="./assets/index-D8Aziy0B.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Ci51apF7.css">
+  <script type="module" crossorigin src="./assets/index-BEa7NeQj.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Bw1C8RcS.css">
 </head>
 <body>
   <div id="app">
@@ -37,10 +37,12 @@
             <input type="file" id="sheet-json" accept=".json,application/json" hidden>
             JSON
           </label>
+          <span id="sheet-json-status" class="file-status pending">---</span>
           <label class="btn-sm secondary" title="Imagen del spritesheet">
             <input type="file" id="sheet-image" accept="image/*" hidden>
             Sheet
           </label>
+          <span id="sheet-image-status" class="file-status pending">---</span>
           <button type="button" id="btn-load-sheet" class="btn-sm primary" title="Cargar spritesheet desde JSON + imagen" disabled>Load Sheet</button>
         </div>
 
@@ -65,7 +67,13 @@
         <div class="canvas-wrapper">
           <canvas id="preview-canvas"></canvas>
           <div class="engine-test-panel hidden" id="engine-test-panel">
-            <span>Test in Engine</span>
+            <div class="engine-test-header">
+              <span>Test in Engine</span>
+              <label class="engine-size-label" title="Tamano del canvas de prueba">
+                <span class="engine-size-val" id="engine-size-val">160</span>
+                <input type="range" id="engine-size-slider" min="80" max="320" value="160" step="8">
+              </label>
+            </div>
             <canvas id="engine-canvas" width="160" height="160"></canvas>
           </div>
         </div>
@@ -103,6 +111,10 @@
           <label id="bg-color-wrap" class="hidden" title="Color de fondo personalizado">
             Color <input type="color" id="bg-color" value="#1a1a2e">
           </label>
+          <label class="toggle-label" title="Mostrar frames anterior/siguiente semitransparentes">
+            <input type="checkbox" id="onion-toggle">
+            Onion skin
+          </label>
           <button type="button" id="btn-engine-test" title="Simular render en el motor del juego"><i class="fa-solid fa-gamepad"></i> Test in Engine</button>
         </div>
       </section>
@@ -117,7 +129,10 @@
         <ul id="anim-list" class="anim-list"></ul>
 
         <div id="anim-editor" class="anim-editor hidden">
-          <h3>Editar animación</h3>
+          <div class="editor-header">
+            <h3>Editar animación</h3>
+            <button type="button" id="btn-close-editor" class="btn-sm btn-icon" title="Cerrar editor (Escape)">×</button>
+          </div>
           <label title="Nombre de la animación">
             Nombre
             <input type="text" id="anim-name">
@@ -125,6 +140,7 @@
           <label title="FPS de esta animación">
             Speed (FPS)
             <input type="number" id="anim-speed" min="1" max="60" value="10">
+            <span class="fps-recommend" id="fps-recommend"></span>
           </label>
           <label class="toggle-label" title="Bucle de esta animación">
             <input type="checkbox" id="anim-loop" checked>
@@ -146,6 +162,7 @@
           </label>
           <div class="btn-row">
             <button type="button" id="btn-export" class="primary" title="Descargar JSON de animaciones"><i class="fa-solid fa-download"></i> Export</button>
+            <button type="button" id="btn-export-sheet" title="Exportar spritesheet PNG + JSON"><i class="fa-solid fa-table-cells"></i> Sheet</button>
             <button type="button" id="btn-copy" title="Copiar JSON al portapapeles"><i class="fa-solid fa-copy"></i> Copy</button>
           </div>
           <pre class="json-preview" id="json-preview">{}</pre>
@@ -167,6 +184,20 @@
       <div class="dialog-actions">
         <button type="button" id="new-anim-cancel">Cancelar</button>
         <button type="submit" class="primary">Crear</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="rename-frame-dialog">
+    <form method="dialog" id="rename-frame-form">
+      <h3>Renombrar frame</h3>
+      <label>
+        Nombre
+        <input type="text" id="rename-frame-input" required>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" id="rename-frame-cancel">Cancelar</button>
+        <button type="submit" class="primary">Guardar</button>
       </div>
     </form>
   </dialog>
