@@ -5,15 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sprite Cutter — JavaScript Games</title>
   <meta name="description" content="Herramienta visual para definir regiones de sprites y exportar JSON compatible con SpriteProcessor.loadSpriteSheet">
-  <script type="module" crossorigin src="./assets/index-DlZ2yThk.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Cja2QtAy.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <script type="module" crossorigin src="./assets/index-I9QooM2V.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DyRYzp99.css">
 </head>
 <body>
   <div id="app">
     <header class="app-header">
       <h1>Sprite Cutter</h1>
       <p class="subtitle">Define regiones y exporta JSON para <code>SpriteProcessor.loadSpriteSheet</code></p>
-      <button type="button" id="toggle-sidebar" class="mobile-toggle" aria-label="Mostrar panel de controles" title="Panel de controles">☰</button>
+      <button type="button" id="toggle-sidebar" class="mobile-toggle" aria-label="Mostrar panel de controles" title="Panel de controles"><i class="fa-solid fa-bars"></i></button>
     </header>
 
     <main class="workspace">
@@ -21,7 +23,7 @@
         <div class="canvas-toolbar">
           <label class="file-btn" title="Cargar imagen (PNG, GIF, JPG, WebP)">
             <input type="file" id="file-input" accept="image/png,image/gif,image/jpeg,image/webp" hidden>
-            📁 Cargar imagen
+            <i class="fa-solid fa-folder-open"></i> Cargar imagen
           </label>
           <button type="button" id="btn-fit" title="Ajustar imagen al viewport">⊡ Fit</button>
           <button type="button" id="btn-reset-zoom" title="Restablecer zoom al 100%">1:1</button>
@@ -78,7 +80,7 @@
             <input type="text" id="name-prefix" value="sprite_" placeholder="sprite_">
           </label>
           <div class="btn-row">
-            <button type="button" id="btn-regen-names" title="Regenerar todos los nombres con el prefijo actual">↻ Regenerar nombres</button>
+            <button type="button" id="btn-regen-names" title="Regenerar todos los nombres con el prefijo actual"><i class="fa-solid fa-rotate-right"></i> Regenerar nombres</button>
           </div>
           <label class="checkbox-label" title="Alinear coordenadas al grid al dibujar o mover">
             <input type="checkbox" id="snap-enabled">
@@ -104,7 +106,7 @@
               <span>W <output id="rect-w">0</output></span>
               <span>H <output id="rect-h">0</output></span>
             </div>
-            <button type="button" id="btn-delete-rect" class="danger" title="Eliminar rectángulo (Del / Backspace)">🗑 Eliminar</button>
+            <button type="button" id="btn-delete-rect" class="danger" title="Eliminar rectángulo (Del / Backspace)"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
           </div>
         </div>
 
@@ -139,8 +141,8 @@
             Incluir options (scale, anchorX, anchorY)
           </label>
           <div class="btn-row">
-            <button type="button" id="btn-export" class="primary" title="Descargar archivo .json">⬇ Export JSON</button>
-            <button type="button" id="btn-copy" title="Copiar JSON al portapapeles">📋 Copy</button>
+            <button type="button" id="btn-export" class="primary" title="Descargar archivo .json"><i class="fa-solid fa-download"></i> Export JSON</button>
+            <button type="button" id="btn-copy" title="Copiar JSON al portapapeles"><i class="fa-solid fa-copy"></i> Copy</button>
           </div>
           <pre class="json-preview" id="json-preview" aria-label="Vista previa del JSON">[]</pre>
         </div>
