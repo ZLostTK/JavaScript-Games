@@ -21,8 +21,12 @@ index.html
   ├── render-bridge.js    ← puente entre motores
   ├── input.js / audio.js ← subsistemas desacoplados
   ├── engine.js | pixi-engine.js | littlejs-engine.js
-  ├── ui-canvas.js        ← menús canvas (opcional)
-  ├── online-lobby.js     ← lobby P2P (opcional)
+  ├── ui-canvas.js        ← primitivas de botón canvas (opcional)
+  ├── ui-menu.js          ← menús declarativos (opcional)
+  ├── game-states.js      ← máquina de estados (opcional)
+  ├── game-overlay.js     ← overlay de gameover (opcional)
+  ├── online-lobby.js     ← lobby P2P DOM (opcional)
+  ├── online-setup.js     ← flujo online-setup canvas (opcional)
   ├── mobile-controls.js  ← D-pad táctil (opcional)
   ├── game-boot.js        ← arranque unificado
   └── script.js           ← solo lógica de tu juego
@@ -169,6 +173,214 @@ if (UICanvas.hitTest(clickPos.x, clickPos.y, this._btns.play)) this.startGame();
 // Fila de botones de menú
 const [b1, b2, b3] = UICanvas.layoutButtons(3, { startY: 140, width: 220 });
 ```
+
+Para menús completos con varios botones, título y manejo de clics, prefiere **UIMenu** (ver abajo).
+
+---
+
+## UIMenu
+
+### ¿Para qué sirve?
+Constructor de menús canvas **declarativo**. Sustituye el patrón repetido de `_btns` + posicionamiento manual + `UICanvas.drawButton` + `UICanvas.hitTest` en cada juego (~50–100 líneas por pantalla).
+
+Define botones como datos (`id`, `label`, `y`, `accent`) y delega layout, hover, dibujo e input en un solo objeto.
+
+### ¿Cuándo utilizarlo?
+En cualquier pantalla canvas con botones: menú principal (`'select'`), submenú online (`'online-setup'`), pausa o gameover con acciones. **No** lo uses en UI HTML/DOM — ahí usa markup o `DOMEngine`.
+
+Requiere: `theme.js`, `render-bridge.js`, `input.js`, `ui-canvas.js`, `ui-menu.js` y motor Canvas 2D para `draw()`.
+
+| Método | Engine | PIXI | LittleJS |
+|--------|--------|------|----------|
+| `handleClick()`, `handleInput()` | ✓ | ✓ | ✓ |
+| `draw()` | ✓ | — | — |
+
+### ¿Cómo usarlo?
+
+```html
+<script src="../../engine/ui-canvas.js"></script>
+<script src="../../engine/ui-menu.js"></script>
+```
+
+```javascript
+// Menú personalizado
+this.menu = new UIMenu([
+    { id: 'play',  label: 'Jugar',  y: 200 },
+    { id: 'setup', label: 'Online', y: 270, accent: Theme.colors.success },
+    { id: 'exit',  label: 'Salir',  y: 340, accent: Theme.colors.muted },
+], { title: 'Mi Juego', subtitle: 'Elige una opción' });
+
+// Presets incluidos
+this.modeMenu   = UIMenu.modeSelect({ title: 'Conecta 4', footer: 'Conecta 4 · Vanilla JS' });
+this.onlineMenu = UIMenu.onlineSetup();
+
+// En render:
+this.menu.draw(ctx);
+
+// En update — devuelve el id del botón pulsado o null:
+const id = this.menu.handleInput();
+if (id === 'play') this.startGame();
+```
+
+Métodos útiles: `getButton(id)`, `updateHover()`, `relayout()` (tras cambio de viewport), `handleClick(x, y)` (si ya tienes `clickPos` propio).
+
+---
+
+## GameStates
+
+### ¿Para qué sirve?
+Mini manejador de estados que elimina el `switch (this.state)` duplicado en `update()` y `render()`. Cada estado expone `init`, `update`, `render`, `enter` y `exit` como métodos del game object.
+
+Centraliza transiciones y evita olvidar inicializar o limpiar al cambiar de pantalla.
+
+### ¿Cuándo utilizarlo?
+En juegos con máquina de estados explícita: `'select' → 'online-setup' → 'playing' → 'gameover'`. Especialmente útil cuando `update` y `render` crecen y repiten la misma condición de estado.
+
+No es obligatorio en juegos de un solo estado (p. ej. snake arcade sin menú) ni cuando el flujo es trivial (2–3 líneas de `if`).
+
+Requiere solo `game-states.js`. Compatible con todos los motores.
+
+### ¿Cómo usarlo?
+
+```html
+<script src="../../engine/game-states.js"></script>
+```
+
+```javascript
+init() {
+    this.states = new GameStates({
+        select: {
+            update(dt) { /* input del menú */ },
+            render(ctx) { this.menu.draw(ctx); },
+        },
+        playing: {
+            init() { this.resetBoard(); },
+            update(dt) { /* lógica de partida */ },
+            render(ctx) { this._renderBoard(ctx); },
+        },
+        gameover: {
+            init() { this.restartCd = 1.2; },
+            update(dt) { if (this.restartCd > 0) this.restartCd -= dt; },
+            render(ctx) { GameOverlay.draw(ctx, { title: 'Fin', cooldown: this.restartCd }); },
+        },
+    }, 'select', this);
+},
+
+update(dt) { this.states.update(dt); },
+render(ctx) { this.states.render(ctx); },
+
+// Transición:
+this.states.set('playing');
+this.states.is('gameover');  // true/false
+```
+
+`set(name)` ejecuta `exit` del estado anterior e `init` del nuevo. Si no pasas `ctx` al constructor, usa `this.states.bind(this)`.
+
+---
+
+## GameOverlay
+
+### ¿Para qué sirve?
+Pantalla de fin de partida unificada: overlay semitransparente + título + puntuación + líneas extra + hint *"Toca para continuar"*. Opcionalmente dibuja un panel con borde (estilo flappybird).
+
+Elimina ~30 líneas repetidas de `fillRect` + `Engine.text` en cada juego.
+
+### ¿Cuándo utilizarlo?
+Al mostrar game over, victoria, derrota o desconexión online encima del tablero/juego. **No** sustituye gameovers muy custom (othello con disco ganador, flappybird con marcador rival) — en esos casos usa `GameOverlay.drawDim()` o combina `panel: true` con `lines` extra.
+
+Requiere: `theme.js`, `render-bridge.js`, `game-overlay.js` y motor con `Engine.text` (Canvas 2D).
+
+### ¿Cómo usarlo?
+
+```html
+<script src="../../engine/game-overlay.js"></script>
+```
+
+```javascript
+// Game over básico
+GameOverlay.draw(ctx, {
+    title: 'Game Over',
+    titleColor: Theme.colors.accent,
+    score: this.score,
+    scoreLabel: 'Puntuación',
+    hint: 'Toca para continuar',
+    cooldown: this.restartCd,  // oculta el hint hasta que llegue a 0
+});
+
+// Con panel y líneas extra
+GameOverlay.draw(ctx, {
+    title: '¡Ganaste! 🎉',
+    titleColor: Theme.colors.success,
+    panel: true,
+    lines: [{ text: `Rival: ${this.rivalScore}`, color: Theme.colors.info }],
+});
+
+// Resultado online (helper)
+const { title, color } = GameOverlay.onlineResult(this.winner, this.myPiece);
+GameOverlay.draw(ctx, { title, titleColor: color, score: this.score });
+
+// Solo oscurecer el fondo
+GameOverlay.drawDim(ctx, 0.75);
+GameOverlay.canContinue(this.restartCd);  // true si se puede continuar
+```
+
+---
+
+## OnlineSetup
+
+### ¿Para qué sirve?
+Encapsula el flujo **canvas** de multijugador: submenú host/join/back + wiring de `OnlineLobby.host()` / `prepareJoin()` + manejo por defecto de desconexión. Elimina ~80 líneas de boilerplate que se repiten en connect4, tictactoe, minesweeper, etc.
+
+Complementa a `OnlineLobby` (overlay DOM) — no lo reemplaza.
+
+### ¿Cuándo utilizarlo?
+En juegos P2P con pantalla `'online-setup'` dibujada en canvas y markup estándar `#online-ui`. Usa `OnlineSetup.forGame()` cuando el flujo sea el típico: conectar → `startGame('online', role)` → sincronizar movimientos vía `onData`.
+
+**No** lo uses si el lobby es totalmente custom (domino 4 jugadores, void sector con tabs 1v1/co-op) — ahí mantén `OnlineLobby` directo.
+
+Requiere: `ui-menu.js`, `online-lobby.js`, `online-setup.js`, `peerjs.min.js`, `online.js` y `#online-ui` en el HTML.
+
+### ¿Cómo usarlo?
+
+```html
+<script src="../../engine/ui-menu.js"></script>
+<script src="../../engine/online-lobby.js"></script>
+<script src="../../engine/online-setup.js"></script>
+```
+
+```javascript
+init() {
+    this.online = OnlineSetup.forGame(this, {
+        onData: (data) => { if (data.type === 'move') this.makeMove(data.index, false); },
+    });
+},
+
+update(dt) {
+    if (this.state === 'online-setup') {
+        this.online.handleClick(clickPos);  // o this.online.handleInput()
+        return;
+    }
+},
+
+render(ctx) {
+    if (this.state === 'online-setup') {
+        this.online.render(ctx);
+        return;
+    }
+},
+
+// Manual (sin forGame):
+this.online = new OnlineSetup({
+    game: this,
+    onConnected: (role) => this.startGame('online', role),
+    onData: (data) => this.applyMove(data),
+    onCancel: () => { this.state = 'select'; },
+});
+this.online.host();   // o .join()
+this.online.cancel();
+```
+
+Por defecto, `_onDisconnect` pone `winner = '__disconnect__'`, `state = 'gameover'` y `restartCd = 2` si el juego estaba en `'playing'` o `'gameover'`. Personaliza con `onDisconnect` o `activeStates`.
 
 ---
 
@@ -332,6 +544,9 @@ Como base al crear un juego nuevo o al migrar uno existente.
     <script src="../../engine/audio.js"></script>
     <script src="../../engine/engine.js"></script>
     <script src="../../engine/ui-canvas.js"></script>
+    <script src="../../engine/ui-menu.js"></script>
+    <script src="../../engine/game-states.js"></script>
+    <script src="../../engine/game-overlay.js"></script>
     <script src="../../engine/game-boot.js"></script>
     <script src="script.js"></script>
 </body>
@@ -346,7 +561,7 @@ Como base al crear un juego nuevo o al migrar uno existente.
 | **LittleJS** | `littlejs.min.js`, `littlejs-engine.js` |
 | **DOM** | `dom-engine.js` (omitir `ui-canvas.js`) |
 
-Añadir si aplica: `peerjs.min.js` + `online.js` + `online-lobby.js`, `mobile-controls.js`.
+Añadir si aplica: `peerjs.min.js` + `online.js` + `online-lobby.js` + `online-setup.js`, `mobile-controls.js`.
 
 **script.js mínimo:**
 
@@ -375,11 +590,13 @@ En todo juego nuevo y al refactorizar uno existente.
 | Convención | Detalle |
 |------------|---------|
 | **Game object** | `{ init, update, render? }` — el motor invoca estos métodos |
-| **Máquina de estados** | `'select' → 'online-setup' → 'playing' → 'gameover'` en juegos con menú |
+| **Máquina de estados** | `'select' → 'online-setup' → 'playing' → 'gameover'` — preferir `GameStates` |
+| **Menús canvas** | `UIMenu` / presets `modeSelect()` / `onlineSetup()`, no `_btns` manuales |
+| **Game over** | `GameOverlay.draw()`, no `fillRect` + textos sueltos |
 | **Colores** | `Theme.colors.*`, no hex sueltos |
 | **CSS** | Común en `game-shell.css`; específico en `style.css` |
 | **Boot** | `GameBoot.start*()`, no `Engine.init` suelto al final del archivo |
-| **Online UI** | `OnlineLobby`, no wiring manual de `#copy-btn` / `#join-btn` |
+| **Online UI** | `OnlineLobby` + `OnlineSetup`, no wiring manual de `#copy-btn` / `#join-btn` |
 
 ---
 
@@ -399,7 +616,7 @@ Cada motor optimiza un tipo de juego distinto. Elegir bien evita pelear contra l
 | Simulación custom | Sin motor | Loop propio (p. ej. butterfly-effect) |
 
 ### ¿Cómo arrancarlo?
-Ver sección **GameBoot**. Los módulos compartidos (`Theme`, `Input`, `Audio`, `Online`, `OnlineLobby`, `MobileControls`) funcionan con los tres motores gráficos; solo cambia el script del renderizador y la llamada `GameBoot.start*`.
+Ver sección **GameBoot**. Los módulos compartidos (`Theme`, `Input`, `Audio`, `Online`, `UIMenu`, `GameStates`, `GameOverlay`, `OnlineLobby`, `OnlineSetup`, `MobileControls`) funcionan con los tres motores gráficos; solo cambia el script del renderizador y la llamada `GameBoot.start*`.
 
 ---
 
@@ -411,7 +628,12 @@ Ver sección **GameBoot**. Los módulos compartidos (`Theme`, `Input`, `Audio`, 
 | `RenderBridge` | ✓ | ✓ | ✓ | — |
 | `UICanvas` (puntero/hit-test) | ✓ | ✓ | ✓ | — |
 | `UICanvas.drawButton` | ✓ | — | — | — |
+| `UIMenu` (input/hit-test) | ✓ | ✓ | ✓ | — |
+| `UIMenu.draw` | ✓ | — | — | — |
+| `GameStates` | ✓ | ✓ | ✓ | ✓ |
+| `GameOverlay` | ✓ | — | — | — |
 | `OnlineLobby` | ✓ | ✓ | ✓ | ✓ |
+| `OnlineSetup` | ✓ | ✓ | ✓ | ✓ |
 | `MobileControls` | ✓ | ✓ | ✓ | ✓ |
 | `GameBoot` | ✓ | ✓ | ✓ | ✓ |
 | `Input` / `Audio` / `Online` | ✓ | ✓ | ✓ | ✓ |

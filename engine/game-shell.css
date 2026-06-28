@@ -41,23 +41,24 @@ body {
 
 #game, #gameCanvas, #canvas {
 	display: block;
+	flex-shrink: 0;
 }
 
-/* En móvil / PWA el canvas debe poder crecer con scaleMode "cover" */
-@media (pointer: coarse), (display-mode: standalone) {
-	#game-container {
-		align-items: stretch;
-		justify-content: stretch;
-	}
+/* Juegos DOM (typing, word scramble, hangman): permitir scroll y texto */
+body.dom-game {
+	touch-action: manipulation;
+	user-select: auto;
+	-webkit-user-select: auto;
+	overflow: auto;
+}
 
-	#game, #gameCanvas, #canvas {
-		flex: 1 1 auto;
-		min-width: 0;
-		min-height: 0;
-		max-width: none;
-		max-height: none;
-		align-self: stretch;
-	}
+#game-container.dom-game {
+	height: auto;
+	min-height: 100dvh;
+	min-height: 100svh;
+	overflow-y: auto;
+	align-items: center;
+	justify-content: flex-start;
 }
 
 #back-btn {

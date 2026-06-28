@@ -58,9 +58,7 @@ const game = {
             if (OnlineLobby.isVisible() || game.state !== 'playing') return;
 
             const rect = Engine.canvas.getBoundingClientRect();
-            const s = Engine._scale || 1;
-            const x = (e.clientX - rect.left) / s;
-            const y = (e.clientY - rect.top) / s;
+            const { x, y } = Engine.toGame(e.clientX - rect.left, e.clientY - rect.top);
             const c = Math.floor((x - game.boardX) / game.cellSize);
             const r = Math.floor((y - game.boardY) / game.cellSize);
 

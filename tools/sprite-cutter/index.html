@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprite Cutter — JavaScript Games</title>
+  <meta name="description" content="Herramienta visual para definir regiones de sprites y exportar JSON compatible con SpriteProcessor.loadSpriteSheet">
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1>Sprite Cutter</h1>
+      <p class="subtitle">Define regiones y exporta JSON para <code>SpriteProcessor.loadSpriteSheet</code></p>
+      <button type="button" id="toggle-sidebar" class="mobile-toggle" aria-label="Mostrar panel de controles" title="Panel de controles">☰</button>
+    </header>
+
+    <main class="workspace">
+      <section class="canvas-area" aria-label="Editor de spritesheet">
+        <div class="canvas-toolbar">
+          <label class="file-btn" title="Cargar imagen (PNG, GIF, JPG, WebP)">
+            <input type="file" id="file-input" accept="image/png,image/gif,image/jpeg,image/webp" hidden>
+            📁 Cargar imagen
+          </label>
+          <button type="button" id="btn-fit" title="Ajustar imagen al viewport">⊡ Fit</button>
+          <button type="button" id="btn-reset-zoom" title="Restablecer zoom al 100%">1:1</button>
+          <span class="zoom-label" id="zoom-label" title="Nivel de zoom actual">100%</span>
+          <span class="coords-label" id="coords-label" title="Coordenadas del cursor">—</span>
+        </div>
+
+        <div class="canvas-wrapper" id="canvas-wrapper">
+          <canvas id="editor-canvas"></canvas>
+          <div class="drop-overlay hidden" id="drop-overlay">
+            <p>Suelta la imagen aquí</p>
+          </div>
+          <canvas id="minimap" class="minimap" width="160" height="120" title="Mini-mapa"></canvas>
+        </div>
+
+        <p class="canvas-hint">Rueda: zoom · Clic derecho + arrastrar: pan · Clic izquierdo: seleccionar / dibujar rectángulo</p>
+      </section>
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-section">
+          <h2>Modo</h2>
+          <div class="mode-tabs">
+            <button type="button" class="mode-tab active" data-mode="manual" title="Dibujar y editar rectángulos manualmente">Manual</button>
+            <button type="button" class="mode-tab" data-mode="grid" title="Generar sprites desde una cuadrícula">Grid</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section" id="grid-panel" hidden>
+          <h2>Cuadrícula automática</h2>
+          <div class="field-grid">
+            <label title="Ancho de cada sprite en píxeles">Ancho <input type="number" id="grid-w" value="32" min="1"></label>
+            <label title="Alto de cada sprite en píxeles">Alto <input type="number" id="grid-h" value="32" min="1"></label>
+            <label title="Número de columnas">Cols <input type="number" id="grid-cols" value="4" min="1"></label>
+            <label title="Número de filas">Filas <input type="number" id="grid-rows" value="4" min="1"></label>
+            <label title="Desplazamiento X inicial">Off X <input type="number" id="grid-ox" value="0" min="0"></label>
+            <label title="Desplazamiento Y inicial">Off Y <input type="number" id="grid-oy" value="0" min="0"></label>
+            <label title="Espacio horizontal entre sprites">Sp X <input type="number" id="grid-sx" value="0" min="0"></label>
+            <label title="Espacio vertical entre sprites">Sp Y <input type="number" id="grid-sy" value="0" min="0"></label>
+          </div>
+          <label class="full-width" title="Prefijo para nombres generados (ej. walk_)">
+            Prefijo nombres
+            <input type="text" id="grid-prefix" value="sprite_" placeholder="sprite_">
+          </label>
+          <div class="btn-row">
+            <button type="button" id="btn-apply-grid" class="primary" title="Generar todos los rectángulos desde la cuadrícula">Apply Grid</button>
+            <button type="button" id="btn-switch-manual" title="Pasar a modo manual para editar rectángulos individuales">Switch to Manual</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Nombrado</h2>
+          <label title="Patrón de auto-nombre: prefijo + índice">
+            Prefijo auto-nombre
+            <input type="text" id="name-prefix" value="sprite_" placeholder="sprite_">
+          </label>
+          <div class="btn-row">
+            <button type="button" id="btn-regen-names" title="Regenerar todos los nombres con el prefijo actual">↻ Regenerar nombres</button>
+          </div>
+          <label class="checkbox-label" title="Alinear coordenadas al grid al dibujar o mover">
+            <input type="checkbox" id="snap-enabled">
+            Grid snapping
+          </label>
+          <label class="snap-size" title="Tamaño del grid de snapping en píxeles">
+            Snap (px)
+            <input type="number" id="snap-size" value="1" min="1" disabled>
+          </label>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Rectángulo seleccionado</h2>
+          <div id="no-selection" class="muted-text">Ninguno seleccionado</div>
+          <div id="selection-panel" hidden>
+            <label title="Nombre del sprite para loadSpriteSheet">
+              Nombre
+              <input type="text" id="rect-name">
+            </label>
+            <div class="field-grid readonly-coords">
+              <span>X <output id="rect-x">0</output></span>
+              <span>Y <output id="rect-y">0</output></span>
+              <span>W <output id="rect-w">0</output></span>
+              <span>H <output id="rect-h">0</output></span>
+            </div>
+            <button type="button" id="btn-delete-rect" class="danger" title="Eliminar rectángulo (Del / Backspace)">🗑 Eliminar</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Lista <span id="rect-count" class="badge">0</span></h2>
+          <ul id="rect-list" class="rect-list"></ul>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Visualización</h2>
+          <label class="checkbox-label" title="Mostrar etiquetas con el nombre de cada sprite">
+            <input type="checkbox" id="show-labels" checked>
+            Show named labels
+          </label>
+        </div>
+
+        <div class="sidebar-section">
+          <h2>Exportación</h2>
+          <div class="field-grid">
+            <label title="Escala al cargar con loadSpriteSheet">scale
+              <input type="number" id="export-scale" value="1" min="0.1" step="0.1">
+            </label>
+            <label title="Ancla X (0–1)">anchorX
+              <input type="number" id="export-anchor-x" value="0.5" min="0" max="1" step="0.1">
+            </label>
+            <label title="Ancla Y (0–1)">anchorY
+              <input type="number" id="export-anchor-y" value="0.5" min="0" max="1" step="0.1">
+            </label>
+          </div>
+          <label class="checkbox-label" title="Incluir scale y anchor en un objeto wrapper">
+            <input type="checkbox" id="export-with-options">
+            Incluir options (scale, anchorX, anchorY)
+          </label>
+          <div class="btn-row">
+            <button type="button" id="btn-export" class="primary" title="Descargar archivo .json">⬇ Export JSON</button>
+            <button type="button" id="btn-copy" title="Copiar JSON al portapapeles">📋 Copy</button>
+          </div>
+          <pre class="json-preview" id="json-preview" aria-label="Vista previa del JSON">[]</pre>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

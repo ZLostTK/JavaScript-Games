@@ -667,8 +667,10 @@ const game = {
     
     _setupBtns() {
         const cx = LW / 2;
+        const bw = 200;
+        const bh = 48;
         this._btns = {
-            play: { x: cx, y: 340, w: 200, h: 48, label: '▶  JUGAR', accent: '#ffe000' },
+            play: { x: cx - bw / 2, y: 340 - bh / 2, w: bw, h: bh, label: '▶  JUGAR', accent: '#ffe000' },
         };
     },
     

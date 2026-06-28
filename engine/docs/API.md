@@ -210,6 +210,40 @@ UICanvas.getPointer()
 UICanvas.layoutButtons(count, opts)
 ```
 
+### `UIMenu`
+```javascript
+new UIMenu(items, opts)                    // items: [{ id, label, y?, accent?, disabled? }]
+menu.draw(ctx, overrides?)
+menu.handleClick(gx, gy)                     // → id | null
+menu.handleInput({ skipIfLobbyVisible? })    // → id | null (ratón + touch)
+menu.updateHover() | .getButton(id) | .relayout()
+UIMenu.modeSelect(opts)                      // preset: vs IA / 1 vs 1 / En línea
+UIMenu.onlineSetup(opts)                     // preset: host / join / volver
+```
+
+### `GameStates`
+```javascript
+new GameStates(states, initial, ctx?)        // states: { name: { init?, update?, render?, exit? } }
+states.bind(ctx) | .get() | .is(name) | .set(name, ...args)
+states.update(dt) | .render(ctx) | .run(dt, ctx)
+```
+
+### `GameOverlay`
+```javascript
+GameOverlay.draw(ctx, { title, titleColor?, score?, scoreLabel?, lines?, hint?, cooldown?, panel?, dim? })
+GameOverlay.drawDim(ctx, alpha?)
+GameOverlay.canContinue(cooldown)
+GameOverlay.onlineResult(winner, myId, opts?)  // → { title, color }
+```
+
+### `OnlineSetup`
+```javascript
+new OnlineSetup(handlers, opts)              // handlers: { onConnected, onData, onDisconnect?, onCancel?, game? }
+OnlineSetup.forGame(game, opts)              // factory con defaults de tablero P2P
+setup.handleClick(clickPos) | .handleInput() | .render(ctx)
+setup.host(overrides?) | .join(overrides?) | .cancel() | .show(game)
+```
+
 ### `OnlineLobby`
 ```javascript
 OnlineLobby.onCancel(cb)

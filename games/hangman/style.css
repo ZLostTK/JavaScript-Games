@@ -2,7 +2,34 @@
 Hangman Game - CSS (Dark Theme · matches other games palette)
 ──────────────────────────────────────────────────────────── */
 
+body.dom-game {
+    background: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #0f0f1a 70%);
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
 
+#game-container.dom-game {
+    width: 100%;
+    height: 100dvh;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+}
+
+#game-ui {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    gap: 0.75rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
 /* ──────────────────────────────────────────────────────────
 Hangman Display

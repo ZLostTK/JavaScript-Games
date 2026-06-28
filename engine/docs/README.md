@@ -2,7 +2,7 @@
 
 Biblioteca modular para juegos 2D web. Es **agnóstica al motor de renderizado**: la misma lógica de juego puede ejecutarse con **Engine** (Canvas 2D), **PIXIEngine** (WebGL), **LittleEngine** (LittleJS) o **DOMEngine** (HTML/CSS).
 
-Los módulos compartidos (`Theme`, `UICanvas`, `OnlineLobby`, `MobileControls`, `GameBoot`) son **retrocompatibles** con los tres motores gráficos principales gracias a `RenderBridge`.
+Los módulos compartidos (`Theme`, `UICanvas`, `UIMenu`, `GameStates`, `GameOverlay`, `OnlineLobby`, `OnlineSetup`, `MobileControls`, `GameBoot`) son **retrocompatibles** con los tres motores gráficos principales gracias a `RenderBridge`.
 
 ## Índice de Contenidos
 
@@ -76,6 +76,9 @@ GameBoot.start(myGame, { renderer: 'little', containerId: 'game-container', widt
     <script src="../../engine/audio.js"></script>
     <script src="../../engine/engine.js"></script>          <!-- o pixi/littlejs según motor -->
     <script src="../../engine/ui-canvas.js"></script>
+    <script src="../../engine/ui-menu.js"></script>       <!-- opcional: menús declarativos -->
+    <script src="../../engine/game-states.js"></script>   <!-- opcional: máquina de estados -->
+    <script src="../../engine/game-overlay.js"></script>   <!-- opcional: overlay gameover -->
     <script src="../../engine/game-boot.js"></script>
     <script src="script.js"></script>
 </body>
@@ -90,7 +93,8 @@ GameBoot.start(myGame, { renderer: 'little', containerId: 'game-container', widt
 | **PIXIEngine** | `pixi.min.js`, `pixi-engine.js`, `sprite-processor.js` |
 | **LittleEngine** | `littlejs.min.js`, `littlejs-engine.js` |
 | **DOMEngine** | `dom-engine.js` (sin `ui-canvas.js`) |
-| **Online** | `peerjs.min.js`, `online.js`, `online-lobby.js` |
+| **Online** | `peerjs.min.js`, `online.js`, `online-lobby.js`, `online-setup.js` |
+| **Menús / estados / overlay** | `ui-menu.js`, `game-states.js`, `game-overlay.js` (opcionales, ver [GAME_ARCHITECTURE.md](GAME_ARCHITECTURE.md)) |
 | **Móvil** | `mobile-controls.js` |
 
 ---

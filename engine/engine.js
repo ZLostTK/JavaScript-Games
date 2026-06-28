@@ -46,6 +46,13 @@ class Engine {
 	
 	/** Convert CSS-pixel coords (offsetX/offsetY or touch) → logical canvas coords */
 	static toGame(x, y) {
+		const rect = this.canvas.getBoundingClientRect();
+		if (rect.width > 0 && rect.height > 0) {
+			return {
+				x: (x / rect.width) * this.W,
+				y: (y / rect.height) * this.H,
+			};
+		}
 		const s = this._scale || 1;
 		return { x: x / s, y: y / s };
 	}

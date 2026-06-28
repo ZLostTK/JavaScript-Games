@@ -1,7 +1,42 @@
 /* ══════════════════════════════════════
-RESET & BOX MODEL
+VARIABLES & LAYOUT (game-shell no las define)
 ══════════════════════════════════════ */
+:root {
+    --bg:           #0f1117;
+    --surface:      #1a1d2e;
+    --surface2:     #252840;
+    --border:       #2e3250;
+    --accent:       #fbbf24;
+    --accent-dim:   #5c4a14;
+    --accent-glow:  rgba(251, 191, 36, 0.25);
+    --purple:       #6c63ff;
+    --green:        #4ade80;
+    --green-dim:    rgba(74, 222, 128, 0.15);
+    --red:          #f87171;
+    --red-dim:      rgba(248, 113, 113, 0.15);
+    --text:         #e2e4f0;
+    --text-muted:   #6b7280;
+    --text-dim:     #9ca3af;
+    --font-ui:      'Inter', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+    --radius:       12px;
+    --radius-sm:    8px;
+    --transition:   0.15s ease;
+}
 
+body.dom-game {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    padding: 16px;
+}
+
+#game-container.dom-game {
+    width: 100%;
+    max-width: 720px;
+    min-height: 480px;
+    padding: 3rem 1rem 2rem;
+}
 
 .screen {
     width: 100%;
