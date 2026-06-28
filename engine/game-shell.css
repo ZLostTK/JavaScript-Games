@@ -10,6 +10,15 @@ html {
 	overflow: hidden;
 }
 
+/* Juegos DOM con scroll de página (typing speed, word scramble) */
+html:has(body.dom-game-scroll) {
+	height: auto;
+	min-height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
 body {
 	background: #0f0f1a;
 	overflow: hidden;
@@ -19,6 +28,15 @@ body {
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 	min-height: 100dvh;
 	min-height: 100svh;
+}
+
+/* Juegos DOM (typing, word scramble, hangman): permitir scroll y texto */
+body.dom-game {
+	touch-action: pan-y pinch-zoom;
+	user-select: auto;
+	-webkit-user-select: auto;
+	overflow: visible;
+	height: auto;
 }
 
 #game-container {
@@ -44,19 +62,10 @@ body {
 	flex-shrink: 0;
 }
 
-/* Juegos DOM (typing, word scramble, hangman): permitir scroll y texto */
-body.dom-game {
-	touch-action: manipulation;
-	user-select: auto;
-	-webkit-user-select: auto;
-	overflow: auto;
-}
-
 #game-container.dom-game {
 	height: auto;
-	min-height: 100dvh;
-	min-height: 100svh;
-	overflow-y: auto;
+	min-height: auto;
+	overflow: visible;
 	align-items: center;
 	justify-content: flex-start;
 }

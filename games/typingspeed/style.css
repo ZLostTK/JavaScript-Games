@@ -37,6 +37,7 @@ body.dom-game {
     max-width: 820px;
     min-height: 480px;
     padding: 3rem 1rem 2rem;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* ══════════════════════════════════════
