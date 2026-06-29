@@ -1,4 +1,4 @@
-const WORD_DATABASE = {
+export const WORD_DATABASE = {
     animals: [
         { word: 'gato', hint: 'Mascota común, felino doméstico' },
         { word: 'perro', hint: 'Mejor amigo del humano' },

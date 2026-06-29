@@ -3,6 +3,8 @@ Hangman Game - script.js
 Modes: Random (palabras aleatorias) | 1v1 (amigo ingresa palabra)
 ──────────────────────────────────────────────────────────── */
 
+import { WORD_DATABASE } from './words.js';
+
 // ────────────────────────────────────────────────────────────
 // Keyboard Layout - Alphabetical (ABC) order
 // ────────────────────────────────────────────────────────────
