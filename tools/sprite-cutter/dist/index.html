@@ -7,7 +7,7 @@
   <meta name="description" content="Herramienta visual para definir regiones de sprites y exportar JSON compatible con SpriteProcessor.loadSpriteSheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-  <script type="module" crossorigin src="./assets/index-CNkgr6AF.js"></script>
+  <script type="module" crossorigin src="./assets/index-DUXtnfE9.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CTffmSAg.css">
 </head>
 <body>
@@ -76,8 +76,8 @@
             <button type="button" id="btn-apply-grid" class="primary" title="Generar todos los rectángulos desde la cuadrícula">Apply Grid</button>
             <button type="button" id="btn-switch-manual" title="Pasar a modo manual para editar rectángulos individuales">Switch to Manual</button>
           </div>
-          <button type="button" id="btn-auto-detect" class="secondary" title="Detectar tamaño de celda automáticamente desde bordes transparentes">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-detect grid
+          <button type="button" id="btn-auto-detect" class="secondary" title="Detectar sprites por píxeles no transparentes conectados (alpha mask)">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-detect sprites
           </button>
           <button type="button" id="btn-detect-edges" class="secondary" title="Detectar cuadrícula mediante bordes de luminancia (funciona sin transparencia)">
             <i class="fa-solid fa-border-all"></i> Detect by edges
@@ -186,6 +186,20 @@
           <label class="checkbox-label" title="Mostrar etiquetas con el nombre de cada sprite">
             <input type="checkbox" id="show-labels" checked>
             Show named labels
+          </label>
+          <label class="checkbox-label" title="Mostrar fondo ajedrezado para ver transparencia">
+            <input type="checkbox" id="show-checkered-bg">
+            Checkered background
+          </label>
+          <label class="checkbox-label" title="Resaltar píxeles transparentes en rojo para depuración">
+            <input type="checkbox" id="debug-alpha">
+            Debug: Alpha mask
+          </label>
+          <label title="Color de fondo del canvas">
+            <span style="display:flex;align-items:center;gap:0.5rem">
+              Background color
+              <input type="color" id="bg-color" value="#0a0a14" style="width:2.5rem;height:2.5rem;padding:0;border:1px solid var(--border);border-radius:4px;background:none;cursor:pointer">
+            </span>
           </label>
           <label class="checkbox-label" title="Mostrar preview del spritesheet exportado">
             <input type="checkbox" id="show-sheet-preview">
