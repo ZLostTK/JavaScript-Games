@@ -60,7 +60,7 @@ unsub(); // también válido — on() devuelve función de cleanup
 
 ## Piloto migrado
 
-- **Snake** — input por teclado y audio vía EventBus
+- **Arkanoid** — input, audio, colisiones ECS vía EventBus
 - **Arkanoid** — input, audio, colisiones ECS vía EventBus
 
 ---

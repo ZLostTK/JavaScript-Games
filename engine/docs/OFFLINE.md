@@ -24,7 +24,7 @@ main.js             ← botón descargar / eliminar / actualizar
 scan-games.js       ← genera games.json y detecta deps desde index.html
 ```
 
-Nombre de caché activa: **`js-games-v3`** (definido en `games.json → cache.name`).
+Nombre de caché activa: **`js-games-v4`** (definido en `games.json → cache.name`).
 
 ---
 
@@ -125,14 +125,14 @@ node scripts/scan-games.js
 
 ---
 
-## Migración de caché v1 → v2 → v3
+## Migración de caché v1 → v2 → v3 → v4
 
 ### ¿Por qué?
-La caché v3 añadió `game-boot.js`, `game-shell.css`, `sprite-processor.js`, y actualizó el nombre a `js-games-v3` con migración desde v1/v2.
+La caché v4 actualizó el nombre a `js-games-v4` para reflejar cambios en la estructura del engine y migración desde v1/v2/v3.
 
 ### ¿Qué hace el SW al activarse?
-1. Copia todas las entradas de `js-games-v1` y `js-games-v2` a `js-games-v3`.
-2. Elimina las cachés legacy (`js-games-v1`, `js-games-v2`).
+1. Copia todas las entradas de `js-games-v1`, `js-games-v2` y `js-games-v3` a `js-games-v4`.
+2. Elimina las cachés legacy (`js-games-v1`, `js-games-v2`, `js-games-v3`).
 3. Los juegos ya descargados siguen funcionando; conviene **re-descargar** cada juego para incluir los nuevos módulos del engine.
 
 ---
