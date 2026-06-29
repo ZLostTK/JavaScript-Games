@@ -92,7 +92,7 @@ Audio.init()
 Audio.resume()
 Audio.load(name, url)
 Audio.play(name, volume, loop)
-Audio.synth(name, type, freq, duration, volume)
+Audio.synth(name, type, freq, duration, volume, slideFreq)
 Audio.toggleMute()
 ```
 
@@ -100,6 +100,7 @@ Audio.toggleMute()
 
 ## [Online](ONLINE.md)
 ```javascript
+Online.genCode()                          // genera código de sala (6 caracteres)
 Online.on(eventString, callbackFunction) // 'onHostReady', 'onConnected', 'onData', etc.
 Online.host(onRoomCreated)
 Online.join(roomCode)
@@ -216,7 +217,7 @@ new UIMenu(items, opts)                    // items: [{ id, label, y?, accent?, 
 menu.draw(ctx, overrides?)
 menu.handleClick(gx, gy)                     // → id | null
 menu.handleInput({ skipIfLobbyVisible? })    // → id | null (ratón + touch)
-menu.updateHover() | .getButton(id) | .relayout()
+menu.updateHover() | .getButton(id) | .getButtons() | .isHovered(id) | .relayout()
 UIMenu.modeSelect(opts)                      // preset: vs IA / 1 vs 1 / En línea
 UIMenu.onlineSetup(opts)                     // preset: host / join / volver
 ```
@@ -224,7 +225,7 @@ UIMenu.onlineSetup(opts)                     // preset: host / join / volver
 ### `GameStates`
 ```javascript
 new GameStates(states, initial, ctx?)        // states: { name: { init?, update?, render?, exit? } }
-states.bind(ctx) | .get() | .is(name) | .set(name, ...args)
+states.bind(ctx) | .get() | .is(name) | .has(name) | .set(name, ...args)
 states.update(dt) | .render(ctx) | .run(dt, ctx)
 ```
 
@@ -253,6 +254,7 @@ OnlineLobby.showHostPanel(code) | .showJoinPanel() | .showHostView() | .showJoin
 OnlineLobby.showStatusOnly(title, status)   // solo mensaje (p. ej. guest esperando)
 OnlineLobby.updateLobbyList(items)          // lista de jugadores (domino 4p)
 OnlineLobby.setLobbyLabel(text) | .enableStart(enabled, text?) | .onStartClick(cb)
+OnlineLobby.getJoinCode() | .enableJoin(enabled) | .setJoinHandler(cb)
 OnlineLobby.wireDefaultJoin((code) => Online.join(code))
 OnlineLobby.host(handlers, { hideOnConnect: true })
 OnlineLobby.prepareJoin(handlers, { hideOnConnect: true })

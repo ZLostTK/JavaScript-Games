@@ -1,0 +1,41 @@
+MIT License (Adapted for Game Development)
+
+Copyright (c) 2026 ZLostTK
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software for non-commercial purposes, including the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, subject to the following conditions:
+
+1. ATTRIBUTION
+   Any game, application, or project that uses any portion of this Software,
+   whether modified or unmodified, MUST include visible credit to the original
+   author. This credit must appear in the credits screen, about section, or
+   equivalent location within the product. Suggested format:
+   
+   "Uses code from JavaScript-Games by ZLostTK (https://github.com/ZLostTK/JavaScript-Games)"
+
+2. NON-COMMERCIAL USE
+   The Software may be used, modified, and shared freely for non-commercial
+   purposes, including personal projects, educational use, and free-to-play
+   games. No payment or prior authorization is required for non-commercial use.
+
+3. COMMERCIAL USE
+   Any commercial use - including but not limited to selling a game that uses
+   this code, monetizing a game (ads, in-app purchases, subscriptions), or
+   using the code in a paid product - requires prior written permission from
+   the original author. Contact: anxerdev@gmail.com
+
+4. VIDEO GAME DEVELOPMENT
+   The Software is explicitly intended to be used for video game development.
+   All code, assets, and tools within this repository may be used to create
+   video games, provided the conditions above are met.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

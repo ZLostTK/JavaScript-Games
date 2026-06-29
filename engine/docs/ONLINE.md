@@ -20,6 +20,8 @@ El módulo funciona mediante eventos (callbacks) que debes configurar antes de i
 
 ```javascript
 // Configura qué pasa cuando recibes datos, cuando alguien se conecta, etc.
+Online.genCode()                              // genera código de sala (6 caracteres)
+
 Online.on('onHostReady', (code) => {
     // Se ejecuta solo para el Host cuando la sala se crea exitosamente
     console.log(`Pasa este código a tu amigo: ${code}`);
@@ -48,7 +50,7 @@ Online.on('onError', (err) => {
 
 ## Crear una Partida (Host)
 
-Para iniciar una sala, llama a `Online.host()`. Internamente generará un código corto de sala de 5 caracteres.
+Para iniciar una sala, llama a `Online.host()`. Internamente generará un código corto de sala de 6 caracteres. También puedes generar un código manualmente con `Online.genCode()`.
 
 ```javascript
 Online.host((code) => {

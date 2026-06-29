@@ -31,14 +31,14 @@ class GameStates {
     }
 
     const prev = this._states[this._name];
-    if (prev?.exit) prev.exit.apply(this._ctx);
+    if (prev?.exit) prev.exit.call(this._ctx ?? prev, ...args);
 
     this._name = name;
     this._initialized = false;
 
     const next = this._states[name];
     if (next?.init) {
-      next.init.apply(this._ctx, args);
+      next.init.call(this._ctx ?? next, ...args);
       this._initialized = true;
     }
 
@@ -50,16 +50,16 @@ class GameStates {
     if (!state) return;
 
     if (!this._initialized && state.init) {
-      state.init.call(this._ctx);
+      state.init.call(this._ctx ?? state);
       this._initialized = true;
     }
 
-    if (state.update) state.update.call(this._ctx, dt);
+    if (state.update) state.update.call(this._ctx ?? state, dt);
   }
 
   render(ctx) {
     const state = this._states[this._name];
-    if (state?.render) state.render.call(this._ctx, ctx);
+    if (state?.render) state.render.call(this._ctx ?? state, ctx);
   }
 
   /** Atajo: update + render en un solo paso (útil en render personalizado) */

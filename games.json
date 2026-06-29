@@ -288,26 +288,6 @@
       ]
     },
     {
-      "id": "playeranimation",
-      "title": "Player Animation",
-      "description": "Test sprite animations with PIXI.js",
-      "path": "games/playeranimation/",
-      "image": "assets/imgs_games/playeranimation.svg",
-      "color": "#1a1a2e",
-      "tags": [
-        "Sprites",
-        "Animaciones",
-        "PixieJS"
-      ],
-      "extraCacheFiles": [
-        "engine/audio.js",
-        "engine/input.js",
-        "engine/pixi-engine.js",
-        "engine/pixi.min.js",
-        "engine/sprite-processor.js"
-      ]
-    },
-    {
       "id": "snake",
       "title": "Snake Game",
       "description": "Grow the snake by eating food",
@@ -477,6 +457,21 @@
         "engine/render-bridge.js",
         "engine/theme.js",
         "games/wordscramble/words.js"
+      ]
+    },
+    {
+      "id": "test",
+      "title": "test",
+      "description": "Battle game with sprites",
+      "path": "games/siege-breaker/",
+      "image": "assets/imgs_games/battle.svg",
+      "color": "#0f1117",
+      "tags": [
+        "Sprites",
+        "Animaciones",
+        "PixieJS"
+      ],
+      "extraCacheFiles": [
       ]
     }
   ]

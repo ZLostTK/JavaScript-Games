@@ -1,5 +1,17 @@
 class Input {
 	static init(canvas) {
+		if (this._initialized) {
+			if (canvas) {
+				canvas.addEventListener('touchstart', this._onTouchStart, { passive: false });
+				canvas.addEventListener('touchend', this._onTouchEnd, { passive: false });
+				canvas.addEventListener('touchmove', this._onTouchMove, { passive: false });
+				canvas.addEventListener('mousedown', this._onMouseDown);
+				canvas.addEventListener('mouseup', this._onMouseUp);
+				canvas.addEventListener('mousemove', this._onMouseMove);
+			}
+			return;
+		}
+		this._initialized = true;
 		this._keys = {};
 		this._pressed = {};
 		this._released = {};

@@ -50,6 +50,8 @@ discard_games/
 
 #Cosas propias
 editor
+plans
+assets/sprites/
 /tools/*/*
 !/tools/shared/
 !/tools/shared/**/*
