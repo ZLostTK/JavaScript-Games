@@ -1,4 +1,18 @@
-const game = {
+import { Engine } from '../../src/core/Engine.js';
+import { Input } from '../../src/modules/Input.js';
+import { Audio } from '../../src/modules/Audio.js';
+import { EventBus } from '../../src/core/EventBus.js';
+import { Events } from '../../src/core/Events.js';
+import { MobileControls } from '../../src/modules/MobileControls.js';
+
+const DIR_KEYS = {
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+};
+
+export const game = {
   init() {
     this.grid = 20;
     this.cols = Math.floor(Engine.W / this.grid);
@@ -23,8 +37,27 @@ const game = {
     this.btnDown = false;
     this.btnLeft = false;
     this.btnRight = false;
+
+    if (!this._onKeyPressed) {
+      this._onKeyPressed = ({ code }) => this._handleKey(code);
+      EventBus.on(Events.INPUT_KEY_PRESSED, this._onKeyPressed);
+    }
     
     MobileControls.bind(this, { 'btn-up': 'btnUp', 'btn-down': 'btnDown', 'btn-left': 'btnLeft', 'btn-right': 'btnRight' });
+  },
+
+  _handleKey(code) {
+    if (this.gameOver) {
+      if (code === 'Space' || code === 'Enter') this.init();
+      return;
+    }
+    const dir = DIR_KEYS[code];
+    if (dir) this._queueDir(dir);
+  },
+
+  _queueDir(reqDir) {
+    if (reqDir.x !== 0 && this.dir.x === 0) this.nextDir = reqDir;
+    if (reqDir.y !== 0 && this.dir.y === 0) this.nextDir = reqDir;
   },
 
   spawnFood() {
@@ -36,31 +69,25 @@ const game = {
   },
 
   update(dt) {
-    if (this.gameOver) {
-      if (Input.isPressed('Space') || Input.isPressed('Enter')) this.init();
-      return;
-    }
+    if (this.gameOver) return;
 
     let reqDir = null;
 
     if (this.lastPressed) {
-      if (this.lastPressed === 'btnUp') reqDir = {x: 0, y: -1};
-      else if (this.lastPressed === 'btnDown') reqDir = {x: 0, y: 1};
-      else if (this.lastPressed === 'btnLeft') reqDir = {x: -1, y: 0};
-      else if (this.lastPressed === 'btnRight') reqDir = {x: 1, y: 0};
+      if (this.lastPressed === 'btnUp') reqDir = { x: 0, y: -1 };
+      else if (this.lastPressed === 'btnDown') reqDir = { x: 0, y: 1 };
+      else if (this.lastPressed === 'btnLeft') reqDir = { x: -1, y: 0 };
+      else if (this.lastPressed === 'btnRight') reqDir = { x: 1, y: 0 };
     }
 
     if (!reqDir) {
-      if (Input.isPressed('ArrowUp') || this.btnUp) reqDir = {x: 0, y: -1};
-      else if (Input.isPressed('ArrowDown') || this.btnDown) reqDir = {x: 0, y: 1};
-      else if (Input.isPressed('ArrowLeft') || this.btnLeft) reqDir = {x: -1, y: 0};
-      else if (Input.isPressed('ArrowRight') || this.btnRight) reqDir = {x: 1, y: 0};
+      if (this.btnUp) reqDir = { x: 0, y: -1 };
+      else if (this.btnDown) reqDir = { x: 0, y: 1 };
+      else if (this.btnLeft) reqDir = { x: -1, y: 0 };
+      else if (this.btnRight) reqDir = { x: 1, y: 0 };
     }
 
-    if (reqDir) {
-      if (reqDir.x !== 0 && this.dir.x === 0) this.nextDir = reqDir;
-      if (reqDir.y !== 0 && this.dir.y === 0) this.nextDir = reqDir;
-    }
+    if (reqDir) this._queueDir(reqDir);
 
     const touch = Input.getTouch();
     if (touch) {
@@ -102,14 +129,14 @@ const game = {
 
     if (this.snake.some(s => s.x === head.x && s.y === head.y)) {
       this.gameOver = true;
-      Audio.play('die');
+      EventBus.emit(Events.AUDIO_PLAY, { name: 'die' });
       return;
     }
 
     this.snake.unshift(head);
     if (head.x === this.food.x && head.y === this.food.y) {
       this.score++;
-      Audio.play('eat');
+      EventBus.emit(Events.AUDIO_PLAY, { name: 'eat' });
       this.food = this.spawnFood();
     } else {
       this.snake.pop();
@@ -147,5 +174,3 @@ const game = {
     }
   }
 };
-
-GameBoot.start(game, { canvasId: 'game', width: 400, height: 400 });

@@ -7,43 +7,50 @@
   <meta name="description" content="Preview de animaciones cuadro a cuadro y exportación para SpriteProcessor.defineAnimations">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-  <script type="module" crossorigin src="./assets/index-BEa7NeQj.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-Bw1C8RcS.css">
+  <script type="module" crossorigin src="./assets/index-1R9xyvVO.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DOg9ox_D.css">
 </head>
 <body>
   <div id="app">
     <header class="app-header">
       <h1>Animation Previewer</h1>
       <p class="subtitle">Preview y exporta para <code>SpriteProcessor.defineAnimations()</code></p>
+      <div class="header-actions">
+        <button type="button" id="btn-undo" class="btn btn-sm btn-icon" title="Deshacer (Ctrl+Z)" disabled><i class="fa-solid fa-undo"></i></button>
+        <button type="button" id="btn-redo" class="btn btn-sm btn-icon" title="Rehacer (Ctrl+Shift+Z)" disabled><i class="fa-solid fa-redo"></i></button>
+        <button type="button" id="btn-save" class="btn btn-sm" title="Guardar en localStorage"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+        <button type="button" id="btn-load" class="btn btn-sm" title="Cargar proyecto (JSON)"><i class="fa-solid fa-folder-open"></i> Load</button>
+        <button type="button" id="btn-export-project" class="btn btn-sm" title="Exportar proyecto completo"><i class="fa-solid fa-download"></i> Project</button>
+      </div>
     </header>
 
-    <main class="workspace">
+    <main class="workspace" id="workspace">
       <!-- Left: frames -->
       <aside class="panel panel-left" id="panel-frames">
         <div class="panel-header">
           <h2>Frames <span class="badge" id="frame-count">0</span></h2>
           <div class="panel-actions">
-            <label class="btn-sm" title="Cargar imágenes PNG, GIF, WebP">
+            <label class="btn btn-sm" title="Cargar imágenes PNG, GIF, WebP">
               <input type="file" id="file-input" accept="image/png,image/gif,image/webp,image/jpeg" multiple hidden>
               + Imágenes
             </label>
-            <button type="button" id="btn-sort-natural" class="btn-sm" title="Ordenar por nombre (numérico)"># Sort</button>
-            <button type="button" id="btn-sort-alpha" class="btn-sm" title="Ordenar alfabéticamente">A-Z</button>
+            <button type="button" id="btn-sort-natural" class="btn btn-sm" title="Ordenar por nombre (numérico)"># Sort</button>
+            <button type="button" id="btn-sort-alpha" class="btn btn-sm" title="Ordenar alfabéticamente">A-Z</button>
           </div>
         </div>
 
         <div class="sheet-load">
-          <label class="btn-sm secondary" title="JSON del Sprite Cutter + imagen del sheet">
+          <label class="btn btn-sm secondary" title="JSON del Sprite Cutter + imagen del sheet">
             <input type="file" id="sheet-json" accept=".json,application/json" hidden>
             JSON
           </label>
           <span id="sheet-json-status" class="file-status pending">---</span>
-          <label class="btn-sm secondary" title="Imagen del spritesheet">
+          <label class="btn btn-sm secondary" title="Imagen del spritesheet">
             <input type="file" id="sheet-image" accept="image/*" hidden>
             Sheet
           </label>
           <span id="sheet-image-status" class="file-status pending">---</span>
-          <button type="button" id="btn-load-sheet" class="btn-sm primary" title="Cargar spritesheet desde JSON + imagen" disabled>Load Sheet</button>
+          <button type="button" id="btn-load-sheet" class="btn btn-sm primary" title="Cargar spritesheet desde JSON + imagen" disabled>Load Sheet</button>
         </div>
 
         <div class="drop-zone" id="drop-zone">
@@ -51,31 +58,30 @@
         </div>
 
         <ul id="frame-list" class="frame-list" aria-label="Lista de frames"></ul>
+
+        <div id="frame-batch-toolbar" class="frame-batch-toolbar hidden">
+          <span class="batch-count" id="batch-count">0 seleccionados</span>
+          <button type="button" id="btn-batch-delete" class="btn btn-sm danger" title="Eliminar frames seleccionados"><i class="fa-solid fa-trash"></i></button>
+          <button type="button" id="btn-batch-move" class="btn btn-sm" title="Mover a animación..."><i class="fa-solid fa-arrow-right"></i> Mover</button>
+        </div>
       </aside>
 
       <!-- Center: preview -->
       <section class="preview-area">
         <div class="preview-toolbar">
-          <button type="button" id="btn-play" title="Play / Pause (Space)"><i class="fa-solid fa-play"></i> Play</button>
-          <button type="button" id="btn-prev" title="Frame anterior (←)"><i class="fa-solid fa-chevron-left"></i></button>
-          <button type="button" id="btn-next" title="Frame siguiente (→)"><i class="fa-solid fa-chevron-right"></i></button>
-          <button type="button" id="btn-restart" title="Reiniciar (R)"><i class="fa-solid fa-rotate-left"></i></button>
+          <button type="button" id="btn-play" class="btn" title="Play / Pause (Space)"><i class="fa-solid fa-play"></i> Play</button>
+          <button type="button" id="btn-prev" class="btn btn-icon" title="Frame anterior (←)"><i class="fa-solid fa-chevron-left"></i></button>
+          <button type="button" id="btn-next" class="btn btn-icon" title="Frame siguiente (→)"><i class="fa-solid fa-chevron-right"></i></button>
+          <button type="button" id="btn-restart" class="btn btn-icon" title="Reiniciar (R)"><i class="fa-solid fa-rotate-left"></i></button>
           <span class="frame-counter" id="frame-counter" title="Frame actual / total">0/0</span>
           <span class="real-fps" id="real-fps" title="FPS real renderizado">— FPS</span>
+          <span class="sep"></span>
+          <button type="button" id="btn-copy-dataurl" class="btn btn-sm" title="Copiar frame actual como DataURL"><i class="fa-solid fa-image"></i> DataURL</button>
+          <button type="button" id="btn-shortcuts" class="btn btn-sm" title="Atajos de teclado (?)"><i class="fa-solid fa-keyboard"></i></button>
         </div>
 
         <div class="canvas-wrapper">
           <canvas id="preview-canvas"></canvas>
-          <div class="engine-test-panel hidden" id="engine-test-panel">
-            <div class="engine-test-header">
-              <span>Test in Engine</span>
-              <label class="engine-size-label" title="Tamano del canvas de prueba">
-                <span class="engine-size-val" id="engine-size-val">160</span>
-                <input type="range" id="engine-size-slider" min="80" max="320" value="160" step="8">
-              </label>
-            </div>
-            <canvas id="engine-canvas" width="160" height="160"></canvas>
-          </div>
         </div>
 
         <div class="scrub-row">
@@ -115,15 +121,27 @@
             <input type="checkbox" id="onion-toggle">
             Onion skin
           </label>
-          <button type="button" id="btn-engine-test" title="Simular render en el motor del juego"><i class="fa-solid fa-gamepad"></i> Test in Engine</button>
+          <button type="button" id="btn-engine-test" class="btn" title="Simular render en el motor del juego"><i class="fa-solid fa-gamepad"></i> Engine Test</button>
         </div>
       </section>
+
+      <!-- Engine Test Panel (sidebar) -->
+      <aside class="engine-test-panel hidden" id="engine-test-panel">
+        <div class="engine-test-header">
+          <span><i class="fa-solid fa-gamepad"></i> Engine Test</span>
+          <label class="engine-size-label" title="Tamaño del canvas de prueba">
+            <span class="engine-size-val" id="engine-size-val">160</span>
+            <input type="range" id="engine-size-slider" min="80" max="320" value="160" step="8">
+          </label>
+        </div>
+        <canvas id="engine-canvas" width="160" height="160"></canvas>
+      </aside>
 
       <!-- Right: animations -->
       <aside class="panel panel-right" id="panel-anims">
         <div class="panel-header">
           <h2>Animaciones <span class="badge" id="anim-count">0</span></h2>
-          <button type="button" id="btn-new-anim" class="btn-sm primary" title="Crear nueva animación">+ New</button>
+          <button type="button" id="btn-new-anim" class="btn btn-sm primary" title="Crear nueva animación">+ New</button>
         </div>
 
         <ul id="anim-list" class="anim-list"></ul>
@@ -131,7 +149,7 @@
         <div id="anim-editor" class="anim-editor hidden">
           <div class="editor-header">
             <h3>Editar animación</h3>
-            <button type="button" id="btn-close-editor" class="btn-sm btn-icon" title="Cerrar editor (Escape)">×</button>
+            <button type="button" id="btn-close-editor" class="btn btn-sm btn-icon" title="Cerrar editor (Escape)">×</button>
           </div>
           <label title="Nombre de la animación">
             Nombre
@@ -149,23 +167,27 @@
           <p class="section-label">Frames en animación <span class="hint">(arrastra para reordenar)</span></p>
           <ul id="anim-frame-list" class="anim-frame-list"></ul>
           <div class="btn-row">
-            <button type="button" id="btn-dup-anim" title="Duplicar animación">Duplicar</button>
-            <button type="button" id="btn-del-anim" class="danger" title="Eliminar animación">Eliminar</button>
+            <button type="button" id="btn-dup-anim" class="btn" title="Duplicar animación">Duplicar</button>
+            <button type="button" id="btn-del-anim" class="btn danger" title="Eliminar animación">Eliminar</button>
           </div>
         </div>
 
-        <div class="export-section">
-          <h3>Exportación</h3>
-          <label class="toggle-label" title="Envolver en { animations: ... } para SpriteManager.load">
-            <input type="checkbox" id="export-wrap">
-            Formato SpriteManager.load()
-          </label>
-          <div class="btn-row">
-            <button type="button" id="btn-export" class="primary" title="Descargar JSON de animaciones"><i class="fa-solid fa-download"></i> Export</button>
-            <button type="button" id="btn-export-sheet" title="Exportar spritesheet PNG + JSON"><i class="fa-solid fa-table-cells"></i> Sheet</button>
-            <button type="button" id="btn-copy" title="Copiar JSON al portapapeles"><i class="fa-solid fa-copy"></i> Copy</button>
+        <div class="export-section collapsible" id="export-section">
+          <div class="export-header" id="export-header">
+            <h3>Exportación <span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></h3>
           </div>
-          <pre class="json-preview" id="json-preview">{}</pre>
+          <div class="export-body">
+            <label class="toggle-label" title="Envolver en { animations: ... } para SpriteManager.load">
+              <input type="checkbox" id="export-wrap">
+              Formato SpriteManager.load()
+            </label>
+            <div class="btn-row">
+              <button type="button" id="btn-export" class="btn primary" title="Descargar JSON de animaciones"><i class="fa-solid fa-download"></i> Export</button>
+              <button type="button" id="btn-export-sheet" class="btn" title="Exportar spritesheet PNG + JSON"><i class="fa-solid fa-table-cells"></i> Sheet</button>
+              <button type="button" id="btn-copy" class="btn" title="Copiar JSON al portapapeles"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+            <pre class="json-preview" id="json-preview">{}</pre>
+          </div>
         </div>
       </aside>
     </main>
@@ -182,12 +204,13 @@
       <p class="section-label">Selecciona frames</p>
       <div id="new-anim-frames" class="frame-picker"></div>
       <div class="dialog-actions">
-        <button type="button" id="new-anim-cancel">Cancelar</button>
-        <button type="submit" class="primary">Crear</button>
+        <button type="button" id="new-anim-cancel" class="btn">Cancelar</button>
+        <button type="submit" class="btn primary">Crear</button>
       </div>
     </form>
   </dialog>
 
+  <!-- Modal: rename frame -->
   <dialog id="rename-frame-dialog">
     <form method="dialog" id="rename-frame-form">
       <h3>Renombrar frame</h3>
@@ -196,11 +219,43 @@
         <input type="text" id="rename-frame-input" required>
       </label>
       <div class="dialog-actions">
-        <button type="button" id="rename-frame-cancel">Cancelar</button>
-        <button type="submit" class="primary">Guardar</button>
+        <button type="button" id="rename-frame-cancel" class="btn">Cancelar</button>
+        <button type="submit" class="btn primary">Guardar</button>
       </div>
     </form>
   </dialog>
+
+  <!-- Modal: keyboard shortcuts -->
+  <dialog id="shortcuts-dialog">
+    <form method="dialog">
+      <h3>Atajos de teclado</h3>
+      <div class="shortcut-grid">
+        <div class="shortcut-item"><span class="shortcut-key">Space</span><span class="shortcut-desc">Play / Pause</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">←</span><span class="shortcut-desc">Frame anterior</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">→</span><span class="shortcut-desc">Frame siguiente</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">R</span><span class="shortcut-desc">Reiniciar</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Escape</span><span class="shortcut-desc">Cerrar editor / diálogos</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Ctrl+Z</span><span class="shortcut-desc">Deshacer</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Ctrl+Shift+Z</span><span class="shortcut-desc">Rehacer</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Ctrl+S</span><span class="shortcut-desc">Guardar proyecto</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Ctrl+O</span><span class="shortcut-desc">Cargar proyecto</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">?</span><span class="shortcut-desc">Mostrar atajos</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Delete</span><span class="shortcut-desc">Eliminar frames seleccionados</span></div>
+        <div class="shortcut-item"><span class="shortcut-key">Ctrl+A</span><span class="shortcut-desc">Seleccionar todos los frames</span></div>
+      </div>
+      <div class="dialog-actions" style="margin-top: 1rem;">
+        <button type="button" id="shortcuts-close" class="btn primary" onclick="this.closest('dialog').close()">Cerrar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container">
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <!-- Hidden file input for project loading -->
+  <input type="file" id="load-project-input" accept=".json,application/json" hidden>
 
 </body>
 </html>

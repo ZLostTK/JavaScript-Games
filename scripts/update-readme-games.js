@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
-const gamesJsonPath = join(root, 'games.json');
+const gamesJsonPath = join(root, 'public', 'games.json');
 const readmePath = join(root, 'README.md');
 
 try {

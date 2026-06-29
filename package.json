@@ -3,12 +3,18 @@
 	"devDependencies": {
 		"jsdom": "^26.1.0",
 		"serve": "^14.2.6",
+		"vite": "^8.1.0",
 		"vitest": "^3.2.4"
 	},
 	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"build:report": "pnpm run build && node scripts/build-report.js",
+		"preview": "vite preview",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"start": "serve .",
+		"start": "vite",
+		"start:static": "vite preview",
 		"editor": "pnpm --dir editor dev",
 		"editor:build": "pnpm --dir editor build",
 		"sprite-cutter": "pnpm --dir tools/sprite-cutter dev",
@@ -22,5 +28,8 @@
 		"hitbox-debugger": "pnpm --dir tools/hitbox-debugger dev",
 		"hitbox-debugger:build": "pnpm --dir tools/hitbox-debugger build",
 		"all:build": "pnpm sprite-cutter:build && pnpm animation-previewer:build && pnpm theme-studio:build && pnpm input-visualizer:build && pnpm hitbox-debugger:build"
+	},
+	"dependencies": {
+		"peerjs": "^1.5.5"
 	}
 }

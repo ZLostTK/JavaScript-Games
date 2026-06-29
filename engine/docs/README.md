@@ -9,6 +9,9 @@ Los módulos compartidos (`Theme`, `UICanvas`, `UIMenu`, `GameStates`, `GameOver
 1. [Conceptos Básicos y Arquitectura](#arquitectura-y-conceptos-básicos)
 2. [Estructura de un Proyecto](#estructura-de-un-proyecto)
 3. **Módulos Principales:**
+   - [Arquitectura moderna (Vite + ESM)](MODERN_STACK.md)
+   - [EventBus (eventos centralizados)](EVENT_BUS.md)
+   - [ECS (entidades y componentes)](ECS.md)
    - [Motores Core (Canvas, DOM, PIXI, LittleJS)](CORE_ENGINES.md)
    - [Arquitectura de Juegos (plantillas y utilidades)](GAME_ARCHITECTURE.md)
    - [Sistema de Input (Teclado, Mouse, Táctil)](INPUT.md)
@@ -51,7 +54,29 @@ GameBoot.start(myGame, { renderer: 'little', containerId: 'game-container', widt
 
 ## Estructura de un Proyecto
 
-### index.html (plantilla mínima)
+### index.html (plantilla ESM — recomendada)
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mi Juego</title>
+    <link rel="stylesheet" href="../../engine/game-shell.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game"></canvas>
+        <button id="back-btn" onclick="location.href='../../'">← Volver</button>
+    </div>
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
+```
+
+### index.html (legacy con `<script>` tags)
 
 ```html
 <!DOCTYPE html>

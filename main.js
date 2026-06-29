@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
 	const grid = document.getElementById('game-grid');
 	const searchInput = document.getElementById('search-input');
-	let cacheConfig = { name: 'js-games-v2', alwaysInclude: ['engine/game-shell.css'] };
+	let cacheConfig = { name: 'js-games-v4', alwaysInclude: [] };
 	let allGames = [];
 
 	try {
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 				`./${g.image}`,
 			]);
 
-			(cacheConfig.gameBaseFiles || ['index.html', 'style.css', 'script.js']).forEach((f) => {
+			(cacheConfig.gameBaseFiles || ['index.html', 'style.css', 'main.js']).forEach((f) => {
 				files.add(`./${g.path}${f}`);
 			});
 
@@ -136,9 +136,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 				if (match) {
 					let isDifferent = false;
 					try {
-						const headRes = await fetch(`./${path}script.js?_nocache=${Date.now()}`, { method: 'HEAD' });
+						const headRes = await fetch(`./${path}main.js?_nocache=${Date.now()}`, { method: 'HEAD' });
 						if (headRes && headRes.ok) {
-							const matchScript = await cache.match(`./${path}script.js`);
+							const matchScript = await cache.match(`./${path}main.js`);
 							if (matchScript) {
 								const netLastMod = headRes.headers.get('Last-Modified');
 								const cachedLastMod = matchScript.headers.get('Last-Modified');

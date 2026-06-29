@@ -13,25 +13,18 @@ const gamesDir = join(root, "games");
 
 /** Manifest de caché offline - fuente única para sw.js y main.js */
 const cacheConfig = {
-  name: "js-games-v3",
+  name: "js-games-v4",
   hubPrecache: [
     "./",
     "./index.html",
-    "./style.css",
-    "./main.js",
     "./games.json",
     "./manifest.json",
     "./icon.svg",
-    "./engine/game-shell.css",
-    "./engine/theme.js",
-    "./engine/render-bridge.js",
-    "./engine/input.js",
-    "./engine/audio.js",
-    "./engine/game-boot.js",
+    "./sw.js",
   ],
-  gameBaseFiles: ["index.html", "style.css", "script.js"],
-  alwaysInclude: ["engine/game-shell.css"],
-  legacyCaches: ["js-games-v1", "js-games-v2"],
+  gameBaseFiles: ["index.html", "style.css", "main.js"],
+  alwaysInclude: [],
+  legacyCaches: ["js-games-v1", "js-games-v2", "js-games-v3"],
 };
 
 const meta = {
@@ -203,7 +196,7 @@ const games = entries
   });
 
 writeFileSync(
-  join(root, "games.json"),
+  join(root, "public", "games.json"),
   JSON.stringify({ cache: cacheConfig, games }, null, 2),
 );
 console.log(

@@ -1066,6 +1066,7 @@ class SpriteManager {
         this.groups = {};
         this.imagePaths = {};
         this.compositions = {};
+        this.hitboxManager = new HitboxManager();
         
         SpriteProcessor.setEngineType(this.engineType);
     }
@@ -1618,7 +1619,7 @@ class SpriteStateMachine {
 // Al cargar el script, agrega listener global para tecla D
 document.addEventListener('keydown', (e) => {
     // Detectar Alt + D (o Alt + d)
-    if (e.altKey && (e.key === 'd' || e.altKey && e.key === 'D')) {
+    if (e.altKey && (e.key === 'd' || e.key === 'D')) {
         const mgr = window.spriteManager || (window.game?.spriteManager);
         if (mgr) {
             e.preventDefault();
@@ -1628,5 +1629,5 @@ document.addEventListener('keydown', (e) => {
 });
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SpriteProcessor, SpriteManager, EntityComposer, SpriteState, SpriteStateMachine };
+    module.exports = { SpriteProcessor, SpriteManager, EntityComposer, SpriteState, SpriteStateMachine, HitboxManager, HitboxDebug };
 }

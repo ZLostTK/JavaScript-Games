@@ -111,6 +111,37 @@ Online.destroy()
 
 ---
 
+## [EventBus](EVENT_BUS.md) — eventos centralizados
+
+```javascript
+import { EventBus, Events } from '../../src/index.js';
+
+EventBus.on(Events.INPUT_KEY_PRESSED, ({ code }) => { /* ... */ });
+EventBus.emit(Events.AUDIO_PLAY, { name: 'hit', vol: 1 });
+EventBus.once(Events.ONLINE_CONNECTED, (role) => { /* ... */ });
+EventBus.off(event, handler);
+```
+
+---
+
+## [ECS](ECS.md) — entidades y componentes
+
+```javascript
+import { World } from '../../src/ecs/World.js';
+import { Transform, Velocity, SpriteData, Collider } from '../../src/components/index.js';
+import { MovementSystem, PhysicsSystem, RenderSystem } from '../../src/systems/index.js';
+
+const world = new World();
+const id = world.createEntity();
+world.addComponent(id, Transform, { x: 0, y: 0 });
+world.addComponent(id, Velocity, { vx: 100, vy: 0 });
+world.addSystem(new MovementSystem(world));
+world.update(dt);
+world.render(ctx);
+```
+
+---
+
 ## [Sprites y Animaciones](SPRITES.md)
 
 ### `SpriteManager`

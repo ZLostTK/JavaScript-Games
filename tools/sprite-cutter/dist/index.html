@@ -7,8 +7,8 @@
   <meta name="description" content="Herramienta visual para definir regiones de sprites y exportar JSON compatible con SpriteProcessor.loadSpriteSheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-  <script type="module" crossorigin src="./assets/index-DWLKVwxX.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-D1CpuVjc.css">
+  <script type="module" crossorigin src="./assets/index-CNkgr6AF.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CTffmSAg.css">
 </head>
 <body>
   <div id="app">
@@ -18,7 +18,7 @@
       <button type="button" id="toggle-sidebar" class="mobile-toggle" aria-label="Mostrar panel de controles" title="Panel de controles"><i class="fa-solid fa-bars"></i></button>
     </header>
 
-    <main class="workspace">
+    <main class="workspace" id="workspace">
       <section class="canvas-area" aria-label="Editor de spritesheet">
         <div class="canvas-toolbar">
           <label class="file-btn" title="Cargar imagen (PNG, GIF, JPG, WebP)">
@@ -39,23 +39,25 @@
             <p>Suelta la imagen aquí</p>
           </div>
           <div id="toast" class="toast" role="status" aria-live="polite"></div>
-          <canvas id="minimap" class="minimap" width="160" height="120" title="Mini-mapa"></canvas>
+          <canvas id="minimap" class="minimap" width="160" height="120" title="Click para navegar"></canvas>
         </div>
 
         <p class="canvas-hint">Rueda: zoom · Clic derecho: pan · Clic: seleccionar / dibujar · Shift/Ctrl+clic: multi-selección · Ctrl+Z/Y: deshacer/rehacer</p>
       </section>
 
+      <div class="sidebar-resizer" id="sidebar-resizer" title="Redimensionar panel"></div>
+
       <aside class="sidebar" id="sidebar">
-        <div class="sidebar-section">
-          <h2>Modo</h2>
+        <details class="sidebar-section" open>
+          <summary><h2>Modo</h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
           <div class="mode-tabs">
             <button type="button" class="mode-tab active" data-mode="manual" title="Dibujar y editar rectángulos manualmente">Manual</button>
             <button type="button" class="mode-tab" data-mode="grid" title="Generar sprites desde una cuadrícula">Grid</button>
           </div>
-        </div>
+        </details>
 
-        <div class="sidebar-section" id="grid-panel" hidden>
-          <h2>Cuadrícula automática</h2>
+        <details class="sidebar-section" id="grid-panel" hidden>
+          <summary><h2>Cuadrícula automática</h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
           <div class="field-grid">
             <label title="Ancho de cada sprite en píxeles">Ancho <input type="number" id="grid-w" value="32" min="1"></label>
             <label title="Alto de cada sprite en píxeles">Alto <input type="number" id="grid-h" value="32" min="1"></label>
@@ -74,10 +76,39 @@
             <button type="button" id="btn-apply-grid" class="primary" title="Generar todos los rectángulos desde la cuadrícula">Apply Grid</button>
             <button type="button" id="btn-switch-manual" title="Pasar a modo manual para editar rectángulos individuales">Switch to Manual</button>
           </div>
-        </div>
+          <button type="button" id="btn-auto-detect" class="secondary" title="Detectar tamaño de celda automáticamente desde bordes transparentes">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-detect grid
+          </button>
+          <button type="button" id="btn-detect-edges" class="secondary" title="Detectar cuadrícula mediante bordes de luminancia (funciona sin transparencia)">
+            <i class="fa-solid fa-border-all"></i> Detect by edges
+          </button>
+          <label class="full-width" title="Umbral de detección de bordes (más bajo = más sensible)">
+            Edge threshold
+            <input type="number" id="edge-threshold" value="30" min="1" max="255">
+          </label>
+          <div style="margin-top:0.75rem;border-top:1px solid var(--border);padding-top:0.75rem">
+            <label title="Encontrar sprites individuales por píxeles conectados (flood fill)">
+              <strong><i class="fa-solid fa-cube"></i> Sprite islands</strong>
+            </label>
+            <label title="Píxeles de padding alrededor de cada sprite">
+              Padding
+              <input type="number" id="sprite-padding" value="1" min="0" max="50">
+            </label>
+            <label title="Tamaño mínimo de sprite en píxeles (ignora ruido pequeño)">
+              Min size
+              <input type="number" id="sprite-min-size" value="4" min="1" max="500">
+            </label>
+            <button type="button" id="btn-detect-sprites" class="primary" title="Detectar sprites por píxeles conectados">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Detect Sprites
+            </button>
+            <button type="button" id="btn-remap-grid" class="secondary" title="Reajustar rectángulos actuales a una cuadrícula perfecta uniforme">
+              <i class="fa-solid fa-grid-2"></i> Remap to Grid
+            </button>
+          </div>
+        </details>
 
-        <div class="sidebar-section">
-          <h2>Nombrado</h2>
+        <details class="sidebar-section">
+          <summary><h2>Nombrado</h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
           <label title="Patrón de auto-nombre: prefijo + índice">
             Prefijo auto-nombre
             <input type="text" id="name-prefix" value="sprite_" placeholder="sprite_">
@@ -93,10 +124,32 @@
             Snap (px)
             <input type="number" id="snap-size" value="1" min="1" disabled>
           </label>
-        </div>
+        </details>
 
-        <div class="sidebar-section">
-          <h2>Rectángulo seleccionado</h2>
+        <details class="sidebar-section" id="batch-rename-section">
+          <summary><h2>Batch rename</h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
+          <label title="Patrón de rename. Usa {n} para número. Ej: walk_{n} → walk_01, walk_02">
+            Patrón
+            <input type="text" id="batch-rename-pattern" value="sprite_{n}" placeholder="walk_{n}">
+          </label>
+          <label title="Número inicial">
+            Start
+            <input type="number" id="batch-rename-start" value="0" min="0">
+          </label>
+          <label title="Padding de dígitos (0 = auto)">
+            Pad
+            <input type="number" id="batch-rename-pad" value="0" min="0" max="9">
+          </label>
+          <label title="Filtro regex opcional para nombres a renombrar (ej: ^walk)">
+            Filtro regex
+            <input type="text" id="batch-rename-filter" placeholder=".+" value=".+">
+          </label>
+          <button type="button" id="btn-batch-rename" class="primary" title="Renombrar sprites con el patrón dado"><i class="fa-solid fa-i-cursor"></i> Renombrar</button>
+          <p class="preview-text" id="batch-preview">Preview: sprite_0, sprite_1, ...</p>
+        </details>
+
+        <details class="sidebar-section">
+          <summary><h2>Rectángulo seleccionado</h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
           <div id="no-selection" class="muted-text">Ninguno seleccionado</div>
           <div id="multi-selection" class="multi-selection" hidden></div>
           <div id="selection-panel" hidden>
@@ -112,24 +165,39 @@
             </div>
             <button type="button" id="btn-delete-rect" class="danger" title="Eliminar selección (Del / Backspace)"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
           </div>
+          <div id="sprite-preview" class="sprite-preview hidden">
+            <canvas id="sprite-preview-canvas" class="sprite-preview-canvas"></canvas>
+          </div>
           <button type="button" id="btn-clear-all" class="danger-outline" title="Eliminar todos los rectángulos"><i class="fa-solid fa-eraser"></i> Clear all</button>
-        </div>
+        </details>
 
-        <div class="sidebar-section">
-          <h2>Lista <span id="rect-count" class="badge">0</span></h2>
+        <details class="sidebar-section" open>
+          <summary><h2>Lista <span id="rect-count" class="badge">0</span></h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
           <ul id="rect-list" class="rect-list"></ul>
-        </div>
+        </details>
 
-        <div class="sidebar-section">
-          <h2>Visualización</h2>
+        <details class="sidebar-section" open>
+          <summary><h2>Visualización</h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
+          <div class="color-legend">
+            <span class="legend-item"><span class="legend-swatch swatch-normal"></span> Normal</span>
+            <span class="legend-item"><span class="legend-swatch swatch-selected"></span> Seleccionado</span>
+            <span class="legend-item"><span class="legend-swatch swatch-grid"></span> Grid preview</span>
+          </div>
           <label class="checkbox-label" title="Mostrar etiquetas con el nombre de cada sprite">
             <input type="checkbox" id="show-labels" checked>
             Show named labels
           </label>
-        </div>
+          <label class="checkbox-label" title="Mostrar preview del spritesheet exportado">
+            <input type="checkbox" id="show-sheet-preview">
+            Sheet preview
+          </label>
+          <div id="sheet-preview-wrap" class="sheet-preview-wrap hidden">
+            <canvas id="sheet-preview-canvas" class="sheet-preview-canvas"></canvas>
+          </div>
+        </details>
 
-        <div class="sidebar-section">
-          <h2>Exportación</h2>
+        <details class="sidebar-section">
+          <summary><h2>Exportación</h2><span class="collapse-icon"><i class="fa-solid fa-chevron-down"></i></span></summary>
           <div class="field-grid">
             <label title="Escala al cargar con loadSpriteSheet">scale
               <input type="number" id="export-scale" value="1" min="0.1" step="0.1">
@@ -151,9 +219,21 @@
             <button type="button" id="btn-copy" title="Copiar JSON al portapapeles"><i class="fa-solid fa-copy"></i> Copy</button>
           </div>
           <pre class="json-preview" id="json-preview" aria-label="Vista previa del JSON">[]</pre>
-        </div>
+        </details>
       </aside>
     </main>
   </div>
+
+  <dialog id="export-preview-dialog">
+    <form method="dialog">
+      <h3>Export Preview</h3>
+      <p class="muted-text">Sprites individuales a exportar:</p>
+      <div id="export-preview-list" class="export-preview-list"></div>
+      <div class="dialog-actions">
+        <button type="button" id="export-preview-close" class="btn">Cerrar</button>
+      </div>
+    </form>
+  </dialog>
+
 </body>
 </html>
