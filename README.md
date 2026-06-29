@@ -24,7 +24,6 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Snake Game](./games/snake/)** - Grow the snake by eating food
 - **[Space Invaders](./games/spaceinvaders/)** - Defend Earth from alien invaders
 - **[Sudoku](./games/sudoku/)** - Solve the sudoku puzzle
-- **[test](./games/siege-breaker/)** - Battle game with sprites
 - **[Typing Speed](./games/typingspeed/)** - Test your typing speed - ES / EN word pools
 - **[Void Sector](./games/voidsector/)** - Space combat game with online multiplayer
 - **[Word Scramble](./games/wordscramble/)** - Unscramble the letters - ES / EN
