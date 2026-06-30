@@ -1,4 +1,4 @@
-import { readdirSync, existsSync } from 'node:fs';
+import { readdirSync, existsSync, cpSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
@@ -15,6 +15,21 @@ export default defineConfig({
 		port: 5173,
 		open: '/',
 	},
+	plugins: [
+		{
+			name: 'copy-engine-vendors',
+			closeBundle() {
+				const engineDir = resolve(root, 'engine');
+				const distEngine = resolve(root, 'dist', 'engine');
+				if (!existsSync(distEngine)) mkdirSync(distEngine, { recursive: true });
+				for (const f of readdirSync(engineDir)) {
+					if (f.endsWith('.min.js')) {
+						cpSync(resolve(engineDir, f), resolve(distEngine, f));
+					}
+				}
+			},
+		},
+	],
 	build: {
 		target: 'es2020',
 		minify: 'esbuild',

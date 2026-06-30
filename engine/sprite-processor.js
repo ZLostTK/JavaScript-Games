@@ -1057,6 +1057,57 @@ class SpriteProcessor {
     }
 }
 
+class HitboxManager {
+    constructor() {
+        this.regions = new Map();
+        this.visible = false;
+    }
+
+    register(id, x, y, w, h, label) {
+        this.regions.set(id, { id, x, y, w, h, label });
+    }
+
+    unregister(id) {
+        this.regions.delete(id);
+    }
+
+    clear() {
+        this.regions.clear();
+    }
+
+    get(id) {
+        return this.regions.get(id);
+    }
+
+    getAll() {
+        return Array.from(this.regions.values());
+    }
+
+    hitTest(px, py) {
+        for (const r of this.regions.values()) {
+            if (px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    toggle() {
+        this.visible = !this.visible;
+    }
+}
+
+class HitboxDebug {
+    static draw(ctx, regions, cameraX = 0, cameraY = 0) {
+        if (!ctx) return;
+        for (const r of regions) {
+            ctx.strokeStyle = 'rgba(255,0,0,0.5)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(r.x - cameraX, r.y - cameraY, r.w, r.h);
+        }
+    }
+}
+
 class SpriteManager {
     constructor(EngineClass = null, engineType = null) {
         this.engine = EngineClass;
