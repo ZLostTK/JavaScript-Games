@@ -5,10 +5,12 @@
 import { PIXIEngine } from './engine-shim.js';
 import { game } from './script.js';
 
-await PIXIEngine.init('game-container', {
-  width: 960,
-  height: 540,
-  bg: 0x0f0f1a,
-});
+(async () => {
+  await PIXIEngine.init('game-container', {
+    width: 960,
+    height: 540,
+    bg: 0x0f0f1a,
+  });
 
-PIXIEngine.start(game);
+  PIXIEngine.start(game);
+})();
