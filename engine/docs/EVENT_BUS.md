@@ -61,7 +61,6 @@ unsub(); // también válido — on() devuelve función de cleanup
 ## Piloto migrado
 
 - **Arkanoid** — input, audio, colisiones ECS vía EventBus
-- **Arkanoid** — input, audio, colisiones ECS vía EventBus
 
 ---
 

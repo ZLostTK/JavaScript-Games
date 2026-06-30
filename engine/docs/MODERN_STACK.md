@@ -40,6 +40,8 @@ GameBoot.start(game, { canvasId: 'game', width: 480, height: 640 });
 | `canvas.js` | Engine, Input, Audio, EventBus, GameBoot, UI… |
 | `canvas-mobile.js` | canvas + MobileControls |
 | `canvas-online.js` | canvas + Online, OnlineLobby |
+| `pixi.js` | canvas + PIXIEngine |
+| `little.js` | canvas + LittleEngine |
 | `dom.js` | DOMEngine, EventBus, AnimationSystem… |
 | `dom-online.js` | dom + Online |
 
@@ -89,8 +91,12 @@ Juegos piloto: **Snake** (EventBus), **Arkanoid** (EventBus + ECS).
 Queda solo lo que no está empaquetado en `src/`:
 
 - `engine/docs/` — documentación
-- `engine/sprite-processor.js` — sprites, animaciones y `SpriteStateMachine` (referencia para herramientas y juegos con sprites)
+- `engine/sprite-processor.js` — sprites, animaciones y `SpriteStateMachine`
+- `engine/pixi.min.js` — librería PIXI.js (cargada vía `<script>` antes del ESM)
+- `engine/littlejs.min.js` — librería LittleJS (cargada vía `<script>` antes del ESM)
 - `public/engine/game-shell.css` — estilos compartidos del shell de juegos (servido en `/engine/game-shell.css`)
+
+Los adapters `PIXIEngine` y `LittleEngine` se importan desde `src/core/` vía boot shims `pixi.js`/`little.js`.
 
 Los módulos del motor viven en `src/` y se importan vía boot shims o ESM directo.
 

@@ -1,9 +1,5 @@
 import { Input } from '../modules/Input.js';
 
-/**
- * Puente agnóstico entre módulos compartidos y los motores de renderizado.
- * Evita import circular con Engine usando _active + fallbacks legacy en globalThis.
- */
 export class RenderBridge {
 	static _active = null;
 
@@ -12,17 +8,7 @@ export class RenderBridge {
 	}
 
 	static active() {
-		if (this._active) return this._active;
-
-		const { Engine, PIXIEngine, LittleEngine } = globalThis;
-		if (Engine?._running) return Engine;
-		if (PIXIEngine?._running) return PIXIEngine;
-		if (LittleEngine?._running) return LittleEngine;
-		if (Engine?.canvas) return Engine;
-		if (PIXIEngine?.app) return PIXIEngine;
-		if (LittleEngine?._container) return LittleEngine;
-
-		return Engine ?? null;
+		return this._active;
 	}
 
 	static type() {

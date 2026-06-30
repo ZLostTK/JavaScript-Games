@@ -2,7 +2,7 @@
 
 Biblioteca modular para juegos 2D web. Es **agnóstica al motor de renderizado**: la misma lógica de juego puede ejecutarse con **Engine** (Canvas 2D), **PIXIEngine** (WebGL), **LittleEngine** (LittleJS) o **DOMEngine** (HTML/CSS).
 
-Los módulos compartidos (`Theme`, `UICanvas`, `UIMenu`, `GameStates`, `GameOverlay`, `OnlineLobby`, `OnlineSetup`, `MobileControls`, `GameBoot`) son **retrocompatibles** con los tres motores gráficos principales gracias a `RenderBridge`.
+Los módulos compartidos (`Theme`, `UICanvas`, `UIMenu`, `GameOverlay`, `OnlineLobby`, `MobileControls`, `GameBoot`) son **retrocompatibles** con los tres motores gráficos principales gracias a `RenderBridge`.
 
 ## Índice de Contenidos
 
@@ -13,13 +13,19 @@ Los módulos compartidos (`Theme`, `UICanvas`, `UIMenu`, `GameStates`, `GameOver
    - [EventBus (eventos centralizados)](EVENT_BUS.md)
    - [ECS (entidades y componentes)](ECS.md)
    - [Motores Core (Canvas, DOM, PIXI, LittleJS)](CORE_ENGINES.md)
-   - [Arquitectura de Juegos (plantillas y utilidades)](GAME_ARCHITECTURE.md)
+   - [Arquitectura de Juegos (plantillas y utilidades)](API.md)
    - [Sistema de Input (Teclado, Mouse, Táctil)](INPUT.md)
    - [Sistema de Audio (Sonidos, Música, Síntesis)](AUDIO.md)
    - [Sistema Online (Multijugador P2P)](ONLINE.md)
    - [Gestión de Sprites y Animaciones](SPRITES.md)
    - [Juegos offline y Service Worker](OFFLINE.md)
-4. [Referencia Rápida API](API.md)
+4. **Librerías Externas:**
+   - [Matter.js — Física 2D](MATTER_PHYSICS.md)
+   - [Howler.js — Audio Avanzado](HOWLER_AUDIO.md)
+   - [Pathfinding.js — Rutas para NPCs](PATHFINDING.md)
+   - [GSAP — Tweens y Animaciones UI](GSAP_TWEENS.md)
+   - [ROT.js — Mazmorras Roguelike](ROGUELIKE_DUNGEON.md)
+5. [Referencia Rápida API](API.md)
 
 ---
 
@@ -76,56 +82,31 @@ GameBoot.start(myGame, { renderer: 'little', containerId: 'game-container', widt
 </html>
 ```
 
-### index.html (legacy con `<script>` tags)
+### main.js (punto de entrada ESM)
 
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Mi Juego</title>
-    <link rel="stylesheet" href="../../engine/game-shell.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="game-container">
-        <canvas id="game"></canvas>
-        <button id="back-btn" onclick="location.href='../../'">← Volver</button>
-    </div>
+```javascript
+import '../../src/boot/canvas.js'; // o canvas-mobile.js, dom.js, pixi.js, little.js
+import { GameBoot } from '../../src/core/GameBoot.js';
+import { game } from './script.js';
 
-    <!-- Orden de carga recomendado -->
-    <script src="../../engine/theme.js"></script>
-    <script src="../../engine/render-bridge.js"></script>
-    <script src="../../engine/input.js"></script>
-    <script src="../../engine/audio.js"></script>
-    <script src="../../engine/engine.js"></script>          <!-- o pixi/littlejs según motor -->
-    <script src="../../engine/ui-canvas.js"></script>
-    <script src="../../engine/ui-menu.js"></script>       <!-- opcional: menús declarativos -->
-    <script src="../../engine/game-states.js"></script>   <!-- opcional: máquina de estados -->
-    <script src="../../engine/game-overlay.js"></script>   <!-- opcional: overlay gameover -->
-    <script src="../../engine/game-boot.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+GameBoot.start(game, { canvasId: 'game', width: 800, height: 600 });
 ```
 
-### Orden de scripts por motor
+### Orden de carga
 
-| Motor | Scripts adicionales |
-|-------|---------------------|
-| **Engine** (Canvas) | `engine.js` |
-| **PIXIEngine** | `pixi.min.js`, `pixi-engine.js`, `sprite-processor.js` |
-| **LittleEngine** | `littlejs.min.js`, `littlejs-engine.js` |
-| **DOMEngine** | `dom-engine.js` (sin `ui-canvas.js`) |
-| **Online** | `peerjs.min.js`, `online.js`, `online-lobby.js`, `online-setup.js` |
-| **Menús / estados / overlay** | `ui-menu.js`, `game-states.js`, `game-overlay.js` (opcionales, ver [GAME_ARCHITECTURE.md](GAME_ARCHITECTURE.md)) |
-| **Móvil** | `mobile-controls.js` |
+| Motor | Carga |
+|-------|-------|
+| **Engine** (Canvas) | boot shim `canvas.js` (importa `src/core/Engine.js`) |
+| **PIXIEngine** | `<script src="../../engine/pixi.min.js">` + boot shim `pixi.js` |
+| **LittleEngine** | `<script src="../../engine/littlejs.min.js">` + boot shim `little.js` |
+| **DOMEngine** | boot shim `dom.js` (importa `src/core/DOMEngine.js`) |
+| **Online** | boot shim `canvas-online.js` o `dom-online.js` |
+| **MobileControls** | boot shim `canvas-mobile.js` |
 
 ---
 
 ## ¿Siguiente Paso?
 
 - Elige renderizador: **[Motores Core](CORE_ENGINES.md)**
-- Estructura de juegos en `games/`: **[Arquitectura de Juegos](GAME_ARCHITECTURE.md)**
+- Estructura de juegos en `games/`: **[API y utilidades](API.md)**
 - Sprites y animaciones: **[Sprites](SPRITES.md)**

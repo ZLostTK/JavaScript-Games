@@ -8,13 +8,11 @@ Los tres motores gráficos principales - **Engine**, **PIXIEngine** y **LittleEn
 
 ## RenderBridge (puente agnóstico)
 
-Carga obligatoria **antes** del motor, **después** de `theme.js`:
-
-```html
-<script src="../../engine/render-bridge.js"></script>
-```
+Se importa como ESM desde `src/core/RenderBridge.js` (incluido automáticamente por los boot shims):
 
 ```javascript
+import { RenderBridge } from '../../src/core/RenderBridge.js';
+
 RenderBridge.W          // ancho lógico del motor activo
 RenderBridge.H          // alto lógico
 RenderBridge.toGame(x, y)  // pantalla → coordenadas de juego
@@ -254,8 +252,14 @@ GameBoot.startLittle(littleGame, {
 });
 ```
 
-**Scripts requeridos:**
+**Carga:**
 ```html
 <script src="../../engine/littlejs.min.js"></script>
-<script src="../../engine/littlejs-engine.js"></script>
+<script type="module" src="./main.js"></script>
+```
+En `main.js`:
+```javascript
+import '../../src/boot/little.js';
+import { game } from './script.js';
+GameBoot.start(game, { renderer: 'little', containerId: 'game-container', width: 640, height: 480, tileSize: 16 });
 ```

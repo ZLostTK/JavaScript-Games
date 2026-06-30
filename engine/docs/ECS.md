@@ -66,6 +66,23 @@ world.render(ctx);
 - `fsm` — instancia de `SpriteStateMachine` (ver [SPRITES.md](SPRITES.md))
 - `hidden` — omitir en render
 
+### `PhysicsBody` (Matter.js)
+- `shape`: `'rectangle'` | `'circle'`
+- `density`, `friction`, `restitution`, `isStatic`
+- Ver [MATTER_PHYSICS.md](MATTER_PHYSICS.md)
+
+### `PathAgent` (Pathfinding.js)
+- `targetX`, `targetY`, `speed`, `path`, `updateInterval`
+- Ver [PATHFINDING.md](PATHFINDING.md)
+
+### `Tween` (GSAP)
+- `duration`, `props`, `ease`, `yoyo`, `repeat`, `delay`
+- Ver [GSAP_TWEENS.md](GSAP_TWEENS.md)
+
+### `DungeonTile` (ROT.js)
+- `tileType`, `walkable`, `visible`, `explored`, `color`
+- Ver [ROGUELIKE_DUNGEON.md](ROGUELIKE_DUNGEON.md)
+
 ## Sistemas disponibles
 
 | Sistema | Función |
@@ -74,6 +91,9 @@ world.render(ctx);
 | `PhysicsSystem` | Rebotes en bordes + colisiones AABB/círculo |
 | `RenderSystem` | Dibuja `Transform` + `SpriteData` vía `RenderBridge` |
 | `AnimationSystem` | Actualiza `SpriteData.fsm` y máquinas del EventBus |
+| `MatterPhysicsSystem` | Simulación Matter.js + sincroniza `Transform` |
+| `PathfindingSystem` | Calcula rutas A* y mueve agentes |
+| `TweenSystem` | Crea y gestiona tweens GSAP por entidad |
 
 ## SpriteStateMachine
 

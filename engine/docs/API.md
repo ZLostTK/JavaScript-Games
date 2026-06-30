@@ -57,7 +57,7 @@ LittleEngine.toGame(x, y)
 
 ---
 
-## [RenderBridge](GAME_ARCHITECTURE.md) - puente entre motores
+## [RenderBridge](CORE_ENGINES.md) - puente entre motores
 
 ```javascript
 RenderBridge.setActive(engine)   // llamado automáticamente por cada motor
@@ -225,7 +225,7 @@ fsm.getTexture()
 
 ## Utilidades compartidas de juegos
 
-Ver [GAME_ARCHITECTURE.md](GAME_ARCHITECTURE.md) para la guía completa.
+Ver [CORE_ENGINES.md](CORE_ENGINES.md) para la guía completa.
 
 ### `Theme`
 ```javascript
@@ -253,27 +253,12 @@ UIMenu.modeSelect(opts)                      // preset: vs IA / 1 vs 1 / En lín
 UIMenu.onlineSetup(opts)                     // preset: host / join / volver
 ```
 
-### `GameStates`
-```javascript
-new GameStates(states, initial, ctx?)        // states: { name: { init?, update?, render?, exit? } }
-states.bind(ctx) | .get() | .is(name) | .has(name) | .set(name, ...args)
-states.update(dt) | .render(ctx) | .run(dt, ctx)
-```
-
 ### `GameOverlay`
 ```javascript
 GameOverlay.draw(ctx, { title, titleColor?, score?, scoreLabel?, lines?, hint?, cooldown?, panel?, dim? })
 GameOverlay.drawDim(ctx, alpha?)
 GameOverlay.canContinue(cooldown)
 GameOverlay.onlineResult(winner, myId, opts?)  // → { title, color }
-```
-
-### `OnlineSetup`
-```javascript
-new OnlineSetup(handlers, opts)              // handlers: { onConnected, onData, onDisconnect?, onCancel?, game? }
-OnlineSetup.forGame(game, opts)              // factory con defaults de tablero P2P
-setup.handleClick(clickPos) | .handleInput() | .render(ctx)
-setup.host(overrides?) | .join(overrides?) | .cancel() | .show(game)
 ```
 
 ### `OnlineLobby`

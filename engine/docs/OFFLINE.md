@@ -37,7 +37,7 @@ Equilibrar **actualizaciones rápidas online** con **juego offline** fiable.
 
 | Estrategia | Recursos | Comportamiento |
 |------------|----------|----------------|
-| **Network-First** | `.html`, `.js`, `.css`, `.json`, `/engine/*`, `/games/*` | Red primero; si falla, caché. Online siempre recibe la versión nueva. |
+| **Network-First** | `.html`, `.js`, `.css`, `.json`, `/games/*`, `/dist/assets/*` | Red primero; si falla, caché. Online siempre recibe la versión nueva. |
 | **Cache-First** | Imágenes SVG del hub, assets binarios | Caché primero; si no existe, red y guardar. |
 | **Bypass** | URLs con `?_nocache` | Siempre red (comprobación de actualizaciones). |
 
@@ -45,7 +45,7 @@ Equilibrar **actualizaciones rápidas online** con **juego offline** fiable.
 
 Ver `sw.js`:
 - `install` → lee `games.json` y precachea `cache.hubPrecache`.
-- `activate` → migra entradas de `js-games-v1`/`js-games-v2` a `js-games-v3` y borra cachés legacy.
+- `activate` → migra entradas de `js-games-v1`/`js-games-v2`/`js-games-v3` a `js-games-v4` y borra cachés legacy.
 - `fetch` → enruta según tipo de recurso.
 
 ---
@@ -67,20 +67,16 @@ Por cada juego, `main.js` construye la lista con `buildGameCacheUrls()`:
 3. **Dependencias auto-detectadas**: scripts y CSS del engine referenciados en el `index.html` del juego (`extraCacheFiles` en `games.json`).
 4. **Assets extra**: definidos manualmente en `scripts/scan-games.js` (p. ej. `words.js`, sprites, imágenes del ahorcado).
 
-Ejemplo de deps detectadas desde `index.html`:
+Ejemplo de dependencias (detectadas por `scan-games.js` de los `<script>` tags en `index.html`):
 
 ```
-engine/theme.js
-engine/render-bridge.js
-engine/input.js
-engine/audio.js
-engine/engine.js
-engine/ui-canvas.js
-engine/online-lobby.js
-engine/peerjs.min.js
-engine/online.js
-engine/game-boot.js
+engine/game-shell.css
+engine/pixi.min.js          (si se usa PIXI)
+engine/littlejs.min.js       (si se usa LittleJS)
+engine/sprite-processor.js   (si se usa)
 ```
+
+Los módulos ESM del motor (`src/`) son empaquetados por Vite en `dist/assets/` y no necesan entrada manual en la caché.
 
 ### ¿Cómo actualizar un juego descargado?
 
@@ -105,23 +101,23 @@ node scripts/scan-games.js
 ```json
 {
   "cache": {
-    "name": "js-games-v3",
-    "hubPrecache": ["./index.html", "./engine/theme.js", "..."],
+    "name": "js-games-v4",
+    "hubPrecache": ["./index.html", "./engine/game-shell.css", "..."],
     "gameBaseFiles": ["index.html", "style.css", "script.js"],
     "alwaysInclude": ["engine/game-shell.css"],
-    "legacyCaches": ["js-games-v1"]
+    "legacyCaches": ["js-games-v1", "js-games-v2", "js-games-v3"]
   },
   "games": [
     {
       "id": "snake",
       "path": "games/snake/",
-      "extraCacheFiles": ["engine/theme.js", "engine/engine.js", "..."]
+      "extraCacheFiles": ["engine/game-shell.css", "..."]
     }
   ]
 }
 ```
 
-`extraCacheFiles` se **fusiona** automáticamente desde el `index.html` del juego + entradas manuales en `scan-games.js` (assets que no aparecen como script/link).
+`extraCacheFiles` se construye desde `scan-games.js`, que analiza el `index.html` del juego en busca de `<script>` y `<link>` tags. Los módulos ESM del motor son empaquetados por Vite y no requieren entrada manual.
 
 ---
 
@@ -147,5 +143,5 @@ La caché v4 actualizó el nombre a `js-games-v4` para reflejar cambios en la es
 
 ## Documentación relacionada
 
-- [Arquitectura de Juegos](GAME_ARCHITECTURE.md) - módulos del engine cacheados
+- [API y utilidades](API.md) - módulos del engine cacheados
 - [README del repo](../../README.md) - visión general PWA
