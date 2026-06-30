@@ -13,7 +13,6 @@ web_modules/
 .stylelintcache
 package-lock.json
 yarn.lock
-pnpm-lock.yaml
 
 # Build and IDE files
 .DS_Store
