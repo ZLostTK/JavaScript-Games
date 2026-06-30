@@ -1,5 +1,5 @@
-import { readdirSync, existsSync, cpSync, mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readdirSync, readFileSync, existsSync, cpSync, mkdirSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
 import { defineConfig } from 'vite';
 
 const root = resolve(import.meta.dirname);
@@ -17,14 +17,31 @@ export default defineConfig({
 	},
 	plugins: [
 		{
-			name: 'copy-engine-vendors',
+			name: 'copy-dist-assets',
 			closeBundle() {
+				const dist = resolve(root, 'dist');
 				const engineDir = resolve(root, 'engine');
-				const distEngine = resolve(root, 'dist', 'engine');
+				const distEngine = resolve(dist, 'engine');
 				if (!existsSync(distEngine)) mkdirSync(distEngine, { recursive: true });
 				for (const f of readdirSync(engineDir)) {
 					if (f.endsWith('.min.js')) {
 						cpSync(resolve(engineDir, f), resolve(distEngine, f));
+					}
+				}
+				const manifestPath = resolve(root, 'public', 'games.json');
+				if (!existsSync(manifestPath)) return;
+				const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+				const seen = new Set();
+				for (const game of manifest.games || []) {
+					for (const file of game.extraCacheFiles || []) {
+						if (seen.has(file) || file.startsWith('engine/')) continue;
+						seen.add(file);
+						const src = resolve(root, file);
+						const dst = resolve(dist, file);
+						if (existsSync(src)) {
+							if (!existsSync(dirname(dst))) mkdirSync(dirname(dst), { recursive: true });
+							cpSync(src, dst);
+						}
 					}
 				}
 			},

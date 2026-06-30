@@ -32,7 +32,7 @@
       "tags": [
         "Arcade",
         "Colisiones",
-        "Física Básica"
+        "F\u00edsica B\u00e1sica"
       ],
       "extraCacheFiles": [
         "engine/game-shell.css"
@@ -46,9 +46,9 @@
       "image": "assets/imgs_games/butterfly-effect.svg",
       "color": "#0c0a1a",
       "tags": [
-        "Simulación",
+        "Simulaci\u00f3n",
         "Caos",
-        "Física",
+        "F\u00edsica",
         "Fractal"
       ],
       "extraCacheFiles": [
@@ -63,7 +63,7 @@
       "image": "assets/imgs_games/connect4.svg",
       "color": "#1a2a5e",
       "tags": [
-        "Clásico",
+        "Cl\u00e1sico",
         "Inteligencia Artificial",
         "Estrategia"
       ],
@@ -81,11 +81,10 @@
       "tags": [
         "Multijugador",
         "Online",
-        "Clásico"
+        "Cl\u00e1sico"
       ],
       "extraCacheFiles": [
-        "engine/game-shell.css",
-        "games/domino/words.js"
+        "engine/game-shell.css"
       ]
     },
     {
@@ -97,8 +96,8 @@
       "color": "#0f2244",
       "tags": [
         "Arcade",
-        "Reacción",
-        "Clásico"
+        "Reacci\u00f3n",
+        "Cl\u00e1sico"
       ],
       "extraCacheFiles": [
         "engine/game-shell.css"
@@ -113,7 +112,7 @@
       "color": "#2a2a4a",
       "tags": [
         "Palabras",
-        "Lógica",
+        "L\u00f3gica",
         "Multijugador"
       ],
       "extraCacheFiles": [
@@ -138,9 +137,9 @@
       "image": "assets/imgs_games/lightsout.svg",
       "color": "#0d0d1a",
       "tags": [
-        "Lógica",
+        "L\u00f3gica",
         "Puzle",
-        "Clásico"
+        "Cl\u00e1sico"
       ],
       "extraCacheFiles": [
         "engine/game-shell.css"
@@ -154,9 +153,9 @@
       "image": "assets/imgs_games/minesweeper.svg",
       "color": "#2a2a4a",
       "tags": [
-        "Lógica",
-        "Clásico",
-        "Cuadrícula"
+        "L\u00f3gica",
+        "Cl\u00e1sico",
+        "Cuadr\u00edcula"
       ],
       "extraCacheFiles": [
         "engine/game-shell.css"
@@ -170,7 +169,7 @@
       "image": "assets/imgs_games/othello.svg",
       "color": "#0f3460",
       "tags": [
-        "Clásico",
+        "Cl\u00e1sico",
         "Estrategia",
         "Tabletop"
       ],
@@ -187,7 +186,7 @@
       "color": "#1a1a2e",
       "tags": [
         "Arcade",
-        "Clásico",
+        "Cl\u00e1sico",
         "Laberinto"
       ],
       "extraCacheFiles": [
@@ -202,8 +201,8 @@
       "image": "assets/imgs_games/snake.svg",
       "color": "#0f3460",
       "tags": [
-        "Clásico",
-        "Cuadrícula",
+        "Cl\u00e1sico",
+        "Cuadr\u00edcula",
         "Arrays"
       ],
       "extraCacheFiles": [
@@ -219,7 +218,7 @@
       "color": "#1a1a2e",
       "tags": [
         "Arcade",
-        "Clásico",
+        "Cl\u00e1sico",
         "Disparos"
       ]
     },
@@ -231,9 +230,9 @@
       "image": "assets/imgs_games/sudoku.svg",
       "color": "#1a1a2e",
       "tags": [
-        "Lógica",
+        "L\u00f3gica",
         "Puzle",
-        "Clásico"
+        "Cl\u00e1sico"
       ],
       "extraCacheFiles": [
         "engine/game-shell.css"
@@ -247,7 +246,7 @@
       "image": "assets/imgs_games/tictactoe.svg",
       "color": "#16213e",
       "tags": [
-        "Lógica",
+        "L\u00f3gica",
         "Inteligencia Artificial"
       ],
       "extraCacheFiles": [
@@ -313,7 +312,7 @@
       "color": "#1a1a2e",
       "tags": [
         "Arcade",
-        "Clásico",
+        "Cl\u00e1sico",
         "Disparos"
       ]
     }
