@@ -1,2 +1,7 @@
+packages:
+  - '.'
+
+allowedDeprecatedVersions: {}
+
 allowBuilds:
   puppeteer: true
