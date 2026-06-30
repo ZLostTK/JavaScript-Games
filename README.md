@@ -21,6 +21,7 @@ A collection of classic arcade games built with vanilla JavaScript, featuring a 
 - **[Gato - Ateti](./games/tictactoe/)** - Classic 3-in-a-row against AI
 - **[Othello - Reversi](./games/othello/)** - Classic strategy board game for two players
 - **[Pac-Man](./games/pacman/)** - Classic maze chase - eat dots and avoid ghosts
+- **[Sky Dash](./games/sky-dash/)** - Sky Dash
 - **[Snake Game](./games/snake/)** - Grow the snake by eating food
 - **[Space Invaders](./games/spaceinvaders/)** - Defend Earth from alien invaders
 - **[Sudoku](./games/sudoku/)** - Solve the sudoku puzzle
