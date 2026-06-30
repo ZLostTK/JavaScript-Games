@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	try {
 		const res = await fetch('games.json');
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		const data = await res.json();
 		if (data.cache) cacheConfig = data.cache;
 		allGames = data.games;

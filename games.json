@@ -1,0 +1,321 @@
+{
+  "cache": {
+    "name": "js-games-v4",
+    "hubPrecache": [
+      "./",
+      "./index.html",
+      "./games.json",
+      "./manifest.json",
+      "./icon.svg",
+      "./sw.js"
+    ],
+    "gameBaseFiles": [
+      "index.html",
+      "style.css",
+      "main.js"
+    ],
+    "alwaysInclude": [],
+    "legacyCaches": [
+      "js-games-v1",
+      "js-games-v2",
+      "js-games-v3"
+    ]
+  },
+  "games": [
+    {
+      "id": "arkanoid",
+      "title": "Arkanoid",
+      "description": "Break bricks with paddle and ball",
+      "path": "games/arkanoid/",
+      "image": "assets/imgs_games/arkanoid.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Arcade",
+        "Colisiones",
+        "Física Básica"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "butterfly-effect",
+      "title": "Efecto Mariposa",
+      "description": "Chaotic visualization of the Lorenz Attractor",
+      "path": "games/butterfly-effect/",
+      "image": "assets/imgs_games/butterfly-effect.svg",
+      "color": "#0c0a1a",
+      "tags": [
+        "Simulación",
+        "Caos",
+        "Física",
+        "Fractal"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "connect4",
+      "title": "Conecta 4",
+      "description": "Connect 4 chips in a row before the AI",
+      "path": "games/connect4/",
+      "image": "assets/imgs_games/connect4.svg",
+      "color": "#1a2a5e",
+      "tags": [
+        "Clásico",
+        "Inteligencia Artificial",
+        "Estrategia"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "domino",
+      "title": "Domino",
+      "description": "4-player online dominoes game",
+      "path": "games/domino/",
+      "image": "assets/imgs_games/domino.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Multijugador",
+        "Online",
+        "Clásico"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css",
+        "games/domino/words.js"
+      ]
+    },
+    {
+      "id": "flappybird",
+      "title": "Flappy Bird",
+      "description": "Fly between pipes without crashing",
+      "path": "games/flappybird/",
+      "image": "assets/imgs_games/flappybird.svg",
+      "color": "#0f2244",
+      "tags": [
+        "Arcade",
+        "Reacción",
+        "Clásico"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "hangman",
+      "title": "Ahorcado",
+      "description": "Guess the secret word - Random and 1v1 modes",
+      "path": "games/hangman/",
+      "image": "assets/imgs_games/hangman.svg",
+      "color": "#2a2a4a",
+      "tags": [
+        "Palabras",
+        "Lógica",
+        "Multijugador"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css",
+        "games/hangman/images/hangman-0.svg",
+        "games/hangman/images/hangman-1.svg",
+        "games/hangman/images/hangman-2.svg",
+        "games/hangman/images/hangman-3.svg",
+        "games/hangman/images/hangman-4.svg",
+        "games/hangman/images/hangman-5.svg",
+        "games/hangman/images/hangman-6.svg",
+        "games/hangman/images/lost.gif",
+        "games/hangman/images/victory.gif",
+        "games/hangman/words.js"
+      ]
+    },
+    {
+      "id": "lightsout",
+      "title": "Fuera Luces!",
+      "description": "Turn off all the lights in the fewest possible pulses",
+      "path": "games/lightsout/",
+      "image": "assets/imgs_games/lightsout.svg",
+      "color": "#0d0d1a",
+      "tags": [
+        "Lógica",
+        "Puzle",
+        "Clásico"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "minesweeper",
+      "title": "Busca Minas",
+      "description": "Find the bombs using logic and arrays",
+      "path": "games/minesweeper/",
+      "image": "assets/imgs_games/minesweeper.svg",
+      "color": "#2a2a4a",
+      "tags": [
+        "Lógica",
+        "Clásico",
+        "Cuadrícula"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "othello",
+      "title": "Othello - Reversi",
+      "description": "Classic strategy board game for two players",
+      "path": "games/othello/",
+      "image": "assets/imgs_games/othello.svg",
+      "color": "#0f3460",
+      "tags": [
+        "Clásico",
+        "Estrategia",
+        "Tabletop"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "pacman",
+      "title": "Pac-Man",
+      "description": "Classic maze chase - eat dots and avoid ghosts",
+      "path": "games/pacman/",
+      "image": "assets/imgs_games/pacman.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Arcade",
+        "Clásico",
+        "Laberinto"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "snake",
+      "title": "Snake Game",
+      "description": "Grow the snake by eating food",
+      "path": "games/snake/",
+      "image": "assets/imgs_games/snake.svg",
+      "color": "#0f3460",
+      "tags": [
+        "Clásico",
+        "Cuadrícula",
+        "Arrays"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "spaceinvaders",
+      "title": "Space Invaders",
+      "description": "Defend Earth from alien invaders",
+      "path": "games/spaceinvaders/",
+      "image": "assets/imgs_games/spaceinvaders.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Arcade",
+        "Clásico",
+        "Disparos"
+      ]
+    },
+    {
+      "id": "sudoku",
+      "title": "Sudoku",
+      "description": "Solve the sudoku puzzle",
+      "path": "games/sudoku/",
+      "image": "assets/imgs_games/sudoku.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Lógica",
+        "Puzle",
+        "Clásico"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "tictactoe",
+      "title": "Gato - Ateti",
+      "description": "Classic 3-in-a-row against AI",
+      "path": "games/tictactoe/",
+      "image": "assets/imgs_games/tictactoe.svg",
+      "color": "#16213e",
+      "tags": [
+        "Lógica",
+        "Inteligencia Artificial"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "typingspeed",
+      "title": "Typing Speed",
+      "description": "Test your typing speed - ES / EN word pools",
+      "path": "games/typingspeed/",
+      "image": "assets/imgs_games/typingspeed.svg",
+      "color": "#0f1117",
+      "tags": [
+        "Palabras",
+        "DOM",
+        "Teclado"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css",
+        "games/typingspeed/words.js"
+      ]
+    },
+    {
+      "id": "voidsector",
+      "title": "Void Sector",
+      "description": "Space combat game with online multiplayer",
+      "path": "games/voidsector/",
+      "image": "assets/imgs_games/voidsector.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Arcade",
+        "Espacio",
+        "Multijugador"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css"
+      ]
+    },
+    {
+      "id": "wordscramble",
+      "title": "Word Scramble",
+      "description": "Unscramble the letters - ES / EN",
+      "path": "games/wordscramble/",
+      "image": "assets/imgs_games/wordscramble.svg",
+      "color": "#0f1117",
+      "tags": [
+        "Palabras",
+        "DOM",
+        "Puzle"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css",
+        "games/wordscramble/words.js"
+      ]
+    },
+    {
+      "id": "sky-dash",
+      "title": "Sky Dash",
+      "description": "Sky Dash",
+      "path": "games/sky-dash/",
+      "image": "assets/imgs_games/sky-dash.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Arcade",
+        "Clásico",
+        "Disparos"
+      ]
+    }
+  ]
+}

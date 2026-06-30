@@ -8,7 +8,6 @@ const LEGACY_CACHES = ["js-games-v1", "js-games-v2", "js-games-v3"];
 const PRECACHE_FALLBACK = [
   "./",
   "./index.html",
-  "./games.json",
   "./manifest.json",
   "./icon.svg",
   "./sw.js",
@@ -32,15 +31,20 @@ function isNetworkFirst(url) {
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
-    fetch("./games.json")
-      .then((r) => r.json())
-      .then((data) => {
-        const list = data.cache?.hubPrecache || PRECACHE_FALLBACK;
-        const name = data.cache?.name || CACHE;
-        return caches.open(name).then((c) => c.addAll(list));
-      })
-      .catch(() => caches.open(CACHE).then((c) => c.addAll(PRECACHE_FALLBACK)))
-      .then(() => self.skipWaiting()),
+    (async () => {
+      let list = PRECACHE_FALLBACK;
+      let name = CACHE;
+      try {
+        const r = await fetch("./games.json");
+        if (r.ok) {
+          const data = await r.json();
+          list = data.cache?.hubPrecache || PRECACHE_FALLBACK;
+          name = data.cache?.name || CACHE;
+        }
+      } catch (_) {}
+      const cache = await caches.open(name);
+      await Promise.allSettled(list.map((url) => cache.add(url)));
+    })().then(() => self.skipWaiting()),
   );
 });
 
