@@ -314,6 +314,11 @@
         "Arcade",
         "Cl\u00e1sico",
         "Disparos"
+      ],
+      "extraCacheFiles": [
+        "engine/game-shell.css",
+        "games/sky-dash/assets/spritesheet.json",
+        "games/sky-dash/assets/spritesheet.png"
       ]
     }
   ]
