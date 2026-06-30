@@ -1,0 +1,58 @@
+[
+  {
+    "name": "player_fly0",
+    "x": 84,
+    "y": 163,
+    "width": 200,
+    "height": 167
+  },
+  {
+    "name": "player_fly1",
+    "x": 367,
+    "y": 163,
+    "width": 205,
+    "height": 167
+  },
+  {
+    "name": "player_fly3",
+    "x": 639,
+    "y": 175,
+    "width": 186,
+    "height": 155
+  },
+  {
+    "name": "obstacle_spike",
+    "x": 945,
+    "y": 184,
+    "width": 164,
+    "height": 167
+  },
+  {
+    "name": "island",
+    "x": 44,
+    "y": 496,
+    "width": 760,
+    "height": 166
+  },
+  {
+    "name": "cloud",
+    "x": 912,
+    "y": 521,
+    "width": 555,
+    "height": 213
+  },
+  {
+    "name": "orb_0",
+    "x": 102,
+    "y": 767,
+    "width": 170,
+    "height": 175
+  },
+  {
+    "name": "orb_1",
+    "x": 400,
+    "y": 767,
+    "width": 173,
+    "height": 182
+  }
+]

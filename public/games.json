@@ -303,6 +303,19 @@
         "engine/game-shell.css",
         "games/wordscramble/words.js"
       ]
+    },
+    {
+      "id": "sky-dash",
+      "title": "Sky Dash",
+      "description": "Sky Dash",
+      "path": "games/sky-dash/",
+      "image": "assets/imgs_games/sky-dash.svg",
+      "color": "#1a1a2e",
+      "tags": [
+        "Arcade",
+        "Clásico",
+        "Disparos"
+      ]
     }
   ]
 }

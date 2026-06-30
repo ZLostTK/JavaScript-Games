@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sky Dash</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <button id="back-btn" onclick="location.href='../../'">Back</button>
+    <div id="hud">
+      <span id="score-display">0 m</span>
+      <span id="best-display">Best: 0 m</span>
+    </div>
+    <div id="start-overlay" class="overlay">
+      <h1>Sky Dash</h1>
+      <p>Tap, click, or press <b>Space</b> to dash upward.<br>Weave through the spikes and collect orbs.</p>
+      <button id="start-btn">Start Flying</button>
+    </div>
+    <div id="gameover-overlay" class="overlay hidden">
+      <h1>You Crashed!</h1>
+      <p id="final-score">Distance: 0 m</p>
+      <button id="retry-btn">Try Again</button>
+    </div>
+  </div>
+
+  <script src="../../engine/pixi.min.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

@@ -1628,6 +1628,8 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+export { SpriteProcessor, SpriteManager, EntityComposer, SpriteState, SpriteStateMachine };
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { SpriteProcessor, SpriteManager, EntityComposer, SpriteState, SpriteStateMachine, HitboxManager, HitboxDebug };
 }
