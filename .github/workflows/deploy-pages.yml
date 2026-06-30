@@ -25,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
@@ -36,6 +36,17 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      - name: Copy tools to dist
+        run: |
+          mkdir -p dist/tools
+          cp -r tools/index.html tools/main.js tools/tools.css tools/tools.json tools/shared dist/tools/
+          for tool in sprite-cutter animation-previewer theme-studio input-visualizer hitbox-debugger; do
+            if [ -d "tools/$tool/dist" ]; then
+              mkdir -p "dist/tools/$tool"
+              cp -r "tools/$tool/dist/"* "dist/tools/$tool/"
+            fi
+          done
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
