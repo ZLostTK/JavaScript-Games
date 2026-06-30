@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
 	const grid = document.getElementById('game-grid');
 	const searchInput = document.getElementById('search-input');
-	let cacheConfig = { name: 'js-games-v4', alwaysInclude: [] };
+	let cacheConfig = { name: 'js-games-v5', alwaysInclude: [] };
 	let allGames = [];
 
 	try {
